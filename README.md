@@ -4,12 +4,13 @@ schedule.
 
 
 ## Prerequisites
-- Python 3.7 or greater
-
+- Python >= 3.7
+- npm v8.1.2
+- node >= 16.13.1
 
 ## How to Run it
 1. Clone the repository and go to the root directory.
-2. In one terminal window, execute `py server/server.py` (for Mac users, `py3 server/server.py`)
+2. In one terminal window, execute `python server/server.py` (for Mac users, `python3 server/server.py`)
 3. In a second terminal window, execute `cd react-calendar-app`
 4. In the same window, execute `npm start`
 
