@@ -8,7 +8,7 @@ from .db.db_utils import *
 class ExampleApi(Resource):
     def get(self):
     # NOTE: No need to replicate code; use the util function!
-       result = exec_get_one("SELECT COUNT(*) FROM courses");
+       result = exec_get_one("SELECT * FROM event_table");
        return result
 
 class TestMessage(Resource):

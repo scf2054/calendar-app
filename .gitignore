@@ -130,3 +130,6 @@ dmypy.json
 
 # DS_Store
 .DS_Store
+
+# SQL Tools
+.sqltools_20211216130929_45819
