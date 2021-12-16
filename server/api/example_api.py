@@ -11,7 +11,6 @@ class Users(Resource):
 
 class Events(Resource):
     def get(self):
-    # NOTE: No need to replicate code; use the util function!
        return exec_get_all("SELECT * FROM event_table")
 
 class Calendars(Resource):
