@@ -1,0 +1,21 @@
+Every single user puts their name into the database and is saved as a "username". The 
+"user_type" can be one of four: school, work, hybrid, other. This determines what
+kinds of events the user can put into their calendar. If this component is 'school',
+the user can put classes into the calendar as well as custom events. If it is
+'work', they can only put in their shifts and custom events. A 'hybrid' is for 
+putting in both classes and shifts as well as custom events into the calendar.
+When it is 'other', they can only put in custom events. The 'calendar_id' is the id 
+that comes from the calendar in the 'calendar_table' that the user created.
+
+The event_table is what the event that the user creates holds. This includes the name, 
+type, priority, start, end, and location. The type can stem from school, work, or custom.
+As for the priority, it can be either 1, 2, or 3. The higher the number, the higher the 
+priority. When an event has its priority set to 3, the time stamps cannot be changed
+no matter the situation. When set to 2, the time stamp can be changed as a last
+minute resort, and for 1 the timestamp can be changed whenever.
+
+A calendar_table holds all 7 days of the week, which is a VARCHAR that contains
+id's referencing the event_table all separated by commas. When extracting the 
+data using the API, the string is split accross commas (,) and iterated over
+to get the event with the corresponding id. This table also references the user 
+that created it.
