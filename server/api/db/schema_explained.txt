@@ -4,8 +4,7 @@ kinds of events the user can put into their calendar. If this component is 'scho
 the user can put classes into the calendar as well as custom events. If it is
 'work', they can only put in their shifts and custom events. A 'hybrid' is for 
 putting in both classes and shifts as well as custom events into the calendar.
-When it is 'other', they can only put in custom events. The 'calendar_id' is the id 
-that comes from the calendar in the 'calendar_table' that the user created.
+When it is 'other', they can only put in custom events.
 
 The event_table is what the event that the user creates holds. This includes the name, 
 type, priority, start, end, and location. The type can stem from school, work, or custom.
