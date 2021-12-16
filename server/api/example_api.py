@@ -5,12 +5,14 @@ from flask_restful import reqparse
 import json
 from .db.db_utils import *
 
-class ExampleApi(Resource):
+class Users(Resource):
     def get(self):
-    # NOTE: No need to replicate code; use the util function!
-       result = exec_get_one("SELECT * FROM event_table");
-       return result
+        return exec_get_all("SELECT * FROM user_table")
 
-class TestMessage(Resource):
+class Events(Resource):
     def get(self):
-        return "Modal components can use onOpened to fetch data dynamically!"
+       return exec_get_all("SELECT * FROM event_table")
+
+class Calendars(Resource):
+    def get(self):
+        return exec_get_all("SELECT * FROM calendar_table")
