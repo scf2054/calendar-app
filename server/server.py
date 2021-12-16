@@ -9,8 +9,9 @@ app = Flask(__name__) #create Flask instance
 
 api = Api(app) #api router
 
-api.add_resource(ExampleApi,'/example_api')
-api.add_resource(TestMessage, '/test_message')
+api.add_resource(Users, '/users')
+api.add_resource(Events,'/events')
+api.add_resource(Calendars, '/calendars')
 
 if __name__ == '__main__':
     print("Loading db");
