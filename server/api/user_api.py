@@ -23,13 +23,13 @@ class Users(Resource):
         args = users_post_args.parse_args()
         username = args[USERNAME]
         user_type = args[USER_TYPE]
-        if len(exec_get_all(f"SELECT * FROM {USER_TABLE} WHERE {USERNAME} = '{username}'")) != 0:
+        if len(exec_get_all(f"SELECT * FROM {USER_TABLE} WHERE {USERNAME} = '{username}';")) == 0:
             if user_type != 'school' and user_type != 'work' and user_type != 'hybrid':
                 user_type = 'other'
-            exec_commit(f"INSERT INTO {USER_TABLE}({USERNAME}, {USER_TYPE}) VALUES ('{username}', '{user_type}'")
+            exec_commit(f"INSERT INTO {USER_TABLE}({USERNAME}, {USER_TYPE}) VALUES ('{username}', '{user_type}');")
             default_user_calendar(exec_get_one(f"SELECT * FROM {USER_TABLE} WHERE {USERNAME} = '{username}' and {USER_TYPE} = '{user_type}';")[0])
         else:
-            return 403
+            return f"The username '{username}' already exists!", 403
 
 class User(Resource):
     def get(self, id):
