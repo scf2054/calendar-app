@@ -6,7 +6,7 @@ import json
 
 from .db.db_utils import *
 from .constants import *
-from .api_utils.post_utils import default_user
+from .api_utils.post_utils import default_user_calendar
 
 HELP_USERNAME = "Your username for the account."
 HELP_USER_TYPE  = "Can be one of four: school, work, hybrid and other."
@@ -27,7 +27,7 @@ class Users(Resource):
             if user_type != 'school' and user_type != 'work' and user_type != 'hybrid':
                 user_type = 'other'
             exec_commit(f"INSERT INTO {USER_TABLE}({USERNAME}, {USER_TYPE}) VALUES ('{username}', '{user_type}'")
-            return default_user(exec_get_one(f"SELECT * FROM {USER_TABLE} WHERE {USERNAME} = '{username}' and {USER_TYPE} = '{user_type}';")[0])
+            default_user_calendar(exec_get_one(f"SELECT * FROM {USER_TABLE} WHERE {USERNAME} = '{username}' and {USER_TYPE} = '{user_type}';")[0])
         else:
             return 403
 
