@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_restful import Resource, Api
 
-
 from api.db.db_utils import *
 from api.user_api import *
 from api.event_api import *
@@ -13,6 +12,7 @@ api = Api(app) #api router
 
 # User
 api.add_resource(Users, '/users')
+api.add_resource(User, '/users/<int:id>')
 
 # Event
 api.add_resource(Events,'/events')
