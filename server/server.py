@@ -3,14 +3,21 @@ from flask_restful import Resource, Api
 
 
 from api.db.db_utils import *
-from api.example_api import *
+from api.user_api import *
+from api.event_api import *
+from api.calendar_api import *
 
 app = Flask(__name__) #create Flask instance
 
 api = Api(app) #api router
 
+# User
 api.add_resource(Users, '/users')
+
+# Event
 api.add_resource(Events,'/events')
+
+# Calendar
 api.add_resource(Calendars, '/calendars')
 
 if __name__ == '__main__':
