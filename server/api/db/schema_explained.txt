@@ -11,7 +11,8 @@ type, priority, start, end, and location. The type can stem from school, work, o
 As for the priority, it can be either 1, 2, or 3. The higher the number, the higher the 
 priority. When an event has its priority set to 3, the time stamps cannot be changed
 no matter the situation. When set to 2, the time stamp can be changed as a last
-minute resort, and for 1 the timestamp can be changed whenever.
+minute resort, and for 1 the timestamp can be changed whenever. The different types of
+events span from: work, school, special, and custom.
 
 A calendar_table holds all 7 days of the week, which is a VARCHAR that contains
 id's referencing the event_table all separated by commas. When extracting the 
