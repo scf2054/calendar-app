@@ -35,6 +35,13 @@ INSERT INTO user_table(username, user_type) VALUES
         ('Sam Frost', 'hybrid')
 ;
 
+INSERT INTO event_table(event_name, event_type, event_priority, start_time, end_time) VALUES 
+        ('Sleep (default)', 'special', 2, '23:00', '7:00'),
+        ('Breakfast (default)', 'special', 2, '7:15', '7:45'),
+        ('Lunch (default)', 'special', 2, '12:15', '12:45'),
+        ('Dinner (default)', 'special', 2, '17:15', '17:45')
+;
+
 INSERT INTO event_table(event_name, event_type, event_priority, start_time, end_time, event_location) VALUES 
         ('SWEN-262', 'school', 3, '10:00', '10:50', 'Golisano 1650'),
         ('MATH-231 Recitation', 'school', 3, '11:00', '11:50', 'Gleason 2129'),
