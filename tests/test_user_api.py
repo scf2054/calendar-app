@@ -19,4 +19,9 @@ class TestUser(unittest.TestCase):
             self.assertTrue(False, "Post did not fail")
         except:
             self.assertTrue(True)
-            print("Post has failed")
+            print("Post has failed!")
+
+    def test_post_users_default_calendar(self):
+        post_rest_call(self, 'http://127.0.0.1:5000/users', {USERNAME: 'Jill Conti', USER_TYPE: 'school'})
+        self.assertEqual((2, 2, '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4'), exec_get_one(f"SELECT * FROM {CALENDAR_TABLE} WHERE {ID} = 2;"), "New calendar not inserted")
+        print("New account created!")
