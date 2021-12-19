@@ -1,5 +1,6 @@
 from ..db.db_utils import *
 from ..constants import *
+import math
 
 def optimize_calendar(calendar):
     u_id = calendar[1]
@@ -11,61 +12,82 @@ def optimize_calendar(calendar):
         low_priorities = []
         medium_priorities = []
         events = calendar[i].split(",")
+        earliest = '23:59'
+        latest = '00:00'
         for id in events:
             event = exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = {int(id)};")
-            if event[3] == 3:
-                event_start = event[4]
-                event_end = event[5]
+            event_start = event[4]
+            event_end = event[5]
+            priority = event[3]
+            if priority == 3:
                 for start in free_time:
                     end = free_time[start]
                     if overlaps_middle(event_start, event_end, start, end):
                         free_time[start] = event_start
                         free_time[event_end] = end
+                        if time_is_greater(earliest, event_start):
+                            earliest = event_start
+                        if time_is_greater(event_end, latest):
+                            latest = event_end
                         break
-            elif event[1] == 'Sleep':
+            elif event[1] == 'Sleep' and priority == 2:
                 sleep[event_start] = event_end
-            elif event[3] == 2:
+            elif priority == 2:
                 medium_priorities.append(event)
             else:
                 low_priorities.append(event)
             day.append(event)
         i += 1
+        free_time.pop('0:00')
+        bedtime = list(sleep.keys())[0]
+        free_time[sleep[bedtime]] = earliest
+        free_time[latest] = bedtime
         if len(low_priorities) != 0:
-            for low_priority in low_priorities:
-                event_start = low_priority[4]
-                event_end = low_priority[5]
-                event_hr_len = int(event_end.split(':')[0]) - int(event_start.split(':')[0])
-                event_min_len = int(event_end.split(':')[1]) - int(event_start.split(':')[1])
-                for free_start in free_time:
-                    free_end = free_time[free_start]
-                    free_hr_len = int(free_end.split(':')[0]) - int(free_start.split(':')[0])
-                    free_min_len = int(free_end.split(':')[1]) - int(free_start.split(':')[1])
-                    if time_is_greater(f"{free_hr_len}:{free_min_len}", f"{event_hr_len}:{event_min_len}", True):
-                        new_start = event_start
-                        new_end = event_end
-                        if overlaps_left(event_start, event_end, free_start, free_end):
-                            new_start = free_end
-                            new_end = f"{int(free_end.split(':')[0]) + event_hr_len}:{int(free_end.split(':')[1]) + event_min_len}"
-                            free_time[free_start] = new_end
-                        elif overlaps_right(event_start, event_end, free_start, free_end):
-                            new_end = free_start
-                            new_start = f"{int(free_start.split(':')[0]) - event_hr_len}:{int(free_start.split(':')[1]) - event_min_len}"
-                            free_time[new_start] = free_end
-                            free_time.pop(free_start)
-                        exec_commit(f"UPDATE {EVENT_TABLE} SET {START_TIME} = '{new_start}', {END_TIME} = '{new_end}' WHERE {id} = {event[0]};")
-                        break
+            optimize_priorities(low_priorities, free_time)
+
+def optimize_priorities(priorities, free_time):
+    for priority in priorities:
+        event_start = priority[4]
+        event_end = priority[5]
+        event_length = length_between_times(event_end, event_start)
+        event_hr_len = int(event_length.split(':')[0])
+        event_min_len = int(event_length.split(':')[1])
+        for free_start in free_time:
+            free_end = free_time[free_start]
+            free_length = length_between_times(free_end, free_start)
+            free_greater_than_event = time_is_greater(free_length, event_length, True)
+            if free_greater_than_event:
+                new_start = free_start
+                new_min = int(free_start.split(':')[1]) + event_min_len
+                if new_min < 10:
+                    new_min = f"0{new_min}"
+                new_end = f"{int(free_start.split(':')[0]) + event_hr_len}:{new_min}"
+                free_time[new_end] = free_time[free_start]
+                free_time.pop(free_start)
+                exec_commit(f"UPDATE {EVENT_TABLE} SET {START_TIME} = '{new_start}', {END_TIME} = '{new_end}' WHERE {ID} = {priority[0]};")
+                break
 
 def overlaps_left(this_start, this_end, that_start, that_end):
-    return time_is_greater(this_start, that_start) and time_is_greater(this_end, that_end)
+    return time_is_greater(this_start, that_start) and time_is_greater(this_end, that_end) and time_is_greater(that_end, this_start)
 
 def overlaps_right(this_start, this_end, that_start, that_end):
-    return time_is_greater(that_end, this_end) and time_is_greater(that_start, this_start)
+    return time_is_greater(that_end, this_end) and time_is_greater(that_start, this_start) and time_is_greater(this_end, that_start)
 
 def overlaps_middle(this_start, this_end, that_start, that_end):
     return time_is_greater(this_start, that_start) and time_is_greater(that_end, this_end)
 
-def overlaps_all(this_start, this_end, that_start, that_end):
-    return time_is_greater(that_start, this_start) and time_is_greater(this_end, that_end)
+def overlaps_at_all(this_start, this_end, that_start, that_end):
+    return overlaps_left(this_start, this_end, that_start, that_end) or overlaps_right(this_start, this_end, that_start, that_end) or overlaps_middle(this_start, this_end, that_start, that_end)
+
+def length_between_times(this, that):
+    this_split = this.split(':')
+    that_split = that.split(':')
+    hr = int(this_split[0]) - int(that_split[0])
+    if hr < 0:
+        hr += -2*hr
+    min = int(this_split[1]) - int(that_split[1])
+    total_min = (hr*60) + min
+    return f"{math.floor(total_min/60)}:{total_min % 60}"
 
 def time_is_greater(a, b, equal=False):
     a_split = a.split(":")
