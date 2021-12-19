@@ -16,7 +16,7 @@ CREATE TABLE event_table (
         start_time VARCHAR(5) NOT NULL,
         end_time VARCHAR(5),
         event_location VARCHAR(50),
-        has_lunch BOOLEAN NOT NULL DEFAULT FALSE
+        has_meal BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE calendar_table (
