@@ -36,10 +36,10 @@ INSERT INTO user_table(username, user_type) VALUES
 ;
 
 INSERT INTO event_table(event_name, event_type, event_priority, start_time, end_time) VALUES 
-        ('Sleep (default)', 'special', 2, '23:00', '7:00'),
-        ('Breakfast (default)', 'special', 2, '7:15', '7:45'),
-        ('Lunch (default)', 'special', 2, '12:15', '12:45'),
-        ('Dinner (default)', 'special', 2, '17:15', '17:45')
+        ('Breakfast', 'special', 2, '7:15', '7:45'),
+        ('Lunch', 'special', 2, '12:15', '12:45'),
+        ('Dinner', 'special', 2, '17:15', '17:45'),
+        ('Sleep', 'special', 2, '23:00', '7:00')
 ;
 
 INSERT INTO event_table(event_name, event_type, event_priority, start_time, end_time, event_location) VALUES 
@@ -54,6 +54,6 @@ INSERT INTO event_table(event_name, event_type, event_priority, start_time, end_
 ;
 
 INSERT INTO calendar_table(u_id, sunday, monday, tuesday, wednesday, thursday, friday, saturday) VALUES 
-        (1, '8', '1,2,3,4,7', '5,6', '1,3,4,7', '5,6', '1,3,4,7', '8')
+        (1, '12,4', '5,6,7,8,11,4', '9,10,4', '5,7,8,11,4', '9,10,4', '5,7,8,11,4', '12,4')
 ;
 
