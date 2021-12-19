@@ -53,7 +53,16 @@ INSERT INTO event_table(event_name, event_type, event_priority, start_time, end_
         ('Office Hours', 'work', 3, '12:00', '14:00', 'My room')
 ;
 
+INSERT INTO event_table(event_name, event_type, event_priority, start_time, end_time, event_location) VALUES 
+        ('SWEN-262 Homework', 'school', 1, '10:50', '11:50', 'Golisano 1650'),
+        ('MATH-231 Recitation Homework', 'school', 1, '11:50', '12:50', 'Gleason 2129'),
+        ('SWEN-256 Homework', 'school', 1, '13:50', '14:50', 'Golisano 1650'),
+        ('STAT-205 Homework', 'school', 1, '15:50', '16:50', 'CBT 1160'),
+        ('ISTE-230 Hoework', 'school', 1, '12:15', '13:15', 'Golisano 2650'),
+        ('MATH-231 Homework', 'school', 1, '15:15', '16:15', 'Gosnell 1250')
+;
+
 INSERT INTO calendar_table(u_id, sunday, monday, tuesday, wednesday, thursday, friday, saturday) VALUES 
-        (1, '12,4', '5,6,7,8,11,4', '9,10,4', '5,7,8,11,4', '9,10,4', '5,7,8,11,4', '12,4')
+        (1, '12,1,2,3,4', '5,6,7,8,11,1,2,3,4,13,14,15,16', '9,10,1,2,3,4,17,18', '5,7,8,11,1,2,3,4,13,15,16', '9,10,1,2,3,4,17,18', '5,7,8,11,1,2,3,4,13,15,16', '12,1,2,3,4')
 ;
 
