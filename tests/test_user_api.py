@@ -1,4 +1,3 @@
-from os import error
 import unittest
 
 from server.api.db.db_utils import *
@@ -56,3 +55,7 @@ class TestUser(unittest.TestCase):
         put_rest_call(self, 'http://127.0.0.1:5000/users/1', {USERNAME: 'Jill Conti', USER_TYPE: 'school'})
         self.assertEqual((1, 'Jill Conti', 'school'), exec_get_one(f"SELECT * FROM {USER_TABLE} WHERE {ID} = 1;"), "User type was not changed")
         print("Username and user type was changed!")
+
+
+if __name__ == '__main__':
+    unittest.main()
