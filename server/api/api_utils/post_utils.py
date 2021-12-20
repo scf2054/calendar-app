@@ -34,15 +34,15 @@ def optimize_calendar(calendar):
                 medium_priorities.append(event)
             else:
                 low_priorities.append(event)
-        i += 1
         free_time.pop('0:00')
         bedtime = list(sleep.keys())[0]
         free_time[sleep[bedtime]] = earliest
         free_time[latest] = bedtime
-        optimize_priorities(events, medium_priorities, free_time, i, calendar[0])
+        optimize_priorities(events, medium_priorities, free_time, i-1, calendar[0])
         if len(low_priorities) != 0:
-            optimize_priorities(events, low_priorities, free_time, i, calendar[0])
-        print("finished")
+            optimize_priorities(events, low_priorities, free_time, i-1, calendar[0])
+        i += 1
+    print("finished")
 
 def optimize_priorities(all_events, priorities, free_time, day_id, cal_id):
     for priority in priorities:
