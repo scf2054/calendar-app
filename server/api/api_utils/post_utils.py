@@ -59,11 +59,11 @@ def optimize_calendar(calendar):
         free_time[sleep[bedtime]] = earliest
         # The value at the latest all events go should now be the bedtime
         free_time[latest] = bedtime
-        optimize_medium_priorities(medium_priorities, free_time)
+        optimize_priority_group(medium_priorities, free_time)
         i += 1
     print("finished")
 
-def optimize_medium_priorities(medium_priorities, free_time):
+def optimize_priority_group(medium_priorities, free_time):
     # For each medium priority...
     for event in medium_priorities:
         # Get the starting and ending time
@@ -73,40 +73,63 @@ def optimize_medium_priorities(medium_priorities, free_time):
         # For each time frame in free time...
         for free_start in free_time:
             free_end = free_time[free_start]
-            # If the event takes place during free time...
-            if overlaps_middle(event_start, event_end, free_start, free_end):
-                # Change the free time and leave the time frame alone
-                free_time[free_start] = event_start
-                free_time[event_end] = free_end
-                break
             # Calculate the length of the event and free time
             event_length = length_between_times(event_start, event_end)
             free_length = length_between_times(free_start, free_end)
-            # If the event overlaps to the left of a free time and the length of the free time is greater than or equal to that of the event...
-            if overlaps_left(event_start, event_end, free_start, free_end) and time_is_greater(free_length, event_length, True):
-                # The new end of the event is the free time's end
-                new_end = free_end
-                # The new start of the event is the new end minus the length
-                new_start = subtract_times(new_end, event_length)
-                optimized = True
-            # If the event overlaps to the right of a free time and the length of the free time is greater than or equal to that of the event...
-            elif overlaps_right(event_start, event_end, free_start, free_end) and time_is_greater(free_length, event_length, True):
-                # The new start of the event is the start of free time
-                new_start = free_start
-                # The new end of the event is the new start plus the length of the evnt
-                new_end = add_times(new_start, event_length)
-                optimized = True
+            # As long as the length of free time is greater than or equal to the event...
+            if time_is_greater(free_length, event_length, True):
+                # If the event takes place during free time...
+                if overlaps_middle(event_start, event_end, free_start, free_end):
+                    # Change the free time and leave the time frame alone
+                    free_time[free_start] = event_start
+                    free_time[event_end] = free_end
+                    break
+                # If the event overlaps to the left of a free time
+                if overlaps_left(event_start, event_end, free_start, free_end):
+                    # The new end of the event is the free time's end
+                    new_end = free_end
+                    # The new start of the event is the new end minus the length
+                    new_start = subtract_times(new_end, event_length)
+                    optimized = True
+                # If the event overlaps to the right of a free time
+                elif overlaps_right(event_start, event_end, free_start, free_end):
+                    # The new start of the event is the start of free time
+                    new_start = free_start
+                    # The new end of the event is the new start plus the length of the evnt
+                    new_end = add_times(new_start, event_length)
+                    optimized = True
+                # If the event overlaps an event that's already there...
+                elif during_event([event_start, event_end], [free_start, free_end], free_time):
+                    pass
+                if optimized:
+                # If the length of the free time is equal to that of the event length...
+                    if event_length == free_length:
+                        # Remove this free time from the dictionary entirely
+                        free_time.pop(free_start)
+                    # Otherwise
+                    else:
+                        # Shorten the free time
+                        free_time[free_start] = new_start
+                    break
 
-            if optimized:
-            # If the length of the free time is equal to that of the event length...
-                if event_length == free_length:
-                    # Remove this free time from the dictionary entirely
-                    free_time.pop(free_start)
-                # Otherwise
-                else:
-                    # Shorten the free time
-                    free_time[free_start] = new_start
-                break
+def during_event(event_frame, free_frame, free_time):
+    # Get the free time that is after this free time passed in
+    starts = list(free_time.keys())
+    ends = list(free_time.values())
+    starts.sort(key=get_total_minutes)
+    ends.sort(key=get_total_minutes)
+    overlapped_event_start = free_frame[1]
+    # Get index in ends of free_frame's value at [1]
+    index = ends.index(overlapped_event_start)
+    # Use this to get the start after this
+    try:
+        overlapped_event_end = starts[index+1]
+        # If the event is overlapping the middle of the time frame between the current end and the next start...
+        # return True
+        return overlaps_middle_exactly(event_frame[0], event_frame[1], overlapped_event_start, overlapped_event_end)
+    except:
+        print("Event is during sleep schedule")
+        return False
 
 def overlaps_left(this_start, this_end, that_start, that_end):
     return time_is_greater(this_start, that_start) and time_is_greater(this_end, that_end) and time_is_greater(that_end, this_start)
@@ -116,6 +139,9 @@ def overlaps_right(this_start, this_end, that_start, that_end):
 
 def overlaps_middle(this_start, this_end, that_start, that_end):
     return time_is_greater(this_start, that_start) and time_is_greater(that_end, this_end)
+
+def overlaps_middle_exactly(this_start, this_end, that_start, that_end):
+    return time_is_greater(this_start, that_start, True) and time_is_greater(that_end, this_end, True)
 
 def overlaps_at_all(this_start, this_end, that_start, that_end):
     return overlaps_left(this_start, this_end, that_start, that_end) or overlaps_right(this_start, this_end, that_start, that_end) or overlaps_middle(this_start, this_end, that_start, that_end)
@@ -163,14 +189,14 @@ def length_between_times(this, that):
         new_min = f"0{new_min}"
     return f"{math.floor(total_min/60)}:{new_min}"
 
-def time_is_greater(a, b, equal=False):
+def time_is_greater(a, b, or_equal=False):
     a_split = a.split(":")
     b_split = b.split(":")
     a_hour = int(a_split[0])
     a_minute = int(a_split[1])
     b_hour = int(b_split[0])
     b_minute = int(b_split[1])
-    if(equal):
+    if(or_equal):
         return (a_hour > b_hour) or (a_hour == b_hour and a_minute >= b_minute)
     return (a_hour > b_hour) or (a_hour == b_hour and a_minute > b_minute)
 
