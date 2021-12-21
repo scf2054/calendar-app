@@ -7,6 +7,13 @@ LUNCH_FRAME = ['11:00', '16:00']
 DINNER_FRAME = ['15:00', '20:00']
 
 def optimize_calendar(calendar):
+    """Given a calendar from the database, this function iterates over every single id
+    in every single day of the week and optimizes it based on sleep, meals, calsses,
+    work, and everything that was added by the user.
+
+    Args:
+        calendar (tuple): The calendar that was grabbed by the database.
+    """
     i = 2
     while i < len(calendar):
         # Initialize all data that will be used
@@ -51,9 +58,29 @@ def optimize_calendar(calendar):
         optimize_priority_group(medium_priorities, free_time, 2)
         optimize_priority_group(low_priorities, free_time, 1)
         i += 1
+        print("Finished day!")
     print("finished")
 
 def optimize_priority_group(priority_group, free_time, priority):
+    """Given a group of events with the same priority, all of the free time, and 
+    the priority number of each event, this function removes all of the times that 
+    are taken up by priority_group events from the free_time dictionary. This works
+    for any priority group: 1, 2, or 3, and adjusts itself based on that priority number.
+    This is a hlper function for the optimize_calendar function and is quite specific to
+    its desires, so calling this outside of that function isn't recommended.
+
+    Args:
+        priority_group (list): A list of all the events with the same priority number
+        free_time (dict): A dictionary of start:end time pairs based on the amount of free time
+        a user has
+        priority (int): Either values: 1, 2, or 3 and has to correspond to the priority group
+        pased in
+
+    Returns:
+        list: A list that contains the values [earliest, latest] times throughout the day
+        solely based on the highest priority events that were passed in. This means that 
+        these values will only be returned when passed in high priority groups.
+    """
     # Initialize the earliest and latest
     earliest = '23:59'
     latest = '00:00'
@@ -139,6 +166,20 @@ def optimize_priority_group(priority_group, free_time, priority):
         return [earliest, latest]
 
 def during_event(event_frame, free_frame, free_time):
+    """This function checks if the event passed in is in between the free time frame
+    passed in and the free time frame ahead of the free time frame. By determining this,
+    the function confirms that the event time frame passed in takes place during and
+    event who's time frame was already established before this event.
+
+    Args:
+        event_frame (list): 0 index being start, 1 index being end of event time frame
+        free_frame (list): 0 index being start, 1 index being end of free time frame
+        free_time (dict): The dictionary of start:end time frames for the free time available
+
+    Returns:
+        list: 0 index being boolean of whether or not the event overlaps an event
+        1 index being the end time of the overlapped event
+    """
     # Get the free time that is after this free time passed in
     starts = list(free_time.keys())
     ends = list(free_time.values())
@@ -158,18 +199,77 @@ def during_event(event_frame, free_frame, free_time):
         return [False]
 
 def overlaps_left(this_start, this_end, that_start, that_end):
+    """Determines whether or not "this" time frame overlaps "that" time frame on "this'" left side.
+    In short, this function determines if "this" overlaps "that" to the left.
+
+    Args:
+        this_start (str): The start of "this" time frame
+        this_end (str): The end of "this" time frame
+        that_start (str): The start of "that" time frame
+        that_end (str): The end of "that" time frame
+
+    Returns:
+        bool: True if "this" overlaps "that" to the left, False otherwise.
+    """
     return time_is_greater(this_start, that_start) and time_is_greater(this_end, that_end) and time_is_greater(that_end, this_start)
 
 def overlaps_right(this_start, this_end, that_start, that_end):
+    """Determines whether or not "this" time frame overlaps "that" time frame on "this'" right side.
+    In short, this function determines if "this" overlaps "that" to the right.
+
+    Args:
+        this_start (str): The start of "this" time frame
+        this_end (str): The end of "this" time frame
+        that_start (str): The start of "that" time frame
+        that_end (str): The end of "that" time frame
+
+    Returns:
+        bool: True if "this" overlaps "that" to the right, False otherwise.
+    """
     return time_is_greater(that_end, this_end) and time_is_greater(that_start, this_start) and time_is_greater(this_end, that_start)
 
 def overlaps_middle(this_start, this_end, that_start, that_end):
+    """Determines whether or not "this" time frame overlaps "that" time frame directly in the middle.
+    In short, this function determines if "this" overlaps "that" entirely.
+
+    Args:
+        this_start (str): The start of "this" time frame
+        this_end (str): The end of "this" time frame
+        that_start (str): The start of "that" time frame
+        that_end (str): The end of "that" time frame
+
+    Returns:
+        bool: True if "this" overlaps "that", False otherwise.
+    """
     return time_is_greater(this_start, that_start, True) and time_is_greater(that_end, this_end, True)
 
 def overlaps_at_all(this_start, this_end, that_start, that_end):
+    """Determines whether or not "this" time frame overlaps "that" time frame in any shape or form.
+    In short, this function determines if "this" overlaps "that" at all: left, right, or middle side.
+
+    Args:
+        this_start (str): The start of "this" time frame
+        this_end (str): The end of "this" time frame
+        that_start (str): The start of "that" time frame
+        that_end (str): The end of "that" time frame
+
+    Returns:
+        bool: True if "this" overlaps "that" at all, False otherwise.
+    """
     return overlaps_left(this_start, this_end, that_start, that_end) or overlaps_right(this_start, this_end, that_start, that_end) or overlaps_middle(this_start, this_end, that_start, that_end)
 
 def add_times(start, length):
+    """Taking a starting time and the length of the time frame, this function adds these
+    two and returns the result. This also works for any two kinds of time frames, but for 
+    this scenerio, the starting time and the length of the time frame.
+
+    Args:
+        start (str): The starting time
+        length (str): The length of the time frame
+
+    Returns:
+        str: The final time, and the result of the addition
+    """
     new_hr = int(start.split(':')[0]) + int(length.split(':')[0])
     new_min = int(start.split(':')[1]) + int(length.split(':')[1])
     if new_min >= 60:
@@ -181,6 +281,17 @@ def add_times(start, length):
     return new_end
 
 def subtract_times(end, length):
+    """Taking an ending time and the length of the time frame, this function subtracts these
+    two and returns the result. This also works for any two kinds of time frames, but for 
+    this scenerio, the ending time and the length of the time frame.
+
+    Args:
+        end (str): The ending time
+        length (str): The length of the time frame
+
+    Returns:
+        str: The final time, and the result of the subtraction
+    """
     new_hr = int(end.split(':')[0]) - int(length.split(':')[0])
     new_min = int(end.split(':')[1]) - int(length.split(':')[1])
     if new_min < 0:
@@ -192,6 +303,14 @@ def subtract_times(end, length):
     return new_start
 
 def get_total_minutes(e):
+    """Helper function that gives the total amount of minutes for a time given
+
+    Args:
+        e (str): The time
+
+    Returns:
+        int: The total minutes of the time
+    """
     e_split = e.split(':')
     hr = int(e_split[0])
     if hr < 0:
@@ -200,6 +319,16 @@ def get_total_minutes(e):
     return (hr*60) + min 
 
 def length_between_times(this, that):
+    """Subtracts "that" from "this" and returns the result, which is the 
+    length between both times
+
+    Args:
+        this (str): The time desired to find the distance of
+        that (str): The other time that is desired to find the length of
+
+    Returns:
+        str: The distance between the two times passed in
+    """
     this_split = this.split(':')
     that_split = that.split(':')
     hr = int(this_split[0]) - int(that_split[0])
@@ -213,6 +342,19 @@ def length_between_times(this, that):
     return f"{math.floor(total_min/60)}:{new_min}"
 
 def time_is_greater(a, b, or_equal=False):
+    """Determines if one time, a, is greater than the other time, b. Will also
+    determine of one is greater than or equal to the other by passing in "True"
+    for "or_equal".
+
+    Args:
+        a (str): The time the user wants to determine is greater than the other
+        b (str): The time the user wants to determine is less than the other
+        or_equal (bool, optional): When passed in as True, the function returns if
+        a is greater than or equal to b. Defaults to False.
+
+    Returns:
+        bool: True if a > b, False otherwise.
+    """
     a_split = a.split(":")
     b_split = b.split(":")
     a_hour = int(a_split[0])
@@ -224,12 +366,27 @@ def time_is_greater(a, b, or_equal=False):
     return (a_hour > b_hour) or (a_hour == b_hour and a_minute > b_minute)
 
 def default_user_calendar(id):
+    """When creating a user, this function is called to initialize a bare-bones calendar
+    for the user to add whatever events they want to it.
+
+    Args:
+        id (int): The id of the user that was created.
+    """
     # Get all of the special events' id's
     components = f"({U_ID}, {SUNDAY}, {MONDAY}, {TUESDAY}, {WEDNESDAY}, {THURSDAY}, {FRIDAY}, {SATURDAY})"
     values = f"({id}, '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4')"
     exec_commit(f"INSERT INTO {CALENDAR_TABLE}{components} VALUES {values};")
 
 def get_meal_frame(meal):
+    """Helper function that, given a meal's name, returns the corresponding
+    time frame.
+
+    Args:
+        meal (str): The name of the desired time frame
+
+    Returns:
+        list: Index 0 being the start of the time frame, and 1 being the end.
+    """
     if meal == 'Breakfast':
         return BREAKFAST_FRAME
     elif meal == 'Lunch':
@@ -238,6 +395,14 @@ def get_meal_frame(meal):
         return DINNER_FRAME
 
 def get_day_by_id(day_id):
+    """Helper function that, given a day id, returns the string of the day
+    that was desired.
+
+    Args:
+        day_id (int): The id of the day
+    Returns:
+        str: The string of the corresponding day
+    """
     if day_id == 1:
         return SUNDAY
     elif day_id == 2:
