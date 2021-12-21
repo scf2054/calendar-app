@@ -15,8 +15,6 @@ def optimize_calendar(calendar):
         medium_priorities = []
         high_priorities = []
         free_time = {'0:00': '23:59'}
-        # earliest = '23:59'
-        # latest = '00:00'
         events = calendar[i].split(",")
         # For every id in the calendar day...
         for id in events:
@@ -29,20 +27,6 @@ def optimize_calendar(calendar):
             if priority == 3:
                 # Add this to the high priority list
                 high_priorities.append(event)
-                # # Fit this event into free time
-                # for start in free_time:
-                #     end = free_time[start]
-                #     # If the event is in the middle of a certain free time frame...
-                #     if overlaps_middle(event_start, event_end, start, end):
-                #         # The original start of free time has an end that is the start of this event
-                #         free_time[start] = event_start
-                #         # A new start to free time is the end of this event, and its end is the original time frame's end
-                #         free_time[event_end] = end
-                #         if time_is_greater(earliest, event_start):
-                #             earliest = event_start
-                #         if time_is_greater(event_end, latest):
-                #             latest = event_end
-                #         break
             # If the event is a sleep event...
             elif event[1] == 'Sleep' and priority == 2:
                 # Initialize this in the sleep structure initialized before
@@ -65,22 +49,28 @@ def optimize_calendar(calendar):
         # The value at the latest all events go should now be the bedtime
         free_time[earliest_latest[1]] = bedtime
         optimize_priority_group(medium_priorities, free_time, 2)
+        optimize_priority_group(low_priorities, free_time, 1)
         i += 1
     print("finished")
 
 def optimize_priority_group(priority_group, free_time, priority):
-    # Initialize the earliest and latest to return
+    # Initialize the earliest and latest
     earliest = '23:59'
     latest = '00:00'
     # For each event in priorities...
     for event in priority_group:
         # Get the starting and ending time
+        meal_frame = get_meal_frame(event[1])
         event_start = event[4]
         event_end = event[5]
         optimized = False
         # For each time frame in free time...
         for free_start in free_time:
             free_end = free_time[free_start]
+            # Check if the free time is in the desired meal time frame, if not coninue
+            if priority == 2:
+                if not overlaps_at_all(free_start, free_end, meal_frame[0], meal_frame[1]):
+                    continue
             # Calculate the length of the event and free time
             event_length = length_between_times(event_start, event_end)
             free_length = length_between_times(free_start, free_end)
@@ -88,7 +78,7 @@ def optimize_priority_group(priority_group, free_time, priority):
             if time_is_greater(free_length, event_length, True):
                 is_during_event = during_event([event_start, event_end], [free_start, free_end], free_time)
                 # If the event takes place during free time...
-                # This should be the only "if" called for the highest priority
+                # This should be the only "if" that passes for the highest priority
                 if overlaps_middle(event_start, event_end, free_start, free_end):
                     # Change the free time and leave the time frame alone
                     free_time[free_start] = event_start
@@ -136,7 +126,7 @@ def optimize_priority_group(priority_group, free_time, priority):
                     new_end = add_times(new_start, event_length)
                     optimized = True
                 if optimized:
-                # If the length of the free time is equal to that of the event length...
+                    # If the length of the free time is equal to that of the event length...
                     if event_length == free_length:
                         # Remove this free time from the dictionary entirely
                         free_time.pop(free_start)
@@ -238,6 +228,14 @@ def default_user_calendar(id):
     components = f"({U_ID}, {SUNDAY}, {MONDAY}, {TUESDAY}, {WEDNESDAY}, {THURSDAY}, {FRIDAY}, {SATURDAY})"
     values = f"({id}, '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4')"
     exec_commit(f"INSERT INTO {CALENDAR_TABLE}{components} VALUES {values};")
+
+def get_meal_frame(meal):
+    if meal == 'Breakfast':
+        return BREAKFAST_FRAME
+    elif meal == 'Lunch':
+        return LUNCH_FRAME
+    elif meal == 'Dinner':
+        return DINNER_FRAME
 
 def get_day_by_id(day_id):
     if day_id == 1:
