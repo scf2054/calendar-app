@@ -22,7 +22,7 @@ api.add_resource(Events,'/events')
 
 if __name__ == '__main__':
     print("Loading db");
-    exec_sql_file('schema_redo.sql');
+    exec_sql_file('schema.sql');
     print("Starting flask");
     app.run(debug=True), #starts Flask
 
