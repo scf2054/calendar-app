@@ -6,60 +6,45 @@ BREAKFAST_FRAME = ['7:00', '12:00']
 LUNCH_FRAME = ['11:00', '16:00']
 DINNER_FRAME = ['15:00', '20:00']
 
-def optimize_calendar(calendar):
-    """Given a calendar from the database, this function iterates over every single id
-    in every single day of the week and optimizes it based on sleep, meals, calsses,
-    work, and everything that was added by the user.
+def initialize_days(u_id):
+    days = [[], [], [], [], [], [], []]
+    for i in range(len(days)):
+        days[i].append(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {i+1} AND {EVENT_PRIORITY} = 3;")),
+        days[i].append(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {i+1} AND {EVENT_PRIORITY} = 2 AND {EVENT_NAME} != 'Sleep';"))
+        days[i].append(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {i+1} AND {EVENT_PRIORITY} = 1;"))
+    return days
+
+def optimize_calendar(u_id):
+    """Given a calendar from the database, which is all events with the user's id,
+    this function iterates over every single event in every single day of the week 
+    and optimizes it based on sleep, meals, calsses, work, and everything that was 
+    added by the user.
 
     Args:
-        calendar (tuple): The calendar that was grabbed by the database.
+        calendar (list): A list of tuples which are each event
     """
-    i = 2
-    while i < len(calendar):
-        # Initialize all data that will be used
-        sleep = {}
-        low_priorities = []
-        medium_priorities = []
-        high_priorities = []
+    # Initialize all data that will be used
+    days = initialize_days(u_id)
+    for day in days:
+        high_priorities = day[0]
+        medium_priorities = day[1]
+        low_priorities = day[2]
+        sleep = exec_get_one(f"SELECT {START_TIME}, {END_TIME} FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {days.index(day) + 1} AND {EVENT_PRIORITY} = 2 AND {EVENT_NAME} = 'Sleep';")
+        sleep_frame = {sleep[0]: sleep[1]}
         free_time = {'0:00': '23:59'}
-        events = calendar[i].split(",")
-        # For every id in the calendar day...
-        for id in events:
-            event = exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = {int(id)};")
-            # Get the start, end, and priority level of the event
-            event_start = event[4]
-            event_end = event[5]
-            priority = event[3]
-            # If the priority is at its highest...
-            if priority == 3:
-                # Add this to the high priority list
-                high_priorities.append(event)
-            # If the event is a sleep event...
-            elif event[1] == 'Sleep' and priority == 2:
-                # Initialize this in the sleep structure initialized before
-                sleep[event_start] = event_end
-            # If the event is of medium priority...
-            elif priority == 2:
-                # Add this to the medium priority list
-                medium_priorities.append(event)
-            else:
-                # Otherwise, add it to the lowest priorities list
-                low_priorities.append(event)
         # Optimize the highest priority group to get the earliest and latest times
         earliest_latest = optimize_priority_group(high_priorities, free_time, 3)
         # Add the sleep schedule to free time...
         # Remove the value at '0:00' which should be stored in the 'earliest' variable already
         free_time.pop('0:00')
-        bedtime = list(sleep.keys())[0]
+        bedtime = list(sleep_frame.keys())[0]
         # The value at sleep's end should now be the earliest time
-        free_time[sleep[bedtime]] = earliest_latest[0]
+        free_time[sleep_frame[bedtime]] = earliest_latest[0]
         # The value at the latest all events go should now be the bedtime
         free_time[earliest_latest[1]] = bedtime
         optimize_priority_group(medium_priorities, free_time, 2)
         optimize_priority_group(low_priorities, free_time, 1)
-        i += 1
         print("Finished day!")
-    print("finished")
 
 def optimize_priority_group(priority_group, free_time, priority):
     """Given a group of events with the same priority, all of the free time, and 
