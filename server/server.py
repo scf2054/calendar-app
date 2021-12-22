@@ -18,11 +18,11 @@ api.add_resource(User, '/users/<int:id>')
 api.add_resource(Events,'/events')
 
 # Calendar
-api.add_resource(Calendars, '/calendars')
+# api.add_resource(Calendars, '/calendars')
 
 if __name__ == '__main__':
     print("Loading db");
-    exec_sql_file('schema.sql');
+    exec_sql_file('schema_redo.sql');
     print("Starting flask");
     app.run(debug=True), #starts Flask
 

@@ -9,11 +9,12 @@ class TestUtils(unittest.TestCase):
 
     def setUp(self) -> None:
         self.maxDiff = None
-        exec_sql_file('schema.sql')
+        exec_sql_file('schema_redo.sql')
         return super().setUp()
 
     def test_optimize_calendar(self):
-        optimize_calendar(exec_get_one(f"SELECT * FROM {CALENDAR_TABLE}"))
+
+        optimize_calendar(1)
 
 if __name__ == '__main__':
     unittest.main()

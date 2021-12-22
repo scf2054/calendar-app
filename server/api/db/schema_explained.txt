@@ -1,10 +1,8 @@
 Every single user puts their name into the database and is saved as a "username". The 
-"user_type" can be one of four: school, work, hybrid, other. This determines what
+"user_type" can be either student or student_worker. This determines what
 kinds of events the user can put into their calendar. If this component is 'school',
 the user can put classes into the calendar as well as custom events. If it is
-'work', they can only put in their shifts and custom events. A 'hybrid' is for 
-putting in both classes and shifts as well as custom events into the calendar.
-When it is 'other', they can only put in custom events.
+'student_worker', they can put in work hours for the week as well as classes.
 
 The event_table is what the event that the user creates holds. This includes the name, 
 type, priority, start, end, and location. The type can stem from school, work, or custom.
