@@ -6,14 +6,6 @@ BREAKFAST_FRAME = ['7:00', '12:00']
 LUNCH_FRAME = ['11:00', '16:00']
 DINNER_FRAME = ['15:00', '20:00']
 
-def initialize_days(u_id):
-    days = [[], [], [], [], [], [], []]
-    for i in range(len(days)):
-        days[i].append(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {i+1} AND {EVENT_PRIORITY} = 3;")),
-        days[i].append(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {i+1} AND {EVENT_PRIORITY} = 2 AND {EVENT_NAME} != 'Sleep';"))
-        days[i].append(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {i+1} AND {EVENT_PRIORITY} = 1;"))
-    return days
-
 def optimize_calendar(u_id):
     """Given a calendar from the database, which is all events with the user's id,
     this function iterates over every single event in every single day of the week 
@@ -35,7 +27,7 @@ def optimize_calendar(u_id):
         # Optimize the highest priority group to get the earliest and latest times
         earliest_latest = optimize_priority_group(high_priorities, free_time, 3)
         # Add the sleep schedule to free time...
-        # Remove the value at '0:00' which should be stored in the 'earliest' variable already
+        # Remove the value at '0:00', this value should already be stored in the 'earliest' variable
         free_time.pop('0:00')
         bedtime = list(sleep_frame.keys())[0]
         # The value at sleep's end should now be the earliest time
@@ -45,6 +37,7 @@ def optimize_calendar(u_id):
         optimize_priority_group(medium_priorities, free_time, 2)
         optimize_priority_group(low_priorities, free_time, 1)
         print("Finished day!")
+    print('finished')
 
 def optimize_priority_group(priority_group, free_time, priority):
     """Given a group of events with the same priority, all of the free time, and 
@@ -361,6 +354,24 @@ def default_user_calendar(id):
     components = f"({U_ID}, {SUNDAY}, {MONDAY}, {TUESDAY}, {WEDNESDAY}, {THURSDAY}, {FRIDAY}, {SATURDAY})"
     values = f"({id}, '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4')"
     exec_commit(f"INSERT INTO {CALENDAR_TABLE}{components} VALUES {values};")
+
+def initialize_days(u_id):
+    """Helper function that initializes the 'days' data structure
+    for the optimize_calendar function
+
+    Args:
+        u_id (int): The id of the user to grab their events
+
+    Returns:
+        list: A list of lists which contains data structures that separate
+        each event by their priority level
+    """
+    days = [[], [], [], [], [], [], []]
+    for i in range(len(days)):
+        days[i].append(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {i+1} AND {EVENT_PRIORITY} = 3;")),
+        days[i].append(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {i+1} AND {EVENT_PRIORITY} = 2 AND {EVENT_NAME} != 'Sleep';"))
+        days[i].append(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {i+1} AND {EVENT_PRIORITY} = 1;"))
+    return days
 
 def get_meal_frame(meal):
     """Helper function that, given a meal's name, returns the corresponding
