@@ -407,9 +407,8 @@ def default_user_calendar(u_id):
     for the user to add whatever events they want to it.
 
     Args:
-        id (int): The id of the user that was created.
+        u_id (int): The id of the user that was created.
     """
-    # Get all of the special events' id's
     exec = f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}) VALUES "
     for i in range(1, 8):
         exec += f"('Breakfast', 'special', 2, '7:15', '7:45', {u_id}, {i}), "
@@ -420,3 +419,21 @@ def default_user_calendar(u_id):
         else:
             exec += ", "
     exec_commit(exec)
+
+def create_homework_event(event_name, end_time, u_id, day_id):
+    """Given a couple of instances of a class event, this function inserts a brand new, 
+    low priority event dedicated to homework that is 15 minutes after the class and is only
+    half an hour long.
+
+    Args:
+        event_name (str): The name of the class event
+        end_time (str): The time that the class event ends, format hh:mm
+        u_id (int): The ID of the user creating the class event
+        day_id (int): The id of the day that the class event takes place
+    Returns:
+        tuple: The homework event in perfect formatting for adding to the database
+    """
+    homework_name = event_name + " Homework"
+    homework_start_time = add_times(end_time, "00:15")
+    homework_end_time = add_times(homework_start_time, '00:30')
+    return (homework_name, 'school', 1, homework_start_time, homework_end_time, u_id, day_id, "")
