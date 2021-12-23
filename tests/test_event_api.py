@@ -46,7 +46,7 @@ class TestEvent(unittest.TestCase):
 
     def test_post_user_events_overlapping_events_left(self):
         try:
-            post_rest_call(self, 'http://127.0.0.1:5000/events/user/1', {START_TIME: '11:30', END_TIME: '12:20', DAY_ID: 2, EVENT_TYPE: 'work', EVENT_PRIORITY: 3})
+            post_rest_call(self, 'http://127.0.0.1:5000/events/user/1', {START_TIME: '11:30', END_TIME: '12:20', DAY_ID: 2, EVENT_TYPE: 'work', EVENT_PRIORITY: 2})
             self.assertTrue(False, "Event was not caught to be overlapping left")
         except Exception:
             self.assertTrue(True, "Wrong error occurred for middle overlapping")
@@ -55,7 +55,7 @@ class TestEvent(unittest.TestCase):
 
     def test_post_user_events_overlapping_events_right(self):
         try:
-            post_rest_call(self, 'http://127.0.0.1:5000/events/user/1', {START_TIME: '14:30', END_TIME: '15:20', DAY_ID: 2, EVENT_TYPE: 'work', EVENT_PRIORITY: 3})
+            post_rest_call(self, 'http://127.0.0.1:5000/events/user/1', {START_TIME: '14:30', END_TIME: '15:20', DAY_ID: 2, EVENT_TYPE: 'work', EVENT_PRIORITY: 1})
             self.assertTrue(False, "Event was not caught to be overlapping right")
         except Exception:
             self.assertTrue(True, "Wrong error occurred for middle overlapping")
