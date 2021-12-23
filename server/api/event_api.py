@@ -47,15 +47,16 @@ class Event(Resource):
         unchanged_event = exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = {id};")
         success_str = "The following have been changed: "
         args = event_put_args.parse_args()
+        changes = ""
         # When changing the name, nothing else changes
         event_name = args[EVENT_NAME]
         if event_name:
-            exec_commit(f"UPDATE {EVENT_TABLE} SET {EVENT_NAME} = '{event_name}' WHERE {ID} = {id};")
+            changes += f"{EVENT_NAME} = '{event_name}', "
             success_str += "event name, "
         # When changing the type...
         event_type = args[EVENT_TYPE]
         if event_type:
-            exec_commit(f"UPDATE {EVENT_TABLE} SET {EVENT_TYPE} = '{event_type}' WHERE {ID} = {id};")
+            changes += f"{EVENT_TYPE} = '{event_type}', "
             success_str += "event type"
             if unchanged_event[3] == 3:
                 # If changing to 'school' and priority level 3, add a homework event
@@ -70,6 +71,7 @@ class Event(Resource):
         # When changing priority...
         event_priority = args[EVENT_PRIORITY]
         if event_priority:
+            changes += f"{EVENT_PRIORITY} = {event_priority}, "
             exec_commit(f"UPDATE {EVENT_TABLE} SET {EVENT_PRIORITY} = {event_priority} WHERE {ID} = {id};")
             success_str += "priority level"
             if (not event_type and unchanged_event[2] == 'school') or (event_type == 'school' and unchanged_event[2] != 'school'):
@@ -87,7 +89,7 @@ class Event(Resource):
         start_time = args[START_TIME]
         end_time = args[END_TIME]
         day_id = args[DAY_ID]
-        temp = set("start time", "end time", "day")
+        temp = set(["start time", "end time", "day"])
         if not start_time:
             start_time = unchanged_event[4]
             temp.remove("start time")
@@ -100,14 +102,16 @@ class Event(Resource):
         if overlaps_high_priority(unchanged_event[6], day_id, start_time, end_time):
             return f"This new time overlaps a high priority event, failed to update calendar...", 406
         else:
-            exec_commit(f"UPDATE {EVENT_TABLE} SET {START_TIME} = '{start_time}', {END_TIME} = '{end_time}', {DAY_ID} = {day_id} WHERE {ID} = {id};")
+            changes += f"{START_TIME} = '{start_time}', {END_TIME} = '{end_time}', {DAY_ID} = {day_id}, "
             for x in temp:
                 success_str += x + ", "
         # When changing event location, nothing else changes
         event_location = args[EVENT_LOCATION]
         if event_location:
-            exec_commit(f"UPDATE {EVENT_TABLE} SET {EVENT_LOCATION} = '{event_location}' WHERE {ID} = {id};")
+            changes += f"{EVENT_LOCATION} = {event_location}, "
             success_str += "event location"
+        changes += f"{U_ID} = {unchanged_event[6]}"
+        exec_commit(f"UPDATE {EVENT_TABLE} SET {changes} WHERE {ID} = {id};")
         return success_str
 
 class User_Events(Resource):
