@@ -19,12 +19,7 @@ class TestUser(unittest.TestCase):
         except:
             self.assertTrue(True)
             print("Post has failed!")
-
-    def test_post_users_default_calendar(self):
-        post_rest_call(self, 'http://127.0.0.1:5000/users', {USERNAME: 'Jill Conti', USER_TYPE: 'school'})
-        self.assertEqual((2, 2, '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4'), exec_get_one(f"SELECT * FROM {CALENDAR_TABLE} WHERE {ID} = 2;"), "New calendar not inserted")
-        print("New account created!")
-
+            
     def test_put_users_fail_username(self):
         try:
             put_rest_call(self, 'http://127.0.0.1:5000/users/1', {USERNAME: 'Sam Frost', USER_TYPE: 'school'})
@@ -43,7 +38,7 @@ class TestUser(unittest.TestCase):
 
     def test_put_users_username(self):
         put_rest_call(self, 'http://127.0.0.1:5000/users/1', {USERNAME: 'Jill Conti'})
-        self.assertEqual((1, 'Jill Conti', 'hybrid'), exec_get_one(f"SELECT * FROM {USER_TABLE} WHERE {ID} = 1;"), "Username was not changed")
+        self.assertEqual((1, 'Jill Conti', 'student'), exec_get_one(f"SELECT * FROM {USER_TABLE} WHERE {ID} = 1;"), "Username was not changed")
         print("Username was changed!")
 
     def test_put_users_user_type(self):
