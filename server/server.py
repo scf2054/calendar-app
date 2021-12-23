@@ -4,7 +4,6 @@ from flask_restful import Resource, Api
 from api.db.db_utils import *
 from api.user_api import *
 from api.event_api import *
-from api.calendar_api import *
 
 app = Flask(__name__) #create Flask instance
 
