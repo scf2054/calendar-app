@@ -95,10 +95,7 @@ def optimize_priority_group(priority_group, free_time, priority):
                             latest = event_end
                     break
                 # If the event overlaps an event that's already there...
-                elif is_during_event[0]:
-                    if priority == 3:
-                        exec_commit(f"DELETE FROM {EVENT_TABLE} WHERE {ID} = {event[0]};")
-                        raise ValueError(f'Event #{event[0]} is overlapping another high priority event. Deleting...')
+                elif is_during_event[0] and priority != 3:
                     overlapped_event_end = is_during_event[1]
                     # Calculate distance between right side and left side
                     length_of_left_side = length_between_times(event_start, free_end)
@@ -120,9 +117,6 @@ def optimize_priority_group(priority_group, free_time, priority):
                             optimized = True
                 # If the event overlaps to the left of a free time
                 elif overlaps_left(event_start, event_end, free_start, free_end) and priority != 3:
-                    if priority == 3:
-                        exec_commit(f"DELETE FROM {EVENT_TABLE} WHERE {ID} = {event[0]};")
-                        raise ValueError(f'Event #{event[0]} is overlapping another high priority event. Deleting...')
                     # The new end of the event is the free time's end
                     new_end = free_end
                     # The new start of the event is the new end minus the length
@@ -130,9 +124,6 @@ def optimize_priority_group(priority_group, free_time, priority):
                     optimized = True
                 # If the event overlaps to the right of a free time
                 elif overlaps_right(event_start, event_end, free_start, free_end) and priority != 3:
-                    if priority == 3:
-                        exec_commit(f"DELETE FROM {EVENT_TABLE} WHERE {ID} = {event[0]};")
-                        raise ValueError(f'Event #{event[0]} is overlapping another high priority event. Deleting...')
                     # The new start of the event is the start of free time
                     new_start = free_start
                     # The new end of the event is the new start plus the length of the evnt
@@ -153,7 +144,7 @@ def optimize_priority_group(priority_group, free_time, priority):
 
 def during_event(event_frame, free_frame, free_time):
     """This function checks if the event passed in is in between the free time frame
-    passed in and the free time frame ahead of the free time frame. By determining this,
+    passed in and the free time frame ahead of it. By determining this,
     the function confirms that the event time frame passed in takes place during and
     event who's time frame was already established before this event.
 
