@@ -1,7 +1,7 @@
 # Constants
 USER_TABLE = "user_table"
 EVENT_TABLE = "event_table"
-CALENDAR_TABLE = "calendar_table"
+DAY_OF_WEEK = "day_of_week"
 ID = "id"
 USERNAME = "username"
 USER_TYPE = "user_type"
