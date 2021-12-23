@@ -4,7 +4,7 @@ from flask_restful import request
 from flask_restful import reqparse
 import json
 
-from server.api.api_utils.post_utils import add_times, create_homework_event, optimize_calendar
+from .api_utils.post_utils import *
 from .db.db_utils import *
 from .constants import *
 
@@ -42,6 +42,8 @@ class User_Events(Resource):
         args = user_events_post_args.parse_args()
         event_name = args[EVENT_NAME]
         event_type = args[EVENT_TYPE]
+        if not event_type:
+            event_type = 'custom'
         event_priority = args[EVENT_PRIORITY]
         if not event_priority:
             event_priority = 1
