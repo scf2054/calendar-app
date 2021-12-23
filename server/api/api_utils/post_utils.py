@@ -343,18 +343,6 @@ def time_is_greater(a, b, or_equal=False):
         return (a_hour > b_hour) or (a_hour == b_hour and a_minute >= b_minute)
     return (a_hour > b_hour) or (a_hour == b_hour and a_minute > b_minute)
 
-def default_user_calendar(id):
-    """When creating a user, this function is called to initialize a bare-bones calendar
-    for the user to add whatever events they want to it.
-
-    Args:
-        id (int): The id of the user that was created.
-    """
-    # Get all of the special events' id's
-    components = f"({U_ID}, {SUNDAY}, {MONDAY}, {TUESDAY}, {WEDNESDAY}, {THURSDAY}, {FRIDAY}, {SATURDAY})"
-    values = f"({id}, '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4', '1,2,3,4')"
-    exec_commit(f"INSERT INTO {CALENDAR_TABLE}{components} VALUES {values};")
-
 def initialize_days(u_id):
     """Helper function that initializes the 'days' data structure
     for the optimize_calendar function
@@ -413,3 +401,22 @@ def get_day_by_id(day_id):
         return FRIDAY
     elif day_id == 7:
         return SATURDAY
+
+def default_user_calendar(u_id):
+    """When creating a user, this function is called to initialize a bare-bones calendar
+    for the user to add whatever events they want to it.
+
+    Args:
+        id (int): The id of the user that was created.
+    """
+    # Get all of the special events' id's
+    exec = f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}) VALUES "
+    for i in range(1, 8):
+        exec += f"('Breakfast', 'special', 2, '7:15', '7:45', {u_id}, {i}), "
+        exec += f"('Lunch', 'special', 2, '12:15', '12:45', {u_id}, {i}), "
+        exec += f"('Dinner', 'special', 2, '17:15', '17:45', {u_id}, {i})"
+        if i == 7:
+            exec += ";"
+        else:
+            exec += ", "
+    exec_commit(exec)
