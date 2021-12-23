@@ -77,6 +77,6 @@ class User_Events(Resource):
             high_priority_start = high_priority[4]
             high_priority_end = high_priority[5]
             if overlaps_at_all(start_time, end_time, high_priority_start, high_priority_end):
-                raise ValueError(f"This new event overlaps '{high_priority[1]}', failed to add to calendar...")
+                return f"This new event overlaps '{high_priority[1]}', failed to add to calendar...", 406
         exec_commit(f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}, {EVENT_LOCATION}) VALUES {values};")
         print("Event successfully added to calendar!")
