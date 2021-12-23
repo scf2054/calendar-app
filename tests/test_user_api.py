@@ -11,7 +11,6 @@ class TestUser(unittest.TestCase):
         exec_sql_file('schema.sql')
         return super().setUp()
 
-    # Users
     def test_post_users_fail(self):
         try:
             post_rest_call(self, 'http://127.0.0.1:5000/users', {USERNAME: 'Sam Frost', USER_TYPE: 'school'})
@@ -19,7 +18,7 @@ class TestUser(unittest.TestCase):
         except:
             self.assertTrue(True)
             print("Post has failed!")
-            
+
     def test_put_users_fail_username(self):
         try:
             put_rest_call(self, 'http://127.0.0.1:5000/users/1', {USERNAME: 'Sam Frost', USER_TYPE: 'school'})
