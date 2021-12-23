@@ -73,9 +73,10 @@ class User_Events(Resource):
             else:
                 return f"Event type '{event_type}' does not exist.", 404
         values += f"('{event_name}', '{event_type}', {event_priority}, '{start_time}', '{end_time}', {u_id}, {day_id}, '{event_location}')"
+        for high_priority in exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {day_id} AND {EVENT_PRIORITY} = 3;"):
+            high_priority_start = high_priority[4]
+            high_priority_end = high_priority[5]
+            if overlaps_at_all(start_time, end_time, high_priority_start, high_priority_end):
+                raise ValueError(f"This new event overlaps '{high_priority[1]}', failed to add to calendar...")
         exec_commit(f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}, {EVENT_LOCATION}) VALUES {values};")
-        try:
-            optimize_calendar(u_id)
-        except ValueError as e:
-            return str(e)
-        return "Event successfully added to your calendar!"
+        print("Event successfully added to calendar!")
