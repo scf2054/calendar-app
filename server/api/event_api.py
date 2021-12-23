@@ -26,6 +26,15 @@ user_events_post_args.add_argument(END_TIME, type=str, help=HELP_END_TIME, requi
 user_events_post_args.add_argument(DAY_ID, type=int, help=HELP_DAY_ID, required=True)
 user_events_post_args.add_argument(EVENT_LOCATION, type=str, help=HELP_EVENT_LOCATION, required=False)
 
+event_put_args = reqparse.RequestParser()
+event_put_args.add_argument(EVENT_NAME, type=str, help=HELP_EVENT_NAME, required=False)
+event_put_args.add_argument(EVENT_TYPE, type=str, help=HELP_EVENT_TYPE, required=False)
+event_put_args.add_argument(EVENT_PRIORITY, type=int, help=HELP_EVENT_PRIORITY, required=False)
+event_put_args.add_argument(START_TIME, type=str, help=HELP_START_TIME, required=False)
+event_put_args.add_argument(END_TIME, type=str, help=HELP_END_TIME, required=False)
+event_put_args.add_argument(DAY_ID, type=int, help=HELP_DAY_ID, required=False)
+event_put_args.add_argument(EVENT_LOCATION, type=str, help=HELP_EVENT_LOCATION, required=False)
+
 class Events(Resource):
     def get(self):
         return exec_get_all(f"SELECT * FROM {EVENT_TABLE};")
@@ -33,6 +42,73 @@ class Events(Resource):
 class Event(Resource):
     def get(self, id):
         return exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = {id};")
+
+    def put(self, id):
+        unchanged_event = exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = {id};")
+        success_str = "The following have been changed: "
+        args = event_put_args.parse_args()
+        # When changing the name, nothing else changes
+        event_name = args[EVENT_NAME]
+        if event_name:
+            exec_commit(f"UPDATE {EVENT_TABLE} SET {EVENT_NAME} = '{event_name}' WHERE {ID} = {id};")
+            success_str += "event name, "
+        # When changing the type...
+        event_type = args[EVENT_TYPE]
+        if event_type:
+            exec_commit(f"UPDATE {EVENT_TABLE} SET {EVENT_TYPE} = '{event_type}' WHERE {ID} = {id};")
+            success_str += "event type"
+            if unchanged_event[3] == 3:
+                # If changing to 'school' and priority level 3, add a homework event
+                if unchanged_event[2] != 'school' and event_type == 'school':
+                    homework_event = create_homework_event(event_name, unchanged_event[5], unchanged_event[6], unchanged_event[7])
+                    exec_commit(f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}, {EVENT_LOCATION}), VALUES {homework_event};")
+                    success_str += " (and a corresponding homework event has been added)"
+                # If changing from school and priority level 3, remove its homework event
+                elif unchanged_event[2] == 'school' and event_type != 'school':
+                    success_str += " (the homework event may still exist for this event)"
+            success_str += ", "
+        # When changing priority...
+        event_priority = args[EVENT_PRIORITY]
+        if event_priority:
+            exec_commit(f"UPDATE {EVENT_TABLE} SET {EVENT_PRIORITY} = {event_priority} WHERE {ID} = {id};")
+            success_str += "priority level"
+            if (not event_type and unchanged_event[2] == 'school') or (event_type == 'school' and unchanged_event[2] != 'school'):
+                # If the new priority is 3 and type is 'school' create a homework event
+                if event_priority == 3 and unchanged_event[3] != 3:
+                    homework_event = create_homework_event(event_name, unchanged_event[5], unchanged_event[6], unchanged_event[7])
+                    exec_commit(f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}, {EVENT_LOCATION}), VALUES {homework_event};")
+                    success_str += " (and a corresponding homework event has been added)"
+                # If the original priority was three and the new one isn't three and is of type 'school', delete its homework event
+                elif unchanged_event[3] == 3 and event_priority != 3:
+                    success_str += " (the homework event may still exist for this event)"
+            success_str += ", "
+        # When changing start time, check if it overlaps a high prority event
+        # Same for end time and day id
+        start_time = args[START_TIME]
+        end_time = args[END_TIME]
+        day_id = args[DAY_ID]
+        temp = set("start time", "end time", "day")
+        if not start_time:
+            start_time = unchanged_event[4]
+            temp.remove("start time")
+        if not end_time:
+            end_time = unchanged_event[5]
+            temp.remove("end time")
+        if not day_id:
+            day_id = unchanged_event[7]
+            temp.remove("day")
+        if overlaps_high_priority(unchanged_event[6], day_id, start_time, end_time):
+            return f"This new time overlaps a high priority event, failed to update calendar...", 406
+        else:
+            exec_commit(f"UPDATE {EVENT_TABLE} SET {START_TIME} = '{start_time}', {END_TIME} = '{end_time}', {DAY_ID} = {day_id} WHERE {ID} = {id};")
+            for x in temp:
+                success_str += x + ", "
+        # When changing event location, nothing else changes
+        event_location = args[EVENT_LOCATION]
+        if event_location:
+            exec_commit(f"UPDATE {EVENT_TABLE} SET {EVENT_LOCATION} = '{event_location}' WHERE {ID} = {id};")
+            success_str += "event location"
+        return success_str
 
 class User_Events(Resource):
     def get(self, u_id):
@@ -74,6 +150,6 @@ class User_Events(Resource):
                 return f"Event type '{event_type}' does not exist.", 404
         values += f"('{event_name}', '{event_type}', {event_priority}, '{start_time}', '{end_time}', {u_id}, {day_id}, '{event_location}')"
         if overlaps_high_priority(u_id, day_id, start_time, end_time):
-                return f"This new event overlaps a high priority event, failed to add to calendar...", 406
+            return f"This new event overlaps a high priority event, failed to add to calendar...", 406
         exec_commit(f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}, {EVENT_LOCATION}) VALUES {values};")
-        print("Event successfully added to calendar!")
+        return "Event successfully added to calendar!"
