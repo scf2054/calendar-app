@@ -36,8 +36,7 @@ def optimize_calendar(u_id):
         free_time[earliest_latest[1]] = bedtime
         optimize_priority_group(medium_priorities, free_time, 2)
         optimize_priority_group(low_priorities, free_time, 1)
-        print("Finished day!")
-    print('finished')
+    print('Finished Optimizing!')
 
 def optimize_priority_group(priority_group, free_time, priority):
     """Given a group of events with the same priority, all of the free time, and 
@@ -182,7 +181,6 @@ def during_event(event_frame, free_frame, free_time):
         # return True
         return [overlaps_middle(event_frame[0], event_frame[1], overlapped_event_start, overlapped_event_end), overlapped_event_end]
     except IndexError:
-        print("Event is during sleep schedule")
         return [False]
 
 def overlaps_left(this_start, this_end, that_start, that_end):
