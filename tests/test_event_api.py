@@ -61,5 +61,7 @@ class TestEvent(unittest.TestCase):
             self.assertTrue(True, "Wrong error occurred for middle overlapping")
             print("Overlapping right was not added!")
 
-    def test_put_event(self):
-        put_rest_call(self, 'http://127.0.0.1:5000/events/32', {START_TIME: '14:30', END_TIME: '15:20', DAY_ID: 1, EVENT_TYPE: 'work', EVENT_PRIORITY: 1})
+    def test_put_event_name(self):
+        put_rest_call(self, 'http://127.0.0.1:5000/events/32', {EVENT_NAME: "New Name"})
+        self.assertEqual(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 32;")[1], "New Name", "Event name was not changed")
+        print("Event name changed!")
