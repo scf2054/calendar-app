@@ -68,10 +68,16 @@ class TestEvent(unittest.TestCase):
         print("Event name changed!")
 
     def test_put_event_type(self):
+        response = put_rest_call(self, 'http://127.0.0.1:5000/events/43', {EVENT_TYPE: 'special'})
+        self.assertEqual(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 43;")[2], 'special', "Event type was not changed to special correctly")
+        self.assertEqual(response, f"The following have been changed: {EVENT_TYPE}", "The response was not returned correctly for event type")
+        print("Event type was hanged to special!")
+
+    def test_put_event_type_from_school(self):
         response = put_rest_call(self, 'http://127.0.0.1:5000/events/32', {EVENT_TYPE: "work"})
         self.assertEqual(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 32;")[2], "work", "Event type was not changed to work correctly")
         self.assertEqual(response, f"The following have been changed: {EVENT_TYPE} (the homework event may still exist for this event) ", "The response was not returned correctly for event type")
-        print("Event type was changed!")
+        print("Event type was changed to work!")
 
     def test_put_event_type_to_school(self):
         response = put_rest_call(self, 'http://127.0.0.1:5000/events/43', {EVENT_TYPE: "school"})
