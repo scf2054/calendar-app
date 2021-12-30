@@ -33,7 +33,7 @@ class Users(Resource):
             exec_commit(f"INSERT INTO {USER_TABLE}({USERNAME}, {USER_TYPE}) VALUES ('{username}', '{user_type}');")
             default_user_calendar(exec_get_one(f"SELECT * FROM {USER_TABLE} WHERE {USERNAME} = '{username}' and {USER_TYPE} = '{user_type}';")[0])
         else:
-            return f"The username '{username}' already exists!", 403
+            return f"The username '{username}' already exists.", 403
 
 class User(Resource):
     def get(self, id):
@@ -51,4 +51,4 @@ class User(Resource):
                     return f"The user type '{user_type}' does not exist. {HELP_USER_TYPE}", 404
                 exec_commit(f"UPDATE {USER_TABLE} SET {USER_TYPE} = '{user_type}' WHERE {ID} = {id};")
         else:  
-            return f"The username '{username}' already exists!", 403
+            return f"The username '{username}' already exists.", 403
