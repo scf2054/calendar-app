@@ -17,6 +17,7 @@ def optimize_calendar(u_id):
     """
     # Initialize all data that will be used
     days = initialize_days(u_id)
+    day_leftovers = []
     for day in days:
         high_priorities = day[0]
         medium_priorities = day[1]
@@ -34,8 +35,8 @@ def optimize_calendar(u_id):
         free_time[sleep_frame[bedtime]] = earliest_latest[0]
         # The value at the latest all events go should now be the bedtime
         free_time[earliest_latest[1]] = bedtime
-        optimize_priority_group(medium_priorities, free_time, 2)
-        optimize_priority_group(low_priorities, free_time, 1)
+        medium_leftovers = optimize_priority_group(medium_priorities + day_leftovers, free_time, 2)
+        day_leftovers = optimize_priority_group(low_priorities + medium_leftovers, free_time, 1)
     return f"The calendar for user #{u_id} has been optimized."
 
 def optimize_priority_group(priority_group, free_time, priority):
@@ -61,6 +62,7 @@ def optimize_priority_group(priority_group, free_time, priority):
     # Initialize the earliest and latest
     earliest = '23:59'
     latest = '00:00'
+    leftovers = []
     # For each event in priorities...
     for event in priority_group:
         # Get the starting and ending time
@@ -68,8 +70,10 @@ def optimize_priority_group(priority_group, free_time, priority):
         event_start = event[4]
         event_end = event[5]
         optimized = False
+        free_time_count = 0
         # For each time frame in free time...
         for free_start in free_time:
+            free_time_count += 1
             free_end = free_time[free_start]
             # Check if the free time is in the desired meal time frame, if not coninue
             if priority == 2:
@@ -139,8 +143,11 @@ def optimize_priority_group(priority_group, free_time, priority):
                         # Shorten the free time
                         free_time[free_start] = new_start
                     break
+                elif free_time_count == len(free_time):
+                    leftovers.append(event)
     if priority == 3:
         return [earliest, latest]
+    return leftovers
 
 def during_event(event_frame, free_frame, free_time):
     """This function checks if the event passed in is in between the free time frame
