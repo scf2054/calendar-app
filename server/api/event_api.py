@@ -79,7 +79,6 @@ class Event(Resource):
         if event_priority:
             changes += f"{EVENT_PRIORITY} = {event_priority}, "
             success_str += EVENT_PRIORITY
-            print(event_type + " " + unchanged_event[2])
             if event_type == 'school':
                 # If the new priority is 3 and type is 'school' create a homework event
                 if event_priority == 3 and unchanged_event[3] != 3 and not homework_event_created:
