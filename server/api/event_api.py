@@ -180,5 +180,8 @@ class User_Events(Resource):
 
     def delete(self, u_id):
         id = request.args.get('id')
+        event = exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = id;")
+        if event[6] != u_id:
+            return f"User #{u_id} doesn't have permission to delete course #{id}.", 403
         exec_commit(f"DELETE FROM {EVENT_TABLE} WHERE {ID} = {id};")
         return f"User #{u_id} has deleted course #{id}."
