@@ -81,7 +81,7 @@ class Event(Resource):
             success_str += EVENT_PRIORITY
             if event_type == 'school':
                 # If the new priority is 3 and type is 'school' create a homework event
-                if event_priority == 3 and unchanged_event[3] != 3 and not homework_event_created:
+                if event_priority == 3 and not homework_event_created:
                     homework_event = create_homework_event(event_name, unchanged_event[5], unchanged_event[6], unchanged_event[7])
                     exec_commit(f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}, {EVENT_LOCATION}) VALUES {homework_event};")
                     success_str += " (and a corresponding homework event has been added)"
