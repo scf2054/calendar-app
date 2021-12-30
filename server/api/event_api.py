@@ -53,6 +53,8 @@ class Event(Resource):
         if event_name:
             changes += f"{EVENT_NAME} = '{event_name}', "
             success_str += EVENT_NAME + " "
+        else:
+            event_name = unchanged_event[1]
         # When changing the type...
         event_type = args[EVENT_TYPE]
         if event_type:
@@ -62,7 +64,7 @@ class Event(Resource):
                 # If changing to 'school' and priority level 3, add a homework event
                 if unchanged_event[2] != 'school' and event_type == 'school':
                     homework_event = create_homework_event(event_name, unchanged_event[5], unchanged_event[6], unchanged_event[7])
-                    exec_commit(f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}, {EVENT_LOCATION}), VALUES {homework_event};")
+                    exec_commit(f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}, {EVENT_LOCATION}) VALUES {homework_event};")
                     success_str += " (and a corresponding homework event has been added)"
                 # If changing from school and priority level 3, remove its homework event
                 elif unchanged_event[2] == 'school' and event_type != 'school':
