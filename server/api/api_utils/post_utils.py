@@ -446,7 +446,7 @@ def overlaps_high_priority(u_id, day_id, start_time, end_time, event_id=None):
         start_time (str): The start time of the event being checked, format hh:mm
         end_time (str): The end time of the event being checked, format hh:mm
         event_id (int): The event that is being checked if it overlaps itself, is passed in
-        only if the event is of highest priority
+        only if the event is already in the table
 
     Returns:
         bool: True if overlaps, False otherwise
