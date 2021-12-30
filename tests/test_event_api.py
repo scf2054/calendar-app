@@ -70,7 +70,7 @@ class TestEvent(unittest.TestCase):
     def test_put_event_type(self):
         response = put_rest_call(self, 'http://127.0.0.1:5000/events/43', {EVENT_TYPE: 'special'})
         self.assertEqual(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 43;")[2], 'special', "Event type was not changed to special correctly")
-        self.assertEqual(response, f"The following have been changed: {EVENT_TYPE}", "The response was not returned correctly for event type")
+        self.assertEqual(response, f"The following have been changed: {EVENT_TYPE} ", "The response was not returned correctly for event type")
         print("Event type was hanged to special!")
 
     def test_put_event_type_from_school(self):
@@ -85,3 +85,32 @@ class TestEvent(unittest.TestCase):
         self.assertIsNotNone(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 62;"), "Homework event was not created correctly")
         self.assertEqual(response, f"The following have been changed: {EVENT_TYPE} (and a corresponding homework event has been added) ", "The response was not returned correctly for event type")
         print("Event type was changed and homework was added!")
+
+    def test_put_event_priority(self):
+        response = put_rest_call(self, 'http://127.0.0.1:5000/events/18', {EVENT_PRIORITY: 1})
+        self.assertEqual(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 18;")[3], 1, 'Event priority was not changed from 2 to 1 correctly')
+        self.assertEqual(response, f"The following have been changed: {EVENT_PRIORITY} ", 'The response was not returned correctly for event priority')
+        print("Event priority was changed from 2 to 1!")
+
+    def test_put_event_priority_school_to_3(self):
+        response = put_rest_call(self, 'http://127.0.0.1:5000/events/61', {EVENT_PRIORITY: 3})
+        self.assertEqual(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 61;")[3], 3, 'Event priority was not changed from 2 to 3 correctly')
+        self.assertIsNotNone(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 62;"), "Homework event was not created correctly")
+        self.assertEqual(response, f"The following have been changed: {EVENT_PRIORITY} (and a corresponding homework event has been added) ", 'The response was not returned correctly for event priority')
+        print("Event priority was changed from 1 to 3 and homework event created!")
+
+    def test_put_event_priority_school_from_3(self):
+        response = put_rest_call(self, 'http://127.0.0.1:5000/events/29', {EVENT_PRIORITY: 2})
+        self.assertEqual(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 29;")[3], 2, 'Event priority was not changed from 3 to 2 correctly')
+        self.assertEqual(response, f"The following have been changed: {EVENT_PRIORITY} (the homework event may still exist for this event) ", 'The response was not returned correctly for event priority')
+        print("Event priority was changed from 3 to 2!")
+
+    def test_put_event_type_to_school_priority_to_3(self):
+        response = put_rest_call(self, 'http://127.0.0.1:5000/events/1', {EVENT_PRIORITY: 3, EVENT_TYPE: 'school'})
+        event = exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 1;")
+        self.assertEqual(event[3], 3, 'Event priority was not changed from 2 to 3 correctly')
+        self.assertEqual(event[2], 'school', 'Event type was not changed from special to school correctly')
+        self.assertIsNotNone(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 62;"), "The correct homework event was not created")
+        self.assertIsNone(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 63;"), "Two homework events were created")
+        self.assertEqual(response, f"The following have been changed: {EVENT_TYPE} {EVENT_PRIORITY} (and a corresponding homework event has been added) ", "The response was ot returned correctly for event priority and type")
+        print("The correct type and priority were changed and only one homework event was created!")
