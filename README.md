@@ -35,12 +35,11 @@ most optimized calendar to fit the needs of the user and their massive time-comm
 ### Special Events
 For any kind of calendar (school, work, or hybrid), a sleep event is automatically assigned to every single 
 day of the week. This is defaulted to eight hours a night, 11:00-7:00, but the user can change this whenever 
-they'd like. The amount of hours and when they'd like to go to sleep every night is adapted to their calendar 
-as a whole. The same goes for the three meals a day; breakfast, lunch, and dinner. All three of these are added 
+they'd like. The same goes for the three meals a day; breakfast, lunch, and dinner. All three of these are added 
 to the calendar based on all other priorities that are already on the calendar.
 
 ### Custom Events
-A user is able to create just about any kind of event for themselves. This can span from a project to a wedding, 
-as long as the time frame is given, "Schedgy" adapts the user's calendar to this new event. There is also the 
+A user is able to create just about any kind of event for themselves, this can span from a project to a wedding. 
+As long as the time frame is given, "Schedgy" adapts the user's calendar to this new event. There is also the 
 functionality to edit an event that was given to the user. If a homework event isn't up to standards for a student, 
 they can make it shorter or longer and the calendar will adapt.
