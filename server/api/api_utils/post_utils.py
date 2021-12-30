@@ -36,7 +36,7 @@ def optimize_calendar(u_id):
         free_time[earliest_latest[1]] = bedtime
         optimize_priority_group(medium_priorities, free_time, 2)
         optimize_priority_group(low_priorities, free_time, 1)
-    print('Finished Optimizing!')
+    return f"The calendar for user #{u_id} has been optimized."
 
 def optimize_priority_group(priority_group, free_time, priority):
     """Given a group of events with the same priority, all of the free time, and 

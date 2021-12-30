@@ -6,7 +6,7 @@ import json
 
 from .db.db_utils import *
 from .constants import *
-from .api_utils.post_utils import default_user_calendar
+from .api_utils.post_utils import default_user_calendar, optimize_calendar
 
 HELP_USERNAME = "Your username for the account."
 HELP_USER_TYPE  = "The user type can be one of four: school, work, hybrid and other."
@@ -58,3 +58,6 @@ class User(Resource):
                 exec_commit(f"UPDATE {USER_TABLE} SET {USER_TYPE} = '{user_type}' WHERE {ID} = {id};")
         else:  
             return f"The username '{username}' already exists.", 403
+
+    def post(self, id):
+        return optimize_calendar(id)
