@@ -113,8 +113,10 @@ class Event(Resource):
         if time_is_greater(start_time, end_time):
             if end_changed and not start_changed:
                 start_time = subtract_times(end_time, '00:30')
+                temp.append(START_TIME)
             elif start_changed and not end_changed:
                 end_time = add_times(start_time, '00:30')
+                temp.append(END_TIME)
         if overlaps_high_priority(unchanged_event[6], day_id, start_time, end_time, unchanged_event[0]):
             return f"This new time overlaps a high priority event, failed to update calendar...", 406
         else:
