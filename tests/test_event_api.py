@@ -142,3 +142,6 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 3;")[8], "Mama Gs", "The event location was nnot updated correctly")
         self.assertEqual(response, f"The following have been changed: {EVENT_LOCATION} ", "The response for the event location was not returned correctly")
         print("Event location updated successfully!")
+
+if __name__ == '__main__':
+    unittest.main()
