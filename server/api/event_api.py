@@ -84,12 +84,14 @@ class Event(Resource):
                 elif unchanged_event[3] == 3 and event_priority != 3:
                     success_str += " (the homework event may still exist for this event)"
             success_str += ", "
+        else:
+            event_priority = unchanged_event[3]
         # When changing start time, check if it overlaps a high prority event
         # Same for end time and day id
         start_time = args[START_TIME]
         end_time = args[END_TIME]
         day_id = args[DAY_ID]
-        temp = set(["start time", "end time", "day"])
+        temp = ["start time", "end time", "day"]
         if not start_time:
             start_time = unchanged_event[4]
             temp.remove("start time")
@@ -99,7 +101,9 @@ class Event(Resource):
         if not day_id:
             day_id = unchanged_event[7]
             temp.remove("day")
-        if overlaps_high_priority(unchanged_event[6], day_id, start_time, end_time):
+        if event_priority == 3 and overlaps_high_priority(unchanged_event[6], day_id, start_time, end_time, unchanged_event[0]):
+            return f"This new time overlaps a high priority event, failed to update calendar...", 406
+        elif event_priority != 3 and overlaps_high_priority(unchanged_event[6], day_id, start_time, end_time):
             return f"This new time overlaps a high priority event, failed to update calendar...", 406
         else:
             changes += f"{START_TIME} = '{start_time}', {END_TIME} = '{end_time}', {DAY_ID} = {day_id}, "
