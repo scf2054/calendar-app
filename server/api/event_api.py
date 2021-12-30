@@ -96,16 +96,25 @@ class Event(Resource):
         start_time = args[START_TIME]
         end_time = args[END_TIME]
         day_id = args[DAY_ID]
-        temp = ["start time", "end time", "day"]
+        temp = [START_TIME, END_TIME, DAY_ID]
+        start_changed = True
+        end_changed = True
         if not start_time:
             start_time = unchanged_event[4]
-            temp.remove("start time")
+            temp.remove(START_TIME)
+            start_changed = False
         if not end_time:
             end_time = unchanged_event[5]
-            temp.remove("end time")
+            temp.remove(END_TIME)
+            end_changed = False
         if not day_id:
             day_id = unchanged_event[7]
-            temp.remove("day")
+            temp.remove(DAY_ID)
+        if time_is_greater(start_time, end_time):
+            if end_changed and not start_changed:
+                start_time = subtract_times(end_time, '00:30')
+            elif start_changed and not end_changed:
+                end_time = add_times(start_time, '00:30')
         if overlaps_high_priority(unchanged_event[6], day_id, start_time, end_time, unchanged_event[0]):
             return f"This new time overlaps a high priority event, failed to update calendar...", 406
         else:
