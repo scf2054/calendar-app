@@ -143,5 +143,17 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(response, f"The following have been changed: {EVENT_LOCATION} ", "The response for the event location was not returned correctly")
         print("Event location updated successfully!")
 
+    def test_delete_event(self):
+        delete_rest_call(self, 'http://127.0.0.1:5000/events/user/1?id=52')
+        self.assertIsNone(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 52;"), "Event was not deleted")
+        print("Event was deleted successfully!")
+
+    def test_delete_event_fail(self):
+        post_rest_call(self, 'http://127.0.0.1:5000/users', {USERNAME: 'Jill Conti'})
+        post_rest_call(self, 'http://127.0.0.1:5000/events/user/2', {START_TIME: '12:00', DAY_ID: 5})
+        response = delete_rest_call(self, 'http://127.0.0.1:5000/events/user/1?id=62', 403)
+        self.assertEqual(response, "User #1 doesn't have permission to delete course #62.")
+        print("Event delete failure success!")
+
 if __name__ == '__main__':
     unittest.main()
