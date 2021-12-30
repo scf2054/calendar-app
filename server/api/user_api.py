@@ -35,6 +35,12 @@ class Users(Resource):
         else:
             return f"The username '{username}' already exists.", 403
 
+    def delete(self):
+        u_id = request.args.get('u_id')
+        exec_commit(f"DELETE FROM {EVENT_TABLE} WHERE {U_ID} = {u_id};")
+        exec_commit(f"DELETE FROM {USER_TABLE} WHERE {ID} = {u_id};")
+        return f"User #{u_id} has been deleted along with their events."
+
 class User(Resource):
     def get(self, id):
         return exec_get_all(f"SELECT * FROM user_table WHERE id = {id};")

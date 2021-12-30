@@ -177,3 +177,8 @@ class User_Events(Resource):
             return f"This new event overlaps a high priority event, failed to add to calendar...", 406
         exec_commit(f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}, {EVENT_LOCATION}) VALUES {values};")
         return "Event successfully added to calendar!"
+
+    def delete(self, u_id):
+        id = request.args.get('id')
+        exec_commit(f"DELETE FROM {EVENT_TABLE} WHERE {ID} = {id};")
+        return f"User #{u_id} has deleted course #{id}."
