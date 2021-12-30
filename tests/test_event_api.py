@@ -128,4 +128,5 @@ class TestEvent(unittest.TestCase):
 
     def test_put_start_and_end_time_fail(self):
         response = put_rest_call(self, 'http://127.0.0.1:5000/events/2', {END_TIME: '11:00', START_TIME: '12:00'}, {}, 406)
+        self.assertEqual(response, "The start time must come before the end time: 12:00, 11:00")
         print("Start and end time failed successfully!")
