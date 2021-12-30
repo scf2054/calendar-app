@@ -52,12 +52,12 @@ class Event(Resource):
         event_name = args[EVENT_NAME]
         if event_name:
             changes += f"{EVENT_NAME} = '{event_name}', "
-            success_str += "event name, "
+            success_str += EVENT_NAME + " "
         # When changing the type...
         event_type = args[EVENT_TYPE]
         if event_type:
             changes += f"{EVENT_TYPE} = '{event_type}', "
-            success_str += "event type"
+            success_str += EVENT_TYPE
             if unchanged_event[3] == 3:
                 # If changing to 'school' and priority level 3, add a homework event
                 if unchanged_event[2] != 'school' and event_type == 'school':
@@ -67,13 +67,13 @@ class Event(Resource):
                 # If changing from school and priority level 3, remove its homework event
                 elif unchanged_event[2] == 'school' and event_type != 'school':
                     success_str += " (the homework event may still exist for this event)"
-            success_str += ", "
+            success_str += " "
         # When changing priority...
         event_priority = args[EVENT_PRIORITY]
         if event_priority:
             changes += f"{EVENT_PRIORITY} = {event_priority}, "
             exec_commit(f"UPDATE {EVENT_TABLE} SET {EVENT_PRIORITY} = {event_priority} WHERE {ID} = {id};")
-            success_str += "priority level"
+            success_str += EVENT_PRIORITY
             if (not event_type and unchanged_event[2] == 'school') or (event_type == 'school' and unchanged_event[2] != 'school'):
                 # If the new priority is 3 and type is 'school' create a homework event
                 if event_priority == 3 and unchanged_event[3] != 3:
@@ -83,7 +83,7 @@ class Event(Resource):
                 # If the original priority was three and the new one isn't three and is of type 'school', delete its homework event
                 elif unchanged_event[3] == 3 and event_priority != 3:
                     success_str += " (the homework event may still exist for this event)"
-            success_str += ", "
+            success_str += " "
         else:
             event_priority = unchanged_event[3]
         # When changing start time, check if it overlaps a high prority event
@@ -108,12 +108,12 @@ class Event(Resource):
         else:
             changes += f"{START_TIME} = '{start_time}', {END_TIME} = '{end_time}', {DAY_ID} = {day_id}, "
             for x in temp:
-                success_str += x + ", "
+                success_str += x + " "
         # When changing event location, nothing else changes
         event_location = args[EVENT_LOCATION]
         if event_location:
             changes += f"{EVENT_LOCATION} = {event_location}, "
-            success_str += "event location"
+            success_str += EVENT_LOCATION + " "
         changes += f"{U_ID} = {unchanged_event[6]}"
         exec_commit(f"UPDATE {EVENT_TABLE} SET {changes} WHERE {ID} = {id};")
         return success_str

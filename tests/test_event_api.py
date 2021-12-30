@@ -62,6 +62,10 @@ class TestEvent(unittest.TestCase):
             print("Overlapping right was not added!")
 
     def test_put_event_name(self):
-        put_rest_call(self, 'http://127.0.0.1:5000/events/32', {EVENT_NAME: "New Name"})
+        response = put_rest_call(self, 'http://127.0.0.1:5000/events/32', {EVENT_NAME: "New Name"})
         self.assertEqual(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 32;")[1], "New Name", "Event name was not changed")
+        self.assertEqual(response, f"The following have been changed: {EVENT_NAME} ", "The response was not returned correctly")
         print("Event name changed!")
+
+    # def test_put_event_type(self):
+    #     put_rest_call(self, )
