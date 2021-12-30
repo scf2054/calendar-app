@@ -64,8 +64,18 @@ class TestEvent(unittest.TestCase):
     def test_put_event_name(self):
         response = put_rest_call(self, 'http://127.0.0.1:5000/events/32', {EVENT_NAME: "New Name"})
         self.assertEqual(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 32;")[1], "New Name", "Event name was not changed")
-        self.assertEqual(response, f"The following have been changed: {EVENT_NAME} ", "The response was not returned correctly")
+        self.assertEqual(response, f"The following have been changed: {EVENT_NAME} ", "The response was not returned correctly for event name")
         print("Event name changed!")
 
-    # def test_put_event_type(self):
-    #     put_rest_call(self, )
+    def test_put_event_type(self):
+        response = put_rest_call(self, 'http://127.0.0.1:5000/events/32', {EVENT_TYPE: "work"})
+        self.assertEqual(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 32;")[2], "work", "Event type was not changed to work correctly")
+        self.assertEqual(response, f"The following have been changed: {EVENT_TYPE} (the homework event may still exist for this event) ", "The response was not returned correctly for event type")
+        print("Event type was changed!")
+
+    def test_put_event_type_to_school(self):
+        response = put_rest_call(self, 'http://127.0.0.1:5000/events/43', {EVENT_TYPE: "school"})
+        self.assertEqual(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 43;")[2], "school", "Event type was not changed to school correctly")
+        self.assertIsNotNone(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 62;"), "Homework event was not created correctly")
+        self.assertEqual(response, f"The following have been changed: {EVENT_TYPE} (and a corresponding homework event has been added) ", "The response was not returned correctly for event type")
+        print("Event type was changed and homework was added!")
