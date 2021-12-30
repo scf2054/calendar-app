@@ -130,3 +130,9 @@ class TestEvent(unittest.TestCase):
         response = put_rest_call(self, 'http://127.0.0.1:5000/events/2', {END_TIME: '11:00', START_TIME: '12:00'}, {}, 406)
         self.assertEqual(response, "The start time must come before the end time: 12:00, 11:00")
         print("Start and end time failed successfully!")
+
+    def test_put_day_id(self):
+        response = put_rest_call(self, 'http://127.0.0.1:5000/events/3', {DAY_ID: 2})
+        self.assertEqual(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 3;")[7], 2, "The day id was not updated correctly")
+        self.assertEqual(response, f"The following have been changed: {DAY_ID} ", "The response for day id ws not returned correctly")
+        print("Day ID updated successfully")
