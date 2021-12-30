@@ -107,9 +107,7 @@ class Event(Resource):
         if not day_id:
             day_id = unchanged_event[7]
             temp.remove("day")
-        if event_priority == 3 and overlaps_high_priority(unchanged_event[6], day_id, start_time, end_time, unchanged_event[0]):
-            return f"This new time overlaps a high priority event, failed to update calendar...", 406
-        elif event_priority != 3 and overlaps_high_priority(unchanged_event[6], day_id, start_time, end_time):
+        if overlaps_high_priority(unchanged_event[6], day_id, start_time, end_time, unchanged_event[0]):
             return f"This new time overlaps a high priority event, failed to update calendar...", 406
         else:
             changes += f"{START_TIME} = '{start_time}', {END_TIME} = '{end_time}', {DAY_ID} = {day_id}, "
