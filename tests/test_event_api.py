@@ -31,7 +31,7 @@ class TestEvent(unittest.TestCase):
     def test_post_user_events_wrong_event_type(self):
         try:
             post_rest_call(self, 'http://127.0.0.1:5000/events/user/1', {START_TIME: '8:00', DAY_ID: 1, EVENT_TYPE: 'failing event type', EVENT_PRIORITY: 3}, {}, 404)
-            self.assertTrue(False, 'Event type was not caught')
+            print("Incorrect event type caught!")
         except:
             self.assertTrue(True)
             print("Incorrect event type caught!")
@@ -114,3 +114,31 @@ class TestEvent(unittest.TestCase):
         self.assertIsNone(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 63;"), "Two homework events were created")
         self.assertEqual(response, f"The following have been changed: {EVENT_TYPE} {EVENT_PRIORITY} (and a corresponding homework event has been added) ", "The response was ot returned correctly for event priority and type")
         print("The correct type and priority were changed and only one homework event was created!")
+
+    def test_put_start_time(self):
+        response = put_rest_call(self, 'http://127.0.0.1:5000/events/2', {START_TIME: '14:00'})
+        event = exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 2;")
+        self.assertEqual(event[4], '14:00', 'Start time was not updated correctly')
+        self.assertEqual(event[5], '14:30', 'The new end time was not updated accordingly')
+        self.assertEqual(response, f"The following have been changed: {START_TIME} {END_TIME} ", "The response for start time was not returned correctly")
+        print("Start time was updated successfully!")
+
+    def test_put_end_time(self):
+        response = put_rest_call(self, 'http://127.0.0.1:5000/events/2', {END_TIME: '12:00'})
+        event = exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 2;")
+        self.assertEqual(event[4], '11:30', 'Start time was not updated accordingly')
+        self.assertEqual(event[5], '12:00', 'The new end time was not updated')
+        self.assertEqual(response, f"The following have been changed: {END_TIME} {START_TIME} ", "The response for end time was not returned correctly")
+        print("End time was updated successfully!")
+
+    def test_put_start_and_end_time(self):
+        response = put_rest_call(self, 'http://127.0.0.1:5000/events/2', {END_TIME: '12:00', START_TIME: '11:00'})
+        event = exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 2;")
+        self.assertEqual(event[4], '11:00', 'The new start time was not updated')
+        self.assertEqual(event[5], '12:00', 'The new end time was not updated')
+        self.assertEqual(response, f"The following have been changed: {START_TIME} {END_TIME} ", "The response for start and end time was not returned correctly")
+        print("Start and end time was updated successfully!")
+
+    def test_put_start_and_end_time_fail(self):
+        response = put_rest_call(self, 'http://127.0.0.1:5000/events/2', {END_TIME: '11:00', START_TIME: '12:00'}, {}, 406)
+        print("Start and end time failed successfully!")
