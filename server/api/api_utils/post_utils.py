@@ -69,22 +69,21 @@ def optimize_priority_group(priority_group, free_time, priority):
         meal_frame = get_meal_frame(event[1])
         event_start = event[4]
         event_end = event[5]
-        optimized = False
+        new_start = event_start
+        new_end = event_end
         free_time_count = 0
         # For each time frame in free time...
         for free_start in free_time:
             free_time_count += 1
             free_end = free_time[free_start]
             # Check if the free time is in the desired meal time frame, if not coninue
-            if priority == 2:
-                if not overlaps_at_all(free_start, free_end, meal_frame[0], meal_frame[1]):
-                    continue
+            if priority == 2 and not overlaps_at_all(free_start, free_end, meal_frame[0], meal_frame[1]):
+                continue
             # Calculate the length of the event and free time
             event_length = length_between_times(event_start, event_end)
             free_length = length_between_times(free_start, free_end)
             # As long as the length of free time is greater than or equal to the event...
             if time_is_greater(free_length, event_length, True):
-                is_during_event = during_event([event_start, event_end], [free_start, free_end], free_time)
                 # If the event takes place during free time...
                 # This should be the only "if" that passes for the highest priority
                 if overlaps_middle(event_start, event_end, free_start, free_end):
@@ -98,53 +97,66 @@ def optimize_priority_group(priority_group, free_time, priority):
                         if time_is_greater(event_end, latest):
                             latest = event_end
                     break
-                # If the event overlaps an event that's already there...
-                elif is_during_event[0] and priority != 3:
-                    overlapped_event_end = is_during_event[1]
-                    # Calculate distance between right side and left side
-                    length_of_left_side = length_between_times(event_start, free_end)
-                    length_of_right_side = length_between_times(event_end, overlapped_event_end)
-                    # If distance is shorter on left side...
-                    if time_is_greater(length_of_right_side, length_of_left_side, True):
-                        # Set new start/end
-                        new_end = free_end
-                        new_start = subtract_times(new_end, event_length)
-                        optimized = True
-                    # If distance is shorter on right side and the free time frame length on the right side is greater than the event's...
-                    else:
-                        free_after_overlapped_end = free_time[overlapped_event_end]
-                        free_after_length = length_between_times(overlapped_event_end, free_after_overlapped_end)
-                        if time_is_greater(free_after_length, event_length, True):
+                elif priority != 3:
+                    is_during_event = during_event([event_start, event_end], [free_start, free_end], free_time)
+                    # If the event overlaps an event that's already there...
+                    if is_during_event[0]:
+                        overlapped_event_end = is_during_event[1]
+                        # Calculate distance between right side and left side
+                        length_of_left_side = length_between_times(event_start, free_end)
+                        length_of_right_side = length_between_times(event_end, overlapped_event_end)
+                        # If distance is shorter on left side...
+                        if time_is_greater(length_of_right_side, length_of_left_side, True):
                             # Set new start/end
-                            new_start = overlapped_event_end
-                            new_end = add_times(new_start, event_length)
-                            optimized = True
-                # If the event overlaps to the left of a free time
-                elif overlaps_left(event_start, event_end, free_start, free_end) and priority != 3:
-                    # The new end of the event is the free time's end
-                    new_end = free_end
-                    # The new start of the event is the new end minus the length
-                    new_start = subtract_times(new_end, event_length)
-                    optimized = True
-                # If the event overlaps to the right of a free time
-                elif overlaps_right(event_start, event_end, free_start, free_end) and priority != 3:
-                    # The new start of the event is the start of free time
-                    new_start = free_start
-                    # The new end of the event is the new start plus the length of the evnt
-                    new_end = add_times(new_start, event_length)
-                    optimized = True
-                if optimized:
-                    # If the length of the free time is equal to that of the event length...
-                    if event_length == free_length:
-                        # Remove this free time from the dictionary entirely
+                            new_end = free_end
+                            new_start = subtract_times(new_end, event_length)
+                            # Update free_time
+                            if event_length == free_length:
+                                free_time.pop(free_start)
+                            else:
+                                free_time[free_start] = new_start
+                            break
+                        # If distance is shorter on right side and the free time frame length on the right side is greater than the event's...
+                        else:
+                            free_after_overlapped_end = free_time[overlapped_event_end]
+                            free_after_length = length_between_times(overlapped_event_end, free_after_overlapped_end)
+                            if time_is_greater(free_after_length, event_length, True):
+                                # Set new start/end
+                                new_start = overlapped_event_end
+                                new_end = add_times(new_start, event_length)
+                                # Update free_time
+                                if event_length != free_length:
+                                    free_time[new_end] = free_time[free_start]
+                                free_time.pop(free_start)
+                                break
+                    # If the event overlaps to the left of a free time
+                    elif overlaps_left(event_start, event_end, free_start, free_end):
+                        # The new end of the event is the free time's end
+                        new_end = free_end
+                        # The new start of the event is the new end minus the length
+                        new_start = subtract_times(new_end, event_length)
+                        # Update free_time
+                        if event_length == free_length:
+                            free_time.pop(free_start)
+                        else:
+                            free_time[free_start] = new_start
+                        break
+                    # If all else fails...
+                    elif overlaps_right(event_start, event_end, free_start, free_end) or priority == 1:
+                        # The new start of the event is the start of free time
+                        new_start = free_start
+                        # The new end of the event is the new start plus the length of the evnt
+                        new_end = add_times(new_start, event_length)
+                        # Update free_time
+                        if event_length != free_length:
+                            free_time[new_end] = free_time[free_start]
                         free_time.pop(free_start)
-                    # Otherwise
-                    else:
-                        # Shorten the free time
-                        free_time[free_start] = new_start
-                    break
-                elif free_time_count == len(free_time):
-                    leftovers.append(event)
+                        break
+            elif free_time_count == len(free_time):
+                leftovers.append(event)
+        # Update database with new values
+        if priority != 3:
+            exec_commit(f"UPDATE {EVENT_TABLE} SET {START_TIME} = '{new_start}', {END_TIME} = '{new_end}' WHERE {ID} = {event[0]};")
     if priority == 3:
         return [earliest, latest]
     return leftovers
@@ -152,7 +164,7 @@ def optimize_priority_group(priority_group, free_time, priority):
 def during_event(event_frame, free_frame, free_time):
     """This function checks if the event passed in is in between the free time frame
     passed in and the free time frame ahead of it. By determining this,
-    the function confirms that the event time frame passed in takes place during and
+    the function confirms that the event time frame passed in takes place during an
     event who's time frame was already established before this event.
 
     Args:
