@@ -134,5 +134,11 @@ class TestEvent(unittest.TestCase):
     def test_put_day_id(self):
         response = put_rest_call(self, 'http://127.0.0.1:5000/events/3', {DAY_ID: 2})
         self.assertEqual(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 3;")[7], 2, "The day id was not updated correctly")
-        self.assertEqual(response, f"The following have been changed: {DAY_ID} ", "The response for day id ws not returned correctly")
-        print("Day ID updated successfully")
+        self.assertEqual(response, f"The following have been changed: {DAY_ID} ", "The response for day id was not returned correctly")
+        print("Day ID updated successfully!")
+
+    def test_put_event_location(self):
+        response = put_rest_call(self, 'http://127.0.0.1:5000/events/3', {EVENT_LOCATION: "Mama Gs"})
+        self.assertEqual(exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 3;")[8], "Mama Gs", "The event location was nnot updated correctly")
+        self.assertEqual(response, f"The following have been changed: {EVENT_LOCATION} ", "The response for the event location was not returned correctly")
+        print("Event location updated successfully!")

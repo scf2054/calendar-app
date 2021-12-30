@@ -128,7 +128,7 @@ class Event(Resource):
         # When changing event location, nothing else changes
         event_location = args[EVENT_LOCATION]
         if event_location:
-            changes += f"{EVENT_LOCATION} = {event_location}, "
+            changes += f"{EVENT_LOCATION} = '{event_location}', "
             success_str += EVENT_LOCATION + " "
         changes += f"{U_ID} = {unchanged_event[6]}"
         exec_commit(f"UPDATE {EVENT_TABLE} SET {changes} WHERE {ID} = {id};")
