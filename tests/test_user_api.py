@@ -41,6 +41,11 @@ class TestUser(unittest.TestCase):
         self.assertEqual((1, 'Jill Conti', 'school'), exec_get_one(f"SELECT * FROM {USER_TABLE} WHERE {ID} = 1;"), "User type was not changed")
         print("Username and user type was changed!")
 
+    def test_delete_user(self):
+        delete_rest_call(self, 'http://127.0.0.1:5000/users?u_id=1')
+        self.assertEqual(len(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = 1;")), 0, "Not all events were deleted")
+        self.assertEqual(len(exec_get_all(f"SELECT * FROM {USER_TABLE} WHERE {ID} = 1;")), 0, "Not all users were deleted")
+        print("User and their events were deleted!")
 
 if __name__ == '__main__':
     unittest.main()
