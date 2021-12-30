@@ -12,28 +12,19 @@ class TestUser(unittest.TestCase):
         return super().setUp()
 
     def test_post_users_fail(self):
-        try:
-            post_rest_call(self, 'http://127.0.0.1:5000/users', {USERNAME: 'Sam Frost', USER_TYPE: 'school'}, {}, 403)
-            self.assertTrue(False, "Post did not fail")
-        except:
-            self.assertTrue(True)
-            print("Post has failed!")
+        response = post_rest_call(self, 'http://127.0.0.1:5000/users', {USERNAME: 'Sam Frost', USER_TYPE: 'school'}, {}, 403)
+        self.assertEqual(response, "The username 'Sam Frost' already exists.")
+        print("Post has failed!")
 
     def test_put_users_fail_username(self):
-        try:
-            put_rest_call(self, 'http://127.0.0.1:5000/users/1', {USERNAME: 'Sam Frost', USER_TYPE: 'school'}, {}, 403)
-            self.assertTrue(False, "Post username did not fail")
-        except:
-            self.assertTrue(True)
-            print("Post username has failed!")
+        response = put_rest_call(self, 'http://127.0.0.1:5000/users/1', {USERNAME: 'Sam Frost', USER_TYPE: 'school'}, {}, 403)
+        self.assertEqual(response, "The username 'Sam Frost' already exists.")
+        print("Post username has failed!")
 
     def test_put_users_fail_user_type(self):
-        try:
-            put_rest_call(self, 'http://127.0.0.1:5000/users/1', {USERNAME: 'Jill Conti', USER_TYPE: 'sschool'}, {}, 404)
-            self.assertTrue(False, "Post user type did not fail")
-        except:
-            self.assertTrue(True)
-            print("Post user type has failed!")
+        response = put_rest_call(self, 'http://127.0.0.1:5000/users/1', {USERNAME: 'Jill Conti', USER_TYPE: 'sschool'}, {}, 404)
+        self.assertEqual(response, "The user type 'sschool' does not exist. The user type can be one of four: school, work, hybrid and other.")
+        print("Post user type has failed!")
 
     def test_put_users_username(self):
         put_rest_call(self, 'http://127.0.0.1:5000/users/1', {USERNAME: 'Jill Conti'})
