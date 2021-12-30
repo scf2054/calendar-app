@@ -436,7 +436,7 @@ def create_homework_event(event_name, end_time, u_id, day_id):
     homework_end_time = add_times(homework_start_time, '00:30')
     return (homework_name, 'school', 1, homework_start_time, homework_end_time, u_id, day_id, "")
 
-def overlaps_high_priority(u_id, day_id, start_time, end_time):
+def overlaps_high_priority(u_id, day_id, start_time, end_time, event_id=None):
     """Helper function that checks all of the high priority events in the day
     and if the starting and end time passed in overlaps this event.
 
@@ -445,11 +445,17 @@ def overlaps_high_priority(u_id, day_id, start_time, end_time):
         day_id (int): ID of the day that's being checked
         start_time (str): The start time of the event being checked, format hh:mm
         end_time (str): The end time of the event being checked, format hh:mm
+        event_id (int): The event that is being checked if it overlaps itself, is passed in
+        only if the event is of highest priority
 
     Returns:
         bool: True if overlaps, False otherwise
     """
-    for high_priority in exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {day_id} AND {EVENT_PRIORITY} = 3;"):
+    if event_id:
+        events = exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {day_id} AND {EVENT_PRIORITY} = 3 AND {ID} != {event_id};")
+    else:
+        events = exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {day_id} AND {EVENT_PRIORITY} = 3;")
+    for high_priority in events:
         high_priority_start = high_priority[4]
         high_priority_end = high_priority[5]
         if overlaps_at_all(start_time, end_time, high_priority_start, high_priority_end):
