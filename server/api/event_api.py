@@ -56,6 +56,7 @@ class Event(Resource):
         else:
             event_name = unchanged_event[1]
         # When changing the type...
+        homework_event_created = False
         event_type = args[EVENT_TYPE]
         if event_type:
             changes += f"{EVENT_TYPE} = '{event_type}', "
@@ -66,21 +67,24 @@ class Event(Resource):
                     homework_event = create_homework_event(event_name, unchanged_event[5], unchanged_event[6], unchanged_event[7])
                     exec_commit(f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}, {EVENT_LOCATION}) VALUES {homework_event};")
                     success_str += " (and a corresponding homework event has been added)"
+                    homework_event_created = True
                 # If changing from school and priority level 3, remove its homework event
                 elif unchanged_event[2] == 'school' and event_type != 'school':
                     success_str += " (the homework event may still exist for this event)"
             success_str += " "
+        else:
+            event_type = unchanged_event[2]
         # When changing priority...
         event_priority = args[EVENT_PRIORITY]
         if event_priority:
             changes += f"{EVENT_PRIORITY} = {event_priority}, "
-            exec_commit(f"UPDATE {EVENT_TABLE} SET {EVENT_PRIORITY} = {event_priority} WHERE {ID} = {id};")
             success_str += EVENT_PRIORITY
-            if (not event_type and unchanged_event[2] == 'school') or (event_type == 'school' and unchanged_event[2] != 'school'):
+            print(event_type + " " + unchanged_event[2])
+            if event_type == 'school':
                 # If the new priority is 3 and type is 'school' create a homework event
-                if event_priority == 3 and unchanged_event[3] != 3:
+                if event_priority == 3 and unchanged_event[3] != 3 and not homework_event_created:
                     homework_event = create_homework_event(event_name, unchanged_event[5], unchanged_event[6], unchanged_event[7])
-                    exec_commit(f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}, {EVENT_LOCATION}), VALUES {homework_event};")
+                    exec_commit(f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}, {EVENT_LOCATION}) VALUES {homework_event};")
                     success_str += " (and a corresponding homework event has been added)"
                 # If the original priority was three and the new one isn't three and is of type 'school', delete its homework event
                 elif unchanged_event[3] == 3 and event_priority != 3:
