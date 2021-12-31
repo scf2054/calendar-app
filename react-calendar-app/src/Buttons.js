@@ -1,7 +1,7 @@
 import './Buttons.css';
 
 import React, { Component } from 'react';
-import { Row, Col, Table, Container, Button, Modal } from 'reactstrap';
+import { Row, Col, Table, Container, Button, Modal, ModalHeader } from 'reactstrap';
 
 class Buttons extends Component {
     constructor(props) {
@@ -42,10 +42,14 @@ class Buttons extends Component {
                     </Button>
                 </Col>
                 <Modal className='edit-sleep-modal' isOpen={this.state.view_edit_sleep}>
-
+                    <ModalHeader close={<Button onClick={this.toggleEditSleep} close/>}>
+                        Edit Sleep Schedule
+                    </ModalHeader>
                 </Modal>
                 <Modal className='create-event-modal' isOpen={this.state.view_create_event}>
-
+                    <ModalHeader close={<Button onClick={this.toggleCreateEvent} close/>}>
+                        Create New Event
+                    </ModalHeader>
                 </Modal>
             </>
         );
