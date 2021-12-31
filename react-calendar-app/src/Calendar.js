@@ -7,15 +7,18 @@ class Calendar extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            heading: 'Schedgy',
             calendar_rows: []
         }
     }
 
-    createCalendar=()=> {
+    componentDidMount() {
+        this.initializeCalendar(23, 7);
+    }
+
+    initializeCalendar=(sleep_start, sleep_end)=> {
         let rows = [];
         // Get the starting and ending time of the day
-        let sleep_start = 16
-        let sleep_end = 0
         let start_is_greater = sleep_start > sleep_end;
         // While the start is less than end, add a row to the calendar body
         for(let i = 0; i < 24; i++) {
@@ -58,7 +61,7 @@ class Calendar extends Component {
     render() {
         return (
             <Container>
-                <label className='calendar-heading' htmlFor='calendar'>Schedgy</label>
+                <h1 className='calendar-heading'>{this.state.heading}</h1>
                 <Table striped bordered className='calendar'>
                     <thead>
                         <tr>
@@ -76,9 +79,6 @@ class Calendar extends Component {
                         {this.state.calendar_rows}
                     </tbody>
                 </Table>
-                <Button onClick={this.createCalendar}>
-                    Initialize Calendar
-                </Button>
             </Container>
             
         );
