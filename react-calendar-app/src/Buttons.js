@@ -1,7 +1,7 @@
 import './Buttons.css';
 
 import React, { Component } from 'react';
-import { Col, Button, Modal, ModalHeader, ModalBody, InputGroup, InputGroupText, Input, Dropdown, DropdownToggle, DropdownItem, DropdownMenu, Popover, PopoverHeader, PopoverBody, Row, ButtonGroup } from 'reactstrap';
+import { Col, Button, Modal, ModalHeader, ModalBody, InputGroup, InputGroupText, Input, Dropdown, DropdownToggle, DropdownItem, DropdownMenu, Popover, PopoverHeader, PopoverBody, Row, ButtonGroup, List, ListGroup, ListGroupItem } from 'reactstrap';
 
 class Buttons extends Component {
     constructor(props) {
@@ -123,9 +123,9 @@ class Buttons extends Component {
                     </ModalHeader>
                     <ModalBody>
                         <InputGroup>
-                            <InputGroupText>
+                            <Button>
                                 Event Name:
-                            </InputGroupText>
+                            </Button>
                             <Input />
                         </InputGroup>
                         <br/>
@@ -230,9 +230,9 @@ class Buttons extends Component {
                         <Row className='start-end-input' id='start-end-input'>
                             <Col>
                                 <InputGroup id='start-input'>
-                                    <InputGroupText>
+                                    <Button>
                                         Start Time:
-                                    </InputGroupText>
+                                    </Button>
                                     <Input placeholder='00:00' />
                                 </InputGroup>
                                 <ButtonGroup>
@@ -242,9 +242,9 @@ class Buttons extends Component {
                             </Col>
                             <Col>
                                 <InputGroup>
-                                    <InputGroupText>
+                                    <Button>
                                         End Time:
-                                    </InputGroupText>
+                                    </Button>
                                     <Input placeholder='00:00' />
                                 </InputGroup>
                                 <ButtonGroup>
@@ -282,11 +282,22 @@ class Buttons extends Component {
                         </Row>
                         <br/>
                         <InputGroup>
-                            <InputGroupText>
+                            <Button>
                                 Location:
-                            </InputGroupText>
+                            </Button>
                             <Input />
                         </InputGroup>
+                        <br/>
+                        <ListGroup>
+                            <ListGroupItem                             
+                            action
+                            active
+                            href="#"
+                            tag="a"
+                            >
+                            Your Event:
+                            </ListGroupItem>
+                        </ListGroup>
                     </ModalBody>
                 </Modal>
             </>
