@@ -1,7 +1,7 @@
 import './Buttons.css';
 
 import React, { Component } from 'react';
-import { Col, Button, Modal, ModalHeader, ModalBody, InputGroup, InputGroupText, Input, Dropdown, DropdownToggle, DropdownItem, DropdownMenu, Popover, PopoverHeader, PopoverBody, Row, ButtonGroup, List, ListGroup, ListGroupItem } from 'reactstrap';
+import { Col, Button, Modal, ModalHeader, ModalBody, InputGroup, InputGroupText, Input, Dropdown, DropdownToggle, DropdownItem, DropdownMenu, Popover, PopoverHeader, PopoverBody, Row, ButtonGroup, ListGroup, ListGroupItem } from 'reactstrap';
 
 class Buttons extends Component {
     constructor(props) {
@@ -23,7 +23,10 @@ class Buttons extends Component {
             event_priority_selected: 'low',
             event_start_frame_selected: null,
             event_end_frame_selected: null,
-            day_of_week_selected: null
+            day_of_week_selected: null,
+            event_name_input: "'replace me'",
+            event_start_input: '0:00',
+            event_end_input: '0:00'
         }
     }
 
@@ -92,8 +95,33 @@ class Buttons extends Component {
     }
 
     setEventName=(event)=> {
-        
+        this.setState({event_name_input: event.target.value})
     }
+
+    setTimes=(event)=> {
+        let start_end = event.target.className.split(" ")[0];
+        let time = event.target.value;
+        if(start_end === 'start') {
+            this.setState({event_start_input: time});
+        } else if(start_end === 'end') {
+            this.setState({event_end_input: time});
+        }
+    }
+
+    getPriorityStr=(level)=> {
+        switch(level) {
+            case 1:
+                return 'Low';
+            case 2:
+                return 'Medium';
+            case 3:
+                return 'High';
+            default:
+                return null;
+        }
+    }
+
+
 
     render() {
         return (
@@ -237,7 +265,7 @@ class Buttons extends Component {
                                     <InputGroupText>
                                         Start Time:
                                     </InputGroupText>
-                                    <Input placeholder='00:00' />
+                                    <Input className='start' placeholder='00:00' onChange={this.setTimes} />
                                 </InputGroup>
                                 <ButtonGroup>
                                     <Button className='start' value='am' onClick={this.selectEventFrame}>AM</Button>
@@ -249,7 +277,7 @@ class Buttons extends Component {
                                     <InputGroupText>
                                         End Time:
                                     </InputGroupText>
-                                    <Input placeholder='00:00' />
+                                    <Input className='end' placeholder='00:00' onChange={this.setTimes} />
                                 </InputGroup>
                                 <ButtonGroup>
                                     <Button className='end' value='am' onClick={this.selectEventFrame}>AM</Button>
@@ -302,7 +330,16 @@ class Buttons extends Component {
                             Your Event:
                             </ListGroupItem>
                             <ListGroupItem>
-                                Name: aaaa
+                                Name: {this.state.event_name_input}
+                            </ListGroupItem>
+                            <ListGroupItem>
+                                Type: {this.state.event_type_selected}
+                            </ListGroupItem>
+                            <ListGroupItem>
+                                Priority: {this.getPriorityStr(this.state.event_priority_selected)}
+                            </ListGroupItem>
+                            <ListGroupItem>
+                                Time Frame: {this.state.event_start_input}{this.state.event_start_frame_selected} - {this.state.event_end_input}{this.state.event_end_frame_selected}
                             </ListGroupItem>
                         </ListGroup>
                     </ModalBody>
