@@ -22,7 +22,8 @@ class Buttons extends Component {
             event_type_selected: 'Event Type',
             event_priority_selected: 'low',
             event_start_frame_selected: null,
-            event_end_frame_selected: null
+            event_end_frame_selected: null,
+            day_of_week_selected: null
         }
     }
 
@@ -84,6 +85,10 @@ class Buttons extends Component {
         } else if(time === 'end') {
             this.setState({event_end_frame_selected: frame});
         }
+    }
+
+    selectDayOfWeek=(event)=> {
+        this.setState({day_of_week_selected: event.target.value})
     }
 
     render() {
@@ -247,6 +252,33 @@ class Buttons extends Component {
                                     <Button className='end' value='pm' onClick={this.selectEventFrame}>PM</Button>
                                 </ButtonGroup>
                             </Col>
+                        </Row>
+                        <br/>
+                        <Row>
+                            <label htmlFor='day-of-week'>Day of the Week (required)</label>
+                            <ButtonGroup className='days-of-week' id='day-of-week'>
+                                <Button value={1} onClick={this.selectDayOfWeek}>
+                                    Sun
+                                </Button>
+                                <Button value={2} onClick={this.selectDayOfWeek}>
+                                    Mon
+                                </Button>
+                                <Button value={3} onClick={this.selectDayOfWeek}>
+                                    Tue
+                                </Button>
+                                <Button value={4} onClick={this.selectDayOfWeek}>
+                                    Wed
+                                </Button>
+                                <Button value={5} onClick={this.selectDayOfWeek}>
+                                    Thur
+                                </Button>
+                                <Button value={6} onClick={this.selectDayOfWeek}>
+                                    Fri
+                                </Button>
+                                <Button value={7} onClick={this.selectDayOfWeek}>
+                                    Sat
+                                </Button>
+                            </ButtonGroup>
                         </Row>
                     </ModalBody>
                 </Modal>
