@@ -1,5 +1,7 @@
+import './Calendar.css';
+
 import React, { Component } from 'react';
-import { Row, Col, Table } from 'reactstrap'
+import { Row, Col, Table, Container } from 'reactstrap'
 
 class Calendar extends Component {
     constructor(props) {
@@ -11,107 +13,111 @@ class Calendar extends Component {
 
     render() {
         return (
-            <Table striped bordered>
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Sunday</th>
-                        <th>Monday</th>
-                        <th>Tuesday</th>
-                        <th>Wednesday</th>
-                        <th>Thursday</th>
-                        <th>Friday</th>
-                        <th>Saturday</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope='row'>
-                            7:00am
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            8:00am
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            9:00am
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            10:00am
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            11:00am
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            12:00pm
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            1:00pm
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            2:00pm
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            3:00pm
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            4:00pm
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            5:00pm
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            6:00pm
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            7:00pm
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            8:00pm
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            9:00pm
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            10:00pm
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope='row'>
-                            11:00pm
-                        </th>
-                    </tr>
-                </tbody>
-            </Table>
+            <Container>
+                <h1 className='calendar-heading'>Schedgy</h1>
+                <Table striped bordered className='calendar'>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Sunday</th>
+                            <th>Monday</th>
+                            <th>Tuesday</th>
+                            <th>Wednesday</th>
+                            <th>Thursday</th>
+                            <th>Friday</th>
+                            <th>Saturday</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope='row'>
+                                7:00am
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                8:00am
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                9:00am
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                10:00am
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                11:00am
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                12:00pm
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                1:00pm
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                2:00pm
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                3:00pm
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                4:00pm
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                5:00pm
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                6:00pm
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                7:00pm
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                8:00pm
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                9:00pm
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                10:00pm
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope='row'>
+                                11:00pm
+                            </th>
+                        </tr>
+                    </tbody>
+                </Table>
+            </Container>
+            
         );
     }
 }
