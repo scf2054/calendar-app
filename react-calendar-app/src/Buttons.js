@@ -1,7 +1,7 @@
 import './Buttons.css';
 
 import React, { Component } from 'react';
-import { Col, Button, Modal, ModalHeader, ModalBody, InputGroup, InputGroupText, Input, Dropdown, DropdownToggle, DropdownItem, DropdownMenu, Popover, PopoverHeader, PopoverBody, Row, ButtonGroup, ListGroup, ListGroupItem } from 'reactstrap';
+import { Col, Button, Modal, ModalHeader, ModalBody, InputGroup, InputGroupText, Input, Dropdown, DropdownToggle, DropdownItem, DropdownMenu, Popover, PopoverHeader, PopoverBody, Row, ButtonGroup, ListGroup, ListGroupItem, ModalFooter } from 'reactstrap';
 
 class Buttons extends Component {
     constructor(props) {
@@ -20,13 +20,14 @@ class Buttons extends Component {
             view_high_popover: false,
 
             event_type_selected: 'Event Type',
-            event_priority_selected: 'low',
+            event_priority_selected: 1,
             event_start_frame_selected: null,
             event_end_frame_selected: null,
-            day_of_week_selected: null,
+            day_of_week_selected: 1,
             event_name_input: "'replace me'",
             event_start_input: '0:00',
-            event_end_input: '0:00'
+            event_end_input: '0:00',
+            event_location_input: null
         }
     }
 
@@ -56,12 +57,12 @@ class Buttons extends Component {
     }
 
     togglePriorityPopover=(event)=> {
-        let priority = event.target.value;
-        if(priority === 'low') {
+        let priority = parseInt(event.target.value);
+        if(priority === 1) {
             this.setState({view_low_popover: !this.state.view_low_popover});
-        } else if(priority === 'medium') {
+        } else if(priority === 2) {
             this.setState({view_medium_popover: !this.state.view_medium_popover});
-        } else if(priority === 'high') {
+        } else if(priority === 3) {
             this.setState({view_high_popover: !this.state.view_high_popover});
         }
     }
@@ -77,7 +78,7 @@ class Buttons extends Component {
     }
 
     selectEventPriority=(event)=> {
-        this.setState({event_priority_selected: event.target.value});
+        this.setState({event_priority_selected: parseInt(event.target.value)});
     }
 
     selectEventFrame=(event)=> {
@@ -91,7 +92,7 @@ class Buttons extends Component {
     }
 
     selectDayOfWeek=(event)=> {
-        this.setState({day_of_week_selected: event.target.value})
+        this.setState({day_of_week_selected: parseInt(event.target.value)})
     }
 
     setEventName=(event)=> {
@@ -108,6 +109,10 @@ class Buttons extends Component {
         }
     }
 
+    setEventLocation=(event)=> {
+        this.setState({event_location_input: event.target.value});
+    }
+
     getPriorityStr=(level)=> {
         switch(level) {
             case 1:
@@ -118,6 +123,27 @@ class Buttons extends Component {
                 return 'High';
             default:
                 return null;
+        }
+    }
+
+    getDayStr=(id)=> {
+        switch(id) {
+            case 1:
+                return 'Sunday';
+            case 2:
+                return 'Monday';
+            case 3:
+                return 'Tuesday';
+            case 4:
+                return 'Wednesday';
+            case 5:
+                return 'Thursday';
+            case 6:
+                return 'Friday';
+            case 7:
+                return 'Saturday';
+            default:
+                return 'Sunday'
         }
     }
 
@@ -221,7 +247,7 @@ class Buttons extends Component {
                             <Col>
                                 <label htmlFor='event-priority'>Event Priority:</label>
                                 <ButtonGroup id='event-priority'>
-                                    <Button value='low' id='low-button' onMouseEnter={this.togglePriorityPopover} onMouseLeave={this.togglePriorityPopover} onClick={this.selectEventPriority}>
+                                    <Button value={1} id='low-button' onMouseEnter={this.togglePriorityPopover} onMouseLeave={this.togglePriorityPopover} onClick={this.selectEventPriority}>
                                         Low
                                     </Button>
                                     <Popover target='low-button' isOpen={this.state.view_low_popover} placement='bottom' text='Bottom'>
@@ -232,7 +258,7 @@ class Buttons extends Component {
                                             An event with "low" priority can have its time changed freely on the calendar during optimization.
                                         </PopoverBody>
                                     </Popover>
-                                    <Button value='medium' id='medium-button' onMouseEnter={this.togglePriorityPopover} onMouseLeave={this.togglePriorityPopover} onClick={this.selectEventPriority}>
+                                    <Button value={2} id='medium-button' onMouseEnter={this.togglePriorityPopover} onMouseLeave={this.togglePriorityPopover} onClick={this.selectEventPriority}>
                                         Medium
                                     </Button>
                                     <Popover target='medium-button' isOpen={this.state.view_medium_popover} placement='bottom' text='Bottom'>
@@ -243,7 +269,7 @@ class Buttons extends Component {
                                             An event with "medium" priority can have its time changed but as a last resort in order to fit all "high" priority events.
                                         </PopoverBody>
                                     </Popover>
-                                    <Button value='high' id='high-button' onMouseEnter={this.togglePriorityPopover} onMouseLeave={this.togglePriorityPopover} onClick={this.selectEventPriority}>
+                                    <Button value={3} id='high-button' onMouseEnter={this.togglePriorityPopover} onMouseLeave={this.togglePriorityPopover} onClick={this.selectEventPriority}>
                                         High
                                     </Button>
                                     <Popover target='high-button' isOpen={this.state.view_high_popover} placement='bottom' text='Bottom'>
@@ -317,7 +343,7 @@ class Buttons extends Component {
                             <InputGroupText>
                                 Location:
                             </InputGroupText>
-                            <Input />
+                            <Input onChange={this.setEventLocation} />
                         </InputGroup>
                         <br/>
                         <ListGroup>
@@ -341,8 +367,19 @@ class Buttons extends Component {
                             <ListGroupItem>
                                 Time Frame: {this.state.event_start_input}{this.state.event_start_frame_selected} - {this.state.event_end_input}{this.state.event_end_frame_selected}
                             </ListGroupItem>
+                            <ListGroupItem>
+                                Day of the Week: {this.getDayStr(this.state.day_of_week_selected)}
+                            </ListGroupItem>
+                            <ListGroupItem>
+                                Location: {this.state.event_location_input}
+                            </ListGroupItem>
                         </ListGroup>
                     </ModalBody>
+                    <ModalFooter>
+                        <Button>
+                            Save
+                        </Button>
+                    </ModalFooter>
                 </Modal>
             </>
         );
