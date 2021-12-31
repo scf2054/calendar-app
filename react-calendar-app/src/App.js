@@ -3,6 +3,7 @@ import './App.css';
 
 import React from 'react';
 import Calendar from './Calendar';
+import Buttons from './Buttons';
 import { Row } from 'reactstrap';
 
 function App() {
@@ -12,7 +13,7 @@ function App() {
         <Calendar/>
       </Row>
       <Row>
-
+        <Buttons/>
       </Row>
     </div>
   );
