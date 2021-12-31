@@ -146,7 +146,10 @@ class User_Events(Resource):
             event_type = 'custom'
         event_priority = args[EVENT_PRIORITY]
         if not event_priority:
-            event_priority = 1
+            if event_type == 'special':
+                event_priority = 2
+            else:
+                event_priority = 1
         start_time = args[START_TIME]
         end_time = args[END_TIME]
         if not end_time:
