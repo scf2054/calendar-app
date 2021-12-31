@@ -1,7 +1,10 @@
 .calendar-heading {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
     font: 1000;
 }
 
 .calendar {
     background-color: rgb(216, 235, 240);
+    padding-bottom: 0.5em;
 }
