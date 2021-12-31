@@ -1,7 +1,7 @@
 import './Calendar.css';
 
 import React, { Component } from 'react';
-import { Row, Col, Table, Container, Button } from 'reactstrap';
+import { Table, Container } from 'reactstrap';
 
 class Calendar extends Component {
     constructor(props) {
