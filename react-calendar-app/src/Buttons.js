@@ -91,6 +91,10 @@ class Buttons extends Component {
         this.setState({day_of_week_selected: event.target.value})
     }
 
+    setEventName=(event)=> {
+        
+    }
+
     render() {
         return (
             <>
@@ -123,10 +127,10 @@ class Buttons extends Component {
                     </ModalHeader>
                     <ModalBody>
                         <InputGroup>
-                            <Button>
+                            <InputGroupText>
                                 Event Name:
-                            </Button>
-                            <Input />
+                            </InputGroupText>
+                            <Input onChange={this.setEventName} />
                         </InputGroup>
                         <br/>
                         <Row>
@@ -230,9 +234,9 @@ class Buttons extends Component {
                         <Row className='start-end-input' id='start-end-input'>
                             <Col>
                                 <InputGroup id='start-input'>
-                                    <Button>
+                                    <InputGroupText>
                                         Start Time:
-                                    </Button>
+                                    </InputGroupText>
                                     <Input placeholder='00:00' />
                                 </InputGroup>
                                 <ButtonGroup>
@@ -242,9 +246,9 @@ class Buttons extends Component {
                             </Col>
                             <Col>
                                 <InputGroup>
-                                    <Button>
+                                    <InputGroupText>
                                         End Time:
-                                    </Button>
+                                    </InputGroupText>
                                     <Input placeholder='00:00' />
                                 </InputGroup>
                                 <ButtonGroup>
@@ -282,9 +286,9 @@ class Buttons extends Component {
                         </Row>
                         <br/>
                         <InputGroup>
-                            <Button>
+                            <InputGroupText>
                                 Location:
-                            </Button>
+                            </InputGroupText>
                             <Input />
                         </InputGroup>
                         <br/>
@@ -296,6 +300,9 @@ class Buttons extends Component {
                             tag="a"
                             >
                             Your Event:
+                            </ListGroupItem>
+                            <ListGroupItem>
+                                Name: aaaa
                             </ListGroupItem>
                         </ListGroup>
                     </ModalBody>
