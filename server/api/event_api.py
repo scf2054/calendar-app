@@ -148,6 +148,8 @@ class User_Events(Resource):
         if not event_priority:
             if event_type == 'special':
                 event_priority = 2
+            elif event_type == 'work':
+                event_priority = 3
             else:
                 event_priority = 1
         start_time = args[START_TIME]
