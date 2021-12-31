@@ -155,7 +155,7 @@ class User_Events(Resource):
         start_time = args[START_TIME]
         end_time = args[END_TIME]
         if not end_time:
-            end_time = add_times(start_time, '1:00')
+            end_time = add_times(start_time, '0:30')
         day_id = args[DAY_ID]
         event_location = args[EVENT_LOCATION]
         if not event_location:
