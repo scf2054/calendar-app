@@ -14,32 +14,19 @@ class Calendar extends Component {
     createCalendar=()=> {
         let rows = [];
         // Get the starting and ending time of the day
-        let sleep_start = 0
-        let sleep_end = 8
+        let sleep_start = 16
+        let sleep_end = 0
         let start_is_greater = sleep_start > sleep_end;
         // While the start is less than end, add a row to the calendar body
         for(let i = 0; i < 24; i++) {
-            let hr = i;
             let not_during_sleep;
             if (start_is_greater) {
-                not_during_sleep = (hr >= sleep_end && hr < sleep_start);
+                not_during_sleep = (i >= sleep_end && i < sleep_start);
             } else {
-                not_during_sleep = (hr >= sleep_end || hr < sleep_start);
+                not_during_sleep = (i >= sleep_end || i < sleep_start);
             }
             if(not_during_sleep) {
-                let frame;
-                if(hr >= 12) {
-                    frame = 'pm';
-                    if(hr > 12) {
-                        hr = hr % 12;
-                    }
-                } else {
-                    frame = 'am'
-                    if(hr === 0) {
-                        hr = 12;
-                    }
-                }
-                let time = String(hr) + ':00' + frame
+                let time = this.getTime(i);
                 rows.push(
                     <tr key={time}>
                         <th scope='row'>
@@ -50,6 +37,22 @@ class Calendar extends Component {
             }
         }
         this.setState({calendar_rows: rows});
+    }
+
+    getTime=(hr)=> {
+        let frame;
+        if(hr >= 12) {
+            frame = 'pm';
+            if(hr > 12) {
+                hr = hr % 12;
+            }
+        } else {
+            frame = 'am'
+            if(hr === 0) {
+                hr = 12;
+            }
+        }
+        return String(hr) + ':00' + frame;
     }
 
     render() {
