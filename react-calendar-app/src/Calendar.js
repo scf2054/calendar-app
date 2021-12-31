@@ -1,20 +1,61 @@
 import './Calendar.css';
 
 import React, { Component } from 'react';
-import { Row, Col, Table, Container } from 'reactstrap'
+import { Row, Col, Table, Container, Button } from 'reactstrap'
 
 class Calendar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            initial: "Calendar"
+            calendar_rows: []
         }
+    }
+
+    createCalendar=()=> {
+        let rows = [];
+        // Get the starting and ending time of the day
+        let sleep_start = 0
+        let sleep_end = 8
+        let start_is_greater = sleep_start > sleep_end;
+        // While the start is less than end, add a row to the calendar body
+        for(let i = 0; i < 24; i++) {
+            let hr = i;
+            let not_during_sleep;
+            if (start_is_greater) {
+                not_during_sleep = (hr >= sleep_end && hr < sleep_start);
+            } else {
+                not_during_sleep = (hr >= sleep_end || hr < sleep_start);
+            }
+            if(not_during_sleep) {
+                let frame;
+                if(hr >= 12) {
+                    frame = 'pm';
+                    if(hr > 12) {
+                        hr = hr % 12;
+                    }
+                } else {
+                    frame = 'am'
+                    if(hr === 0) {
+                        hr = 12;
+                    }
+                }
+                let time = String(hr) + ':00' + frame
+                rows.push(
+                    <tr key={time}>
+                        <th scope='row'>
+                            {time}
+                        </th>
+                    </tr>
+                );
+            }
+        }
+        this.setState({calendar_rows: rows});
     }
 
     render() {
         return (
             <Container>
-                <h1 className='calendar-heading'>Schedgy</h1>
+                <label className='calendar-heading' htmlFor='calendar'>Schedgy</label>
                 <Table striped bordered className='calendar'>
                     <thead>
                         <tr>
@@ -29,93 +70,12 @@ class Calendar extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <th scope='row'>
-                                7:00am
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                8:00am
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                9:00am
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                10:00am
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                11:00am
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                12:00pm
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                1:00pm
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                2:00pm
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                3:00pm
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                4:00pm
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                5:00pm
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                6:00pm
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                7:00pm
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                8:00pm
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                9:00pm
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                10:00pm
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope='row'>
-                                11:00pm
-                            </th>
-                        </tr>
+                        {this.state.calendar_rows}
                     </tbody>
                 </Table>
+                <Button onClick={this.createCalendar}>
+                    Initialize Calendar
+                </Button>
             </Container>
             
         );
