@@ -20,7 +20,9 @@ class Buttons extends Component {
             view_high_popover: false,
 
             event_type_selected: 'Event Type',
-            event_priority_selected: 'low'
+            event_priority_selected: 'low',
+            event_start_frame_selected: null,
+            event_end_frame_selected: null
         }
     }
 
@@ -72,6 +74,16 @@ class Buttons extends Component {
 
     selectEventPriority=(event)=> {
         this.setState({event_priority_selected: event.target.value});
+    }
+
+    selectEventFrame=(event)=> {
+        let time = event.target.className.split(" ")[0];
+        let frame = event.target.value;
+        if(time === 'start') {
+            this.setState({event_start_frame_selected: frame});
+        } else if(time === 'end') {
+            this.setState({event_end_frame_selected: frame});
+        }
     }
 
     render() {
@@ -205,6 +217,34 @@ class Buttons extends Component {
                                             An event with "high" priority cannot have its time changed after creation or during optimization.
                                         </PopoverBody>
                                     </Popover>
+                                </ButtonGroup>
+                            </Col>
+                        </Row>
+                        <br/>
+                        <label htmlFor='start-end-input'>(start time is required)</label>
+                        <Row className='start-end-input' id='start-end-input'>
+                            <Col>
+                                <InputGroup id='start-input'>
+                                    <InputGroupText>
+                                        Start Time:
+                                    </InputGroupText>
+                                    <Input placeholder='00:00' />
+                                </InputGroup>
+                                <ButtonGroup>
+                                    <Button className='start' value='am' onClick={this.selectEventFrame}>AM</Button>
+                                    <Button className='start' value='pm' onClick={this.selectEventFrame}>PM</Button>
+                                </ButtonGroup>
+                            </Col>
+                            <Col>
+                                <InputGroup>
+                                    <InputGroupText>
+                                        End Time:
+                                    </InputGroupText>
+                                    <Input placeholder='00:00' />
+                                </InputGroup>
+                                <ButtonGroup>
+                                    <Button className='end' value='am' onClick={this.selectEventFrame}>AM</Button>
+                                    <Button className='end' value='pm' onClick={this.selectEventFrame}>PM</Button>
                                 </ButtonGroup>
                             </Col>
                         </Row>
