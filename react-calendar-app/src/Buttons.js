@@ -139,21 +139,10 @@ class Buttons extends Component {
                                         <DropdownItem header>
                                             All Different Event Types
                                         </DropdownItem>
-                                        <DropdownItem value='Work' id='work-item' onMouseEnter={this.getTypeFromDropdown} onMouseLeave={this.getTypeFromDropdown} onClick={this.selectEventType}>
-                                            Work
-                                        </DropdownItem>
-                                        <Popover target='work-item' isOpen={this.state.view_work_popover}>
-                                            <PopoverHeader>
-                                                Work Event Type
-                                            </PopoverHeader>
-                                            <PopoverBody>
-                                                An event with this type will default to "high" priority. Events like this can include work shifts, meetings, and lunch breaks.
-                                            </PopoverBody>
-                                        </Popover>
                                         <DropdownItem value='School' id='school-item' onMouseEnter={this.getTypeFromDropdown} onMouseLeave={this.getTypeFromDropdown} onClick={this.selectEventType}>
                                             School
                                         </DropdownItem>
-                                        <Popover target='school-item' isOpen={this.state.view_school_popover}>
+                                        <Popover target='school-item' isOpen={this.state.view_school_popover} placement='left' text='Left'>
                                             <PopoverHeader>
                                                 School Event Type
                                             </PopoverHeader>
@@ -161,10 +150,21 @@ class Buttons extends Component {
                                                 Events like this can include classes, homework, office hours, and group project meetings. If the event priority is set to "high", then a homework event with "low" priority is automatically created for this class and added to the calendar. An event with this type will default to "low" priority.
                                             </PopoverBody>
                                         </Popover>
+                                        <DropdownItem value='Work' id='work-item' onMouseEnter={this.getTypeFromDropdown} onMouseLeave={this.getTypeFromDropdown} onClick={this.selectEventType}>
+                                            Work
+                                        </DropdownItem>
+                                        <Popover target='work-item' isOpen={this.state.view_work_popover} placement='left' text='Left'>
+                                            <PopoverHeader>
+                                                Work Event Type
+                                            </PopoverHeader>
+                                            <PopoverBody>
+                                                An event with this type will default to "high" priority. Events like this can include work shifts, meetings, and lunch breaks.
+                                            </PopoverBody>
+                                        </Popover>
                                         <DropdownItem value='Special' id='special-item' onMouseEnter={this.getTypeFromDropdown} onMouseLeave={this.getTypeFromDropdown} onClick={this.selectEventType}>
                                             Special
                                         </DropdownItem>
-                                        <Popover target='special-item' isOpen={this.state.view_special_popover}>
+                                        <Popover target='special-item' isOpen={this.state.view_special_popover} placement='left' text='Left'>
                                             <PopoverHeader>
                                                 Special Event Type
                                             </PopoverHeader>
@@ -175,7 +175,7 @@ class Buttons extends Component {
                                         <DropdownItem value='Other' id='other-item' onMouseEnter={this.getTypeFromDropdown} onMouseLeave={this.getTypeFromDropdown} onClick={this.selectEventType}>
                                             Other
                                         </DropdownItem>
-                                        <Popover target='other-item' isOpen={this.state.view_other_popover}>
+                                        <Popover target='other-item' isOpen={this.state.view_other_popover} placement='left' text='Left'>
                                             <PopoverHeader>
                                                 Other Event Type
                                             </PopoverHeader>
@@ -255,7 +255,7 @@ class Buttons extends Component {
                         </Row>
                         <br/>
                         <Row>
-                            <label htmlFor='day-of-week'>Day of the Week (required)</label>
+                            <label htmlFor='day-of-week'>Day of the Week (required):</label>
                             <ButtonGroup className='days-of-week' id='day-of-week'>
                                 <Button value={1} onClick={this.selectDayOfWeek}>
                                     Sun
@@ -280,6 +280,13 @@ class Buttons extends Component {
                                 </Button>
                             </ButtonGroup>
                         </Row>
+                        <br/>
+                        <InputGroup>
+                            <InputGroupText>
+                                Location:
+                            </InputGroupText>
+                            <Input />
+                        </InputGroup>
                     </ModalBody>
                 </Modal>
             </>
