@@ -12,7 +12,7 @@ function App() {
       <Row className='calendar-row'>
         <Calendar/>
       </Row>
-      <Row>
+      <Row className='buttons-row'>
         <Buttons/>
       </Row>
     </div>
