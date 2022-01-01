@@ -8,7 +8,7 @@ class EditSleepSchedule extends Component {
         super(props);
         this.state =  {
             days_selected: {
-                '1': false,
+                '1': true,
                 '2': false,
                 '3': false,
                 '4': false,

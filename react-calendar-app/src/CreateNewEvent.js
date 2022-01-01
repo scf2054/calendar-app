@@ -16,7 +16,7 @@ class CreateNewEvent extends Component {
             view_high_popover: false,
 
             days_selected: {
-                '1': false,
+                '1': true,
                 '2': false,
                 '3': false,
                 '4': false,
