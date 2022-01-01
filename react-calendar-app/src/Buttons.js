@@ -19,6 +19,14 @@ class Buttons extends Component {
                     <Button
                         color='info'
                         outline
+                    >
+                        Sign-In/Create Account
+                    </Button>
+                </Col>
+                <Col>
+                    <Button
+                        color='info'
+                        outline
                         onClick={this.props.toggleEditSleep}
                     >
                         Edit Sleep Schedule
