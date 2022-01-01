@@ -10,7 +10,8 @@ class AccountPage extends Component {
             username: null,
             id_entered: null,
             id_created: null,
-            view_username_error: false
+            view_username_error: false,
+            view_create_user_success: false
         }
     }
 
@@ -42,12 +43,22 @@ class AccountPage extends Component {
         })
         .then(json => {
             this.setState({id_created: json});
-            this.props.toggleAccountPage()
+            this.toggleCreateUserSuccess();
+
         })
         .catch(error => {
             this.setState({view_username_error: true});
             console.log(error)
         })
+    }
+
+    toggleCreateUserSuccess=()=> {
+        this.setState({view_create_user_success: !this.state.view_create_user_success});
+    }
+
+    closeAccountAndSuccessModals=()=> {
+        this.toggleCreateUserSuccess();
+        this.props.toggleAccountPage();
     }
 
     render() {
@@ -71,6 +82,19 @@ class AccountPage extends Component {
                                 The username "{this.state.username}" already exists.
                             </PopoverBody>
                         </Popover>
+                        <Modal isOpen={this.state.view_create_user_success}>
+                            <ModalHeader close={<Button onClick={this.closeAccountAndSuccessModals} close/>}>
+                                User Successfully Created!
+                            </ModalHeader>
+                            <ModalBody>
+                                <div>The ID for "{this.state.username}" is: </div>
+                                <br/>
+                                <div className='id'>{this.state.id_created}</div>
+                                <br/>
+                                <div>Use this to save your calendar so you can sign back into Schedgy.</div>
+                                <div className='happy-planning'>Happy planning!</div>
+                            </ModalBody>
+                        </Modal>
                     </InputGroup>
                     <br/>
                     <h4>OR</h4>
