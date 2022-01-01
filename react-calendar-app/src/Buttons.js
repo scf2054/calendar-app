@@ -37,11 +37,6 @@ class Buttons extends Component {
                         Create Event
                     </Button>
                 </Col>
-                <Modal className='edit-sleep-modal' isOpen={this.state.view_edit_sleep}>
-                    <ModalHeader close={<Button onClick={this.toggleEditSleep} close/>}>
-                        Edit Sleep Schedule
-                    </ModalHeader>
-                </Modal>
             </>
         );
     }
