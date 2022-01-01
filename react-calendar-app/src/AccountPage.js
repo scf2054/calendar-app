@@ -1,14 +1,16 @@
 import './AccountPage.css';
 
 import React, { Component } from 'react';
-import { Modal, ModalHeader, Button, ModalBody, InputGroup, Input } from 'reactstrap';
+import { Modal, ModalHeader, Button, ModalBody, InputGroup, Input, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 
 class AccountPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
             username: null,
-            id: null
+            id_entered: null,
+            id_created: null,
+            view_username_error: false
         }
     }
 
@@ -17,7 +19,35 @@ class AccountPage extends Component {
     }
 
     setID=(event)=> {
-        this.setState({id: parseInt(event.target.value)});
+        this.setState({id_entered: parseInt(event.target.value)});
+    }
+
+    createNewUser=()=> {
+        fetch('/users', {
+            method: 'POST',
+            body: JSON.stringify({
+                'username': this.state.username,
+                'user_type': 'hybrid'
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+        .then(response => {
+            if(response.status >= 200 && response.status < 300) {
+                return response.json()
+            } else {
+                throw Error(response.json())
+            }
+        })
+        .then(json => {
+            this.setState({id_created: json});
+            this.props.toggleAccountPage()
+        })
+        .catch(error => {
+            this.setState({view_username_error: true});
+            console.log(error)
+        })
     }
 
     render() {
@@ -29,10 +59,18 @@ class AccountPage extends Component {
                 <ModalBody>
                     <label htmlFor='username-input'>Create an Account: </label>
                     <InputGroup id='username-input'>
-                        <Input onChange={this.setUsername} placeholder='Enter a username...' />
-                        <Button onClick={this.props.toggleAccountPage}>
+                        <Input onClick={() => {this.setState({view_username_error: false})}} onChange={this.setUsername} placeholder='Enter a username...' />
+                        <Button onClick={this.createNewUser} id='create-account-button'>
                             Create
                         </Button>
+                        <Popover flip target='create-account-button' isOpen={this.state.view_username_error}>
+                            <PopoverHeader>
+                                Error when creating user:
+                            </PopoverHeader>
+                            <PopoverBody>
+                                The username "{this.state.username}" already exists.
+                            </PopoverBody>
+                        </Popover>
                     </InputGroup>
                     <br/>
                     <h4>OR</h4>
