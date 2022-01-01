@@ -19,6 +19,7 @@ class Buttons extends Component {
                     <Button
                         color='info'
                         outline
+                        onClick={this.props.toggleAccountPage}
                     >
                         Sign-In/Create Account
                     </Button>

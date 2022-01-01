@@ -6,15 +6,21 @@ import Calendar from './Calendar';
 import Buttons from './Buttons';
 import CreateNewEvent from './CreateNewEvent';
 import EditSleepSchedule from './EditSleepSchedule';
+import AccountPage from './AccountPage';
 import { Container, Row } from 'reactstrap';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      view_account_page: false,
       view_edit_sleep: false,
       view_create_event: false
     }
+  }
+
+  toggleAccountPage=(event)=> {
+    this.setState({view_account_page: !this.state.view_account_page});
   }
 
   toggleEditSleep=(event)=> {
@@ -78,18 +84,23 @@ class App extends Component {
         </Row>
         <Row className='buttons-row'>
           <Buttons
-            toggleCreateEvent = {this.toggleCreateEvent}
+            toggleAccountPage = {this.toggleAccountPage}
             toggleEditSleep = {this.toggleEditSleep}
+            toggleCreateEvent = {this.toggleCreateEvent}
           />
         </Row>
-        <CreateNewEvent 
-          view_create_event = {this.state.view_create_event}
-          toggleCreateEvent = {this.toggleCreateEvent}
-          getDayStr = {this.getDayStr}
+        <AccountPage
+          view_account_page = {this.state.view_account_page}
+          toggleAccountPage = {this.toggleAccountPage}
         />
         <EditSleepSchedule 
           view_edit_sleep = {this.state.view_edit_sleep}
           toggleEditSleep = {this.toggleEditSleep}
+          getDayStr = {this.getDayStr}
+        />
+        <CreateNewEvent 
+          view_create_event = {this.state.view_create_event}
+          toggleCreateEvent = {this.toggleCreateEvent}
           getDayStr = {this.getDayStr}
         />
       </Container>
