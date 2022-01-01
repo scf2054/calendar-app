@@ -11,10 +11,6 @@ class Buttons extends Component {
         }
     }
 
-    toggleEditSleep=(event)=> {
-        this.setState({view_edit_sleep: !this.state.view_edit_sleep});
-    }
-
     
     render() {
         return (
@@ -23,7 +19,7 @@ class Buttons extends Component {
                     <Button
                         color='info'
                         outline
-                        onClick={this.toggleEditSleep}
+                        onClick={this.props.toggleEditSleep}
                     >
                         Edit Sleep Schedule
                     </Button>
