@@ -31,7 +31,9 @@ class Users(Resource):
             if user_type != 'school' and user_type != 'work' and user_type != 'hybrid':
                 user_type = 'other'
             exec_commit(f"INSERT INTO {USER_TABLE}({USERNAME}, {USER_TYPE}) VALUES ('{username}', '{user_type}');")
-            default_user_calendar(exec_get_one(f"SELECT * FROM {USER_TABLE} WHERE {USERNAME} = '{username}' and {USER_TYPE} = '{user_type}';")[0])
+            u_id = exec_get_one(f"SELECT {ID} FROM {USER_TABLE} WHERE {USERNAME} = '{username}';")[0]
+            default_user_calendar(u_id)
+            return u_id
         else:
             return f"The username '{username}' already exists.", 403
 
