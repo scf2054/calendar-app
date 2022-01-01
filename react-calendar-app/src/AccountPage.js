@@ -1,33 +1,40 @@
 import './AccountPage.css';
 
 import React, { Component } from 'react';
-import { Modal, ModalHeader, Button, ModalBody, InputGroup, Input, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
+import { Modal, ModalHeader, Button, ModalBody, InputGroup, Input, Popover, PopoverHeader, PopoverBody, UncontrolledPopover, ButtonGroup } from 'reactstrap';
 
 class AccountPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: null,
+            user_entered: false,
+            username_created: null,
             id_entered: null,
             id_created: null,
-            view_username_error: false,
-            view_create_user_success: false
+            view_create_user_success: false,
+            view_are_you_sure: false
         }
     }
 
-    setUsername=(event)=> {
-        this.setState({username: event.target.value});
+    setUsernameCreated=(event)=> {
+        this.setState({username_created: event.target.value});
     }
 
-    setID=(event)=> {
+    setIDEntered=(event)=> {
         this.setState({id_entered: parseInt(event.target.value)});
+    }
+
+    confirmUsername=()=> {
+        this.props.setUser(this.state.user_entered);
+        this.toggleAreYouSure();
+        this.props.toggleAccountPage();
     }
 
     createNewUser=()=> {
         fetch('/users', {
             method: 'POST',
             body: JSON.stringify({
-                'username': this.state.username,
+                'username': this.state.username_created,
                 'user_type': 'hybrid'
             }),
             headers: {
@@ -46,7 +53,6 @@ class AccountPage extends Component {
             this.toggleCreateUserSuccess();
         })
         .catch(error => {
-            this.setState({view_username_error: true});
             console.log(error)
         })
     }
@@ -61,8 +67,9 @@ class AccountPage extends Component {
             }
         })
         .then(jsonOutput => {
-            this.props.setUser(jsonOutput);
-            this.props.toggleAccountPage();
+            const user = jsonOutput[0];
+            this.toggleAreYouSure();
+            this.setState({user_entered: user});
         })
         .catch(error => {
             console.log(error);
@@ -71,6 +78,10 @@ class AccountPage extends Component {
 
     toggleCreateUserSuccess=()=> {
         this.setState({view_create_user_success: !this.state.view_create_user_success});
+    }
+
+    toggleAreYouSure=()=> {
+        this.setState({view_are_you_sure: !this.state.view_are_you_sure});
     }
 
     closeAccountAndSuccessModals=()=> {
@@ -87,24 +98,24 @@ class AccountPage extends Component {
                 <ModalBody>
                     <label htmlFor='username-input'>Create an Account: </label>
                     <InputGroup id='username-input'>
-                        <Input onClick={() => {this.setState({view_username_error: false})}} onChange={this.setUsername} placeholder='Enter a username...' />
+                        <Input onChange={this.setUsernameCreated} placeholder='Enter a username...' />
                         <Button onClick={this.createNewUser} id='create-account-button'>
                             Create
                         </Button>
-                        <Popover flip target='create-account-button' isOpen={this.state.view_username_error}>
+                        <UncontrolledPopover target='create-account-button' trigger='focus'>
                             <PopoverHeader>
                                 Error when creating user:
                             </PopoverHeader>
                             <PopoverBody>
-                                The username "{this.state.username}" already exists.
+                                The username "{this.state.username_created}" already exists.
                             </PopoverBody>
-                        </Popover>
+                        </UncontrolledPopover>
                         <Modal isOpen={this.state.view_create_user_success}>
                             <ModalHeader close={<Button onClick={this.closeAccountAndSuccessModals} close/>}>
                                 User Successfully Created!
                             </ModalHeader>
                             <ModalBody>
-                                <div>The ID for "{this.state.username}" is: </div>
+                                <div>The ID for "{this.state.username_created}" is: </div>
                                 <br/>
                                 <div className='id'>{this.state.id_created}</div>
                                 <br/>
@@ -118,10 +129,26 @@ class AccountPage extends Component {
                     <br/>
                     <label htmlFor='id-input'>Sign-in: </label>
                     <InputGroup id='id-input'>
-                        <Input type='number' onChange={this.setID} placeholder='Enter the ID that was given to you...'/>
-                        <Button onClick={this.signIn}>
+                        <Input type='number' onChange={this.setIDEntered} placeholder='Enter the ID that was given to you...'/>
+                        <Button id='sign-in-button' onClick={this.signIn}>
                             Sign-in
                         </Button>
+                        <Popover flip target='sign-in-button' isOpen={this.state.view_are_you_sure}>
+                            <PopoverBody>
+                                <div>This is the ID for user: </div>
+                                <div className='username-entered'>"{this.state.user_entered[1]}"</div>
+                                <div>Is this correct?</div>
+                                <br/>
+                                <ButtonGroup>
+                                    <Button onClick={this.confirmUsername}>
+                                        Yes
+                                    </Button>
+                                    <Button onClick={this.toggleAreYouSure}>
+                                        No
+                                    </Button>
+                                </ButtonGroup>
+                            </PopoverBody>
+                        </Popover>
                     </InputGroup>
                     <br/>
                 </ModalBody>

@@ -46,7 +46,6 @@ class Users(Resource):
 class User(Resource):
     def get(self, id):
         user = exec_get_all(f"SELECT * FROM user_table WHERE id = {id};")
-        print(user)
         if len(user) == 0:
             return f"A user with ID {id} does not exist.", 404
         return user
