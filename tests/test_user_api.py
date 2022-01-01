@@ -11,6 +11,11 @@ class TestUser(unittest.TestCase):
         exec_sql_file('schema.sql')
         return super().setUp()
 
+    def test_post_users(self):
+        response = post_rest_call(self, 'http://127.0.0.1:5000/users', {USERNAME: 'Jill Conti', USER_TYPE: 'school'})
+        self.assertEqual(response, 2, 'The ID returned is not the correct one')
+        print("User successfully created!")
+
     def test_post_users_fail(self):
         response = post_rest_call(self, 'http://127.0.0.1:5000/users', {USERNAME: 'Sam Frost', USER_TYPE: 'school'}, {}, 403)
         self.assertEqual(response, "The username 'Sam Frost' already exists.")
