@@ -26,10 +26,12 @@ class AccountPage extends Component {
                         </Button>
                     </InputGroup>
                     <br/>
+                    <h4>OR</h4>
+                    <br/>
                     <label htmlFor='id-input'>Sign-in: </label>
                     <InputGroup id='id-input'>
                         <Input placeholder='Enter the ID that was given to you...'/>
-                        <Button>
+                        <Button onClick={this.props.toggleAccountPage}>
                             Sign-in
                         </Button>
                     </InputGroup>
