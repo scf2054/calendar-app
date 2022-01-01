@@ -25,6 +25,27 @@ class App extends Component {
     this.setState({view_create_event: !this.state.view_create_event});
   }
 
+  getDayStr=(id)=> {
+    switch(id) {
+      case 1:
+          return 'Sunday';
+      case 2:
+          return 'Monday';
+      case 3:
+          return 'Tuesday';
+      case 4:
+          return 'Wednesday';
+      case 5:
+          return 'Thursday';
+      case 6:
+          return 'Friday';
+      case 7:
+          return 'Saturday';
+      default:
+          return 'Sunday'
+    }
+  }
+
   render() {
     return (
       <Container className="App">
@@ -40,10 +61,12 @@ class App extends Component {
         <CreateNewEvent 
           view_create_event = {this.state.view_create_event}
           toggleCreateEvent = {this.toggleCreateEvent}
+          getDayStr = {this.getDayStr}
         />
         <EditSleepSchedule 
           view_edit_sleep = {this.state.view_edit_sleep}
           toggleEditSleep = {this.toggleEditSleep}
+          getDayStr = {this.getDayStr}
         />
       </Container>
     );
