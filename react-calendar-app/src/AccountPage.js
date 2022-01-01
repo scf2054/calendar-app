@@ -7,8 +7,17 @@ class AccountPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            placeholder: false
+            username: null,
+            id: null
         }
+    }
+
+    setUsername=(event)=> {
+        this.setState({username: event.target.value});
+    }
+
+    setID=(event)=> {
+        this.setState({id: parseInt(event.target.value)});
     }
 
     render() {
@@ -20,7 +29,7 @@ class AccountPage extends Component {
                 <ModalBody>
                     <label htmlFor='username-input'>Create an Account: </label>
                     <InputGroup id='username-input'>
-                        <Input placeholder='Enter a username...' />
+                        <Input onChange={this.setUsername} placeholder='Enter a username...' />
                         <Button onClick={this.props.toggleAccountPage}>
                             Create
                         </Button>
@@ -30,7 +39,7 @@ class AccountPage extends Component {
                     <br/>
                     <label htmlFor='id-input'>Sign-in: </label>
                     <InputGroup id='id-input'>
-                        <Input placeholder='Enter the ID that was given to you...'/>
+                        <Input onChange={this.setID} placeholder='Enter the ID that was given to you...'/>
                         <Button onClick={this.props.toggleAccountPage}>
                             Sign-in
                         </Button>
