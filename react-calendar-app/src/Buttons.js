@@ -1,7 +1,7 @@
 import './Buttons.css';
 
 import React, { Component } from 'react';
-import { Col, Button, Modal, ModalHeader } from 'reactstrap';
+import { Col, Button } from 'reactstrap';
 
 class Buttons extends Component {
     constructor(props) {
