@@ -80,7 +80,7 @@ class CreateNewEvent extends Component {
     }
 
     selectDayOfWeek=(event)=> {
-        this.setState({day_of_week_selected: parseInt(event.target.value)})
+        this.setState({day_of_week_selected: parseInt(event.target.value)});
     }
 
     setEventName=(event)=> {
@@ -111,27 +111,6 @@ class CreateNewEvent extends Component {
                 return 'High';
             default:
                 return null;
-        }
-    }
-
-    getDayStr=(id)=> {
-        switch(id) {
-            case 1:
-                return 'Sunday';
-            case 2:
-                return 'Monday';
-            case 3:
-                return 'Tuesday';
-            case 4:
-                return 'Wednesday';
-            case 5:
-                return 'Thursday';
-            case 6:
-                return 'Friday';
-            case 7:
-                return 'Saturday';
-            default:
-                return 'Sunday'
         }
     }
 
@@ -330,7 +309,7 @@ class CreateNewEvent extends Component {
                         Time Frame: {this.state.event_start_input}{this.state.event_start_frame_selected} - {this.state.event_end_input}{this.state.event_end_frame_selected}
                     </ListGroupItem>
                     <ListGroupItem>
-                        Day of the Week: {this.getDayStr(this.state.day_of_week_selected)}
+                        Day of the Week: {this.props.getDayStr(this.state.day_of_week_selected)}
                     </ListGroupItem>
                     <ListGroupItem>
                         Location: {this.state.event_location_input}
@@ -338,7 +317,7 @@ class CreateNewEvent extends Component {
                 </ListGroup>
             </ModalBody>
             <ModalFooter>
-                <Button onClick={this.props.toggleCreateEvent}>
+                <Button color='primary' onClick={this.props.toggleCreateEvent}>
                     Save
                 </Button>
             </ModalFooter>
