@@ -36,19 +36,36 @@ class AccountPage extends Component {
         })
         .then(response => {
             if(response.status >= 200 && response.status < 300) {
-                return response.json()
+                return response.json();
             } else {
-                throw Error(response.json())
+                throw Error(response.json());
             }
         })
         .then(json => {
             this.setState({id_created: json});
             this.toggleCreateUserSuccess();
-
         })
         .catch(error => {
             this.setState({view_username_error: true});
             console.log(error)
+        })
+    }
+
+    signIn=()=> {
+        fetch('/users/' + this.state.id_entered)
+        .then(response => {
+            if(response.status >= 200 && response.status < 300) {
+                return response.json();
+            } else {
+                throw Error(response.json());
+            }
+        })
+        .then(jsonOutput => {
+            this.props.setUser(jsonOutput);
+            this.props.toggleAccountPage();
+        })
+        .catch(error => {
+            console.log(error);
         })
     }
 
@@ -101,8 +118,8 @@ class AccountPage extends Component {
                     <br/>
                     <label htmlFor='id-input'>Sign-in: </label>
                     <InputGroup id='id-input'>
-                        <Input onChange={this.setID} placeholder='Enter the ID that was given to you...'/>
-                        <Button onClick={this.props.toggleAccountPage}>
+                        <Input type='number' onChange={this.setID} placeholder='Enter the ID that was given to you...'/>
+                        <Button onClick={this.signIn}>
                             Sign-in
                         </Button>
                     </InputGroup>

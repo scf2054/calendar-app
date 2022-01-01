@@ -15,8 +15,13 @@ class App extends Component {
     this.state = {
       view_account_page: false,
       view_edit_sleep: false,
-      view_create_event: false
+      view_create_event: false,
+      current_user: null
     }
+  }
+
+  setUser=(user)=> {
+    this.setState({current_user: user[0]});
   }
 
   toggleAccountPage=(event)=> {
@@ -92,6 +97,7 @@ class App extends Component {
         <AccountPage
           view_account_page = {this.state.view_account_page}
           toggleAccountPage = {this.toggleAccountPage}
+          setUser = {this.setUser}
         />
         <EditSleepSchedule 
           view_edit_sleep = {this.state.view_edit_sleep}
