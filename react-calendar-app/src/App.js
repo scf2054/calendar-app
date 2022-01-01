@@ -21,7 +21,7 @@ class App extends Component {
   }
 
   setUser=(user)=> {
-    this.setState({current_user: user[0]});
+    this.setState({current_user: user});
   }
 
   toggleAccountPage=(event)=> {
