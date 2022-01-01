@@ -15,11 +15,20 @@ class CreateNewEvent extends Component {
             view_medium_popover: false,
             view_high_popover: false,
 
+            days_selected: {
+                '1': false,
+                '2': false,
+                '3': false,
+                '4': false,
+                '5': false,
+                '6': false,
+                '7': false
+            },
+
             event_type_selected: 'Event Type',
             event_priority_selected: 1,
             event_start_frame_selected: null,
             event_end_frame_selected: null,
-            day_of_week_selected: 1,
             event_name_input: "'replace me'",
             event_start_input: '0:00',
             event_end_input: '0:00',
@@ -61,7 +70,7 @@ class CreateNewEvent extends Component {
 
     selectEventType=(event)=> {
         let type = event.target.value;
-        this.setState({event_type_selected: type}, () => {console.log(this.state.event_type_selected)});
+        this.setState({event_type_selected: type});
         this.toggleTypePopover(type);
     }
 
@@ -80,7 +89,14 @@ class CreateNewEvent extends Component {
     }
 
     selectDayOfWeek=(event)=> {
-        this.setState({day_of_week_selected: parseInt(event.target.value)});
+        const key = event.target.value;
+        const value = !this.state.days_selected[key];
+        const new_selected = Object.assign(this.state.days_selected, {[key]: value});
+        this.setState({days_selected: new_selected});
+    }
+
+    getBsStyle=(key)=> {
+        return this.state.days_selected[key] ? 'primary': 'default';
     }
 
     setEventName=(event)=> {
@@ -309,7 +325,7 @@ class CreateNewEvent extends Component {
                         Time Frame: {this.state.event_start_input}{this.state.event_start_frame_selected} - {this.state.event_end_input}{this.state.event_end_frame_selected}
                     </ListGroupItem>
                     <ListGroupItem>
-                        Day of the Week: {this.props.getDayStr(this.state.day_of_week_selected)}
+                        Day(s) of the Week: {this.props.getDayStr(this.state.days_selected)}
                     </ListGroupItem>
                     <ListGroupItem>
                         Location: {this.state.event_location_input}

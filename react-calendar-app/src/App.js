@@ -25,25 +25,49 @@ class App extends Component {
     this.setState({view_create_event: !this.state.view_create_event});
   }
 
-  getDayStr=(id)=> {
-    switch(id) {
-      case 1:
-          return 'Sunday';
-      case 2:
-          return 'Monday';
-      case 3:
-          return 'Tuesday';
-      case 4:
-          return 'Wednesday';
-      case 5:
-          return 'Thursday';
-      case 6:
-          return 'Friday';
-      case 7:
-          return 'Saturday';
-      default:
-          return 'Sunday'
+  getDayStr=(days_dict)=> {
+    let days = [];
+    for(let key in days_dict) {
+      if(days_dict[key]) {
+        let id = parseInt(key);
+        switch(id) {
+          case 1:
+            days.push('Sunday');
+            break;
+          case 2:
+            days.push('Monday');
+            break;
+          case 3:
+            days.push('Tuesday');
+            break;
+          case 4:
+            days.push('Wednesday');
+            break;
+          case 5:
+            days.push('Thursday');
+            break;
+          case 6:
+            days.push('Friday');
+            break;
+          case 7:
+            days.push('Saturday');
+            break;
+          default:
+            continue;
+        }
+      }
     }
+    let day_str = "";
+    const days_len = days.length;
+    for(let i = 0; i < days_len; i++) {
+      day_str += days[i];
+      if(i === days_len-2) {
+        day_str += ' and ';
+      } else if(days_len > 1 && i !== days_len-1) {
+        day_str += ', ';
+      }
+    }
+    return day_str;
   }
 
   render() {
