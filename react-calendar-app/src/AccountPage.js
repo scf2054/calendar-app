@@ -12,16 +12,9 @@ class AccountPage extends Component {
             id_entered: null,
             id_created: null,
             view_create_user_success: false,
-            view_are_you_sure: false
+            view_are_you_sure: false,
+            view_id_doesnt_exist: false
         }
-    }
-
-    setUsernameCreated=(event)=> {
-        this.setState({username_created: event.target.value});
-    }
-
-    setIDEntered=(event)=> {
-        this.setState({id_entered: parseInt(event.target.value)});
     }
 
     confirmUsername=()=> {
@@ -72,6 +65,7 @@ class AccountPage extends Component {
             this.setState({user_entered: user});
         })
         .catch(error => {
+            this.setState({view_id_doesnt_exist: true});
             console.log(error);
         })
     }
@@ -98,7 +92,7 @@ class AccountPage extends Component {
                 <ModalBody>
                     <label htmlFor='username-input'>Create an Account: </label>
                     <InputGroup id='username-input'>
-                        <Input onChange={this.setUsernameCreated} placeholder='Enter a username...' />
+                        <Input onChange={event => {this.setState({username_created: event.target.value});}} placeholder='Enter a username...' />
                         <Button onClick={this.createNewUser} id='create-account-button'>
                             Create
                         </Button>
@@ -129,7 +123,7 @@ class AccountPage extends Component {
                     <br/>
                     <label htmlFor='id-input'>Sign-in: </label>
                     <InputGroup id='id-input'>
-                        <Input type='number' onChange={this.setIDEntered} placeholder='Enter the ID that was given to you...'/>
+                        <Input type='number' onClick={() => {this.setState({view_id_doesnt_exist: false})}} onChange={event => {this.setState({id_entered: parseInt(event.target.value)})}} placeholder='Enter the ID that was given to you...'/>
                         <Button id='sign-in-button' onClick={this.signIn}>
                             Sign-in
                         </Button>
@@ -147,6 +141,14 @@ class AccountPage extends Component {
                                         No
                                     </Button>
                                 </ButtonGroup>
+                            </PopoverBody>
+                        </Popover>
+                        <Popover target='sign-in-button' isOpen={this.state.view_id_doesnt_exist}>
+                            <PopoverHeader>
+                                Error
+                            </PopoverHeader>
+                            <PopoverBody>
+                                This ID does not have a user...
                             </PopoverBody>
                         </Popover>
                     </InputGroup>
