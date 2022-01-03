@@ -1,7 +1,7 @@
 import './Buttons.css';
 
 import React, { Component } from 'react';
-import { Col, Button } from 'reactstrap';
+import { Col, Button, Popover, PopoverHeader, UncontrolledPopover, PopoverBody } from 'reactstrap';
 
 class Buttons extends Component {
     constructor(props) {
@@ -18,10 +18,26 @@ class Buttons extends Component {
                 this.props.toggleEditSleep();
             } else if(button_clicked === 'create-event-button') {
                 this.props.toggleCreateEvent()
-            }   
+            } else if(button_clicked === 'optimize-calendar-button') {
+                this.optimizeCalendar();
+            }
         } else {
-            alert("You must create an account or sign in to use this functionality.");
+            alert("You must sign in to an account in order to use this functionality.");
         }
+    }
+
+    optimizeCalendar=()=> {
+        console.log(this.props.current_user[0]);
+        fetch('/users/' + this.props.current_user[0], {
+            method: 'POST',
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+        .then(response => response.json())
+        .then(json => {
+            console.log(json);
+        })
     }
     
     render() {
@@ -56,6 +72,28 @@ class Buttons extends Component {
                     >
                         Create Event
                     </Button>
+                </Col>
+                <Col>
+                    <Button
+                        color='danger'
+                        onClick={this.checkSignedIn}
+                        className='optimize-calendar-button'
+                        id='optimize-calendar-button'
+                    >
+                        Optimize Calendar
+                    </Button>
+                    <UncontrolledPopover
+                        target='optimize-calendar-button'
+                        trigger='focus'
+                        placement='top'
+                    >
+                        <PopoverHeader>
+                            Success!
+                        </PopoverHeader>
+                        <PopoverBody>
+                            The calendar for {this.props.current_user ? this.props.current_user[1] : null} has been optimized!
+                        </PopoverBody>
+                    </UncontrolledPopover>
                 </Col>
             </>
         );
