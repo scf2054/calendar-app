@@ -77,12 +77,7 @@ class AccountPage extends Component {
     toggleAreYouSure=()=> {
         this.setState({view_are_you_sure: !this.state.view_are_you_sure});
     }
-
-    closeAccountAndSuccessModals=()=> {
-        this.toggleCreateUserSuccess();
-        this.props.toggleAccountPage();
-    }
-
+    
     render() {
         return (
             <Modal isOpen={this.props.view_account_page}>
@@ -105,7 +100,7 @@ class AccountPage extends Component {
                             </PopoverBody>
                         </UncontrolledPopover>
                         <Modal isOpen={this.state.view_create_user_success}>
-                            <ModalHeader close={<Button onClick={this.closeAccountAndSuccessModals} close/>}>
+                            <ModalHeader close={<Button onClick={this.toggleCreateUserSuccess} close/>}>
                                 User Successfully Created!
                             </ModalHeader>
                             <ModalBody>
