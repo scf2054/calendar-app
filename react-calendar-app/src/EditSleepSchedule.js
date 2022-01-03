@@ -1,7 +1,7 @@
 import './EditSleepSchedule.css';
 
 import React, { Component } from 'react';
-import { Button, Modal, ModalBody, ModalHeader, ButtonGroup, Row, Input, ModalFooter } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalHeader, ButtonGroup, Row, Input, ModalFooter, ListGroup, ListGroupItem } from 'reactstrap';
 
 class EditSleepSchedule extends Component {
     constructor(props) {
@@ -54,6 +54,22 @@ class EditSleepSchedule extends Component {
         }
     }
 
+    resetInputs=()=> {
+        this.setState({days_selected: {
+            '1': true,
+            '2': false,
+            '3': false,
+            '4': false,
+            '5': false,
+            '6': false,
+            '7': false
+        }});
+        this.setState({wake_up_time: null});
+        this.setState({wake_up_frame: null});
+        this.setState({sleep_time: null});
+        this.setState({sleep_frame: null});
+    }
+
     render() {
         return (
             <Modal className='edit-sleep-modal' isOpen={this.props.view_edit_sleep}>
@@ -89,7 +105,7 @@ class EditSleepSchedule extends Component {
                     </Row>
                     <br/>
                     <label>
-                        When would you like to wake up on {this.props.getDayStr(this.state.days_selected)}?
+                        When would you like to wake up?
                     </label>      
                     <Input className='wake' placeholder='00:00' onChange={this.setTime} />    
                     <ButtonGroup>
@@ -98,13 +114,34 @@ class EditSleepSchedule extends Component {
                     </ButtonGroup>
                     <br/>
                     <label>
-                        When would you like to go to sleep on {this.props.getDayStr(this.state.days_selected)}?
+                        When would you like to go to sleep?
                     </label>      
                     <Input className='sleep' placeholder='00:00' onChange={this.setTime} />  
                     <ButtonGroup>
                         <Button className='sleep' value='am' onClick={this.selectEventFrame}>AM</Button>
                         <Button className='sleep' value='pm' onClick={this.selectEventFrame}>PM</Button>
-                    </ButtonGroup>       
+                    </ButtonGroup> 
+                    <br/>
+                    <br/>
+                    <ListGroup>
+                        <ListGroupItem
+                        action
+                        active
+                        href="#"
+                        tag="a"
+                        >
+                        Your Sleep Schedule:
+                        </ListGroupItem>
+                        <ListGroupItem>
+                            Day(s) of the Week: {this.props.getDayStr(this.state.days_selected)}
+                        </ListGroupItem>
+                        <ListGroupItem>
+                            Waking up: {this.state.wake_up_time}{this.state.wake_up_frame}
+                        </ListGroupItem>
+                        <ListGroupItem>
+                            Going to Sleep: {this.state.sleep_time}{this.state.sleep_frame}
+                        </ListGroupItem>
+                    </ListGroup>      
                 </ModalBody>
                 <ModalFooter>
                     <Button color='primary' onClick={this.props.toggleEditSleep}>
