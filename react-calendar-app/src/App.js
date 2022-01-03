@@ -20,6 +20,10 @@ class App extends Component {
     }
   }
 
+  componentDidMount() {
+    this.toggleAccountPage();
+  }
+
   setUser=(user)=> {
     this.setState({current_user: user});
   }

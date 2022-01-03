@@ -1,19 +1,20 @@
 import './AccountPage.css';
 
 import React, { Component } from 'react';
-import { Modal, ModalHeader, Button, ModalBody, InputGroup, Input, Popover, PopoverHeader, PopoverBody, UncontrolledPopover, ButtonGroup } from 'reactstrap';
+import { Modal, ModalHeader, Button, ModalBody, InputGroup, Input, Popover, PopoverHeader, PopoverBody, ButtonGroup } from 'reactstrap';
 
 class AccountPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            user_entered: false,
+            user_entered: null,
             username_created: null,
             id_entered: null,
             id_created: null,
             view_create_user_success: false,
             view_are_you_sure: false,
-            view_id_doesnt_exist: false
+            view_id_doesnt_exist: false,
+            view_username_exists: false
         }
     }
 
@@ -46,6 +47,7 @@ class AccountPage extends Component {
             this.toggleCreateUserSuccess();
         })
         .catch(error => {
+            this.setState({view_username_exists: true});
             console.log(error)
         })
     }
@@ -77,7 +79,7 @@ class AccountPage extends Component {
     toggleAreYouSure=()=> {
         this.setState({view_are_you_sure: !this.state.view_are_you_sure});
     }
-    
+
     render() {
         return (
             <Modal isOpen={this.props.view_account_page}>
@@ -87,18 +89,18 @@ class AccountPage extends Component {
                 <ModalBody>
                     <label htmlFor='username-input'>Create an Account: </label>
                     <InputGroup id='username-input'>
-                        <Input onChange={event => {this.setState({username_created: event.target.value});}} placeholder='Enter a username...' />
+                        <Input onClick={() => this.setState({view_username_exists: false})} onChange={event => {this.setState({username_created: event.target.value});}} placeholder='Enter a username...' />
                         <Button onClick={this.createNewUser} id='create-account-button'>
                             Create
                         </Button>
-                        <UncontrolledPopover target='create-account-button' trigger='focus'>
+                        <Popover target='create-account-button' isOpen={this.state.view_username_exists}>
                             <PopoverHeader>
                                 Error when creating user:
                             </PopoverHeader>
                             <PopoverBody>
                                 The username "{this.state.username_created}" already exists.
                             </PopoverBody>
-                        </UncontrolledPopover>
+                        </Popover>
                         <Modal isOpen={this.state.view_create_user_success}>
                             <ModalHeader close={<Button onClick={this.toggleCreateUserSuccess} close/>}>
                                 User Successfully Created!
@@ -125,7 +127,7 @@ class AccountPage extends Component {
                         <Popover flip target='sign-in-button' isOpen={this.state.view_are_you_sure}>
                             <PopoverBody>
                                 <div>This is the ID for user: </div>
-                                <div className='username-entered'>"{this.state.user_entered[1]}"</div>
+                                <div className='username-entered'>"{this.state.user_entered ? this.state.user_entered[1] : null}"</div>
                                 <div>Is this correct?</div>
                                 <br/>
                                 <ButtonGroup>

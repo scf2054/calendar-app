@@ -12,7 +12,6 @@ class Buttons extends Component {
     }
 
     checkSignedIn=(event)=> {
-        console.log(this.props.current_user);
         if(this.props.current_user) {
             const button_clicked = event.target.className.split(" ")[0];
             if(button_clicked === 'edit-sleep-button') {
