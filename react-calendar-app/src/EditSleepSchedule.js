@@ -16,8 +16,10 @@ class EditSleepSchedule extends Component {
                 '6': false,
                 '7': false
             },
-            wake_up_time: '00:00',
-            sleep_time: '00:00'
+            wake_up_time: null,
+            wake_up_frame: null,
+            sleep_time: null,
+            sleep_frame: null
         }
     }
 
@@ -32,12 +34,24 @@ class EditSleepSchedule extends Component {
         return this.state.days_selected[key] ? 'primary': 'default';
     }
 
-    setWakeUpTime=(event)=> {
-        this.setState({wake_up_time: event.target.value});
+    setTime=(event)=> {
+        const wake_sleep = event.target.className.split(" ")[0];
+        const time = event.target.value;
+        if(wake_sleep === 'wake') {
+            this.setState({wake_up_time: time});
+        } else if(wake_sleep === 'sleep') {
+            this.setState({sleep_time: time});
+        }
     }
 
-    setSleepTime=(event)=> {
-        this.setState({sleep_time: event.target.value});
+    selectEventFrame=(event)=> {
+        const wake_sleep = event.target.className.split(" ")[0];
+        const frame = event.target.value;
+        if(wake_sleep === 'wake') {
+            this.setState({wake_up_frame: frame});
+        } else if(wake_sleep === 'sleep') {
+            this.setState({sleep_frame: frame});
+        }
     }
 
     render() {
@@ -77,7 +91,7 @@ class EditSleepSchedule extends Component {
                     <label>
                         When would you like to wake up on {this.props.getDayStr(this.state.days_selected)}?
                     </label>      
-                    <Input placeholder='00:00' onChange={this.setWakeUpTime} />    
+                    <Input className='wake' placeholder='00:00' onChange={this.setTime} />    
                     <ButtonGroup>
                         <Button className='wake' value='am' onClick={this.selectEventFrame}>AM</Button>
                         <Button className='wake' value='pm' onClick={this.selectEventFrame}>PM</Button>
@@ -86,7 +100,7 @@ class EditSleepSchedule extends Component {
                     <label>
                         When would you like to go to sleep on {this.props.getDayStr(this.state.days_selected)}?
                     </label>      
-                    <Input placeholder='00:00' onChange={this.setWakeUpTime} />  
+                    <Input className='sleep' placeholder='00:00' onChange={this.setTime} />  
                     <ButtonGroup>
                         <Button className='sleep' value='am' onClick={this.selectEventFrame}>AM</Button>
                         <Button className='sleep' value='pm' onClick={this.selectEventFrame}>PM</Button>
