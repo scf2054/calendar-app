@@ -7,7 +7,6 @@ class Calendar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            heading: 'Schedgy',
             calendar_rows: []
         }
     }
@@ -58,10 +57,14 @@ class Calendar extends Component {
         return String(hr) + ':00' + frame;
     }
 
+    calendarHeading=()=> {
+        return this.props.current_user ? this.props.current_user[1] + "'s Schedgy" : "Schedgy"
+    }
+
     render() {
         return (
             <Container>
-                <h1 className='calendar-heading'>{this.state.heading}</h1>
+                <h1 className='calendar-heading'>{this.calendarHeading()}</h1>
                 <Table striped bordered className='calendar'>
                     <thead>
                         <tr>

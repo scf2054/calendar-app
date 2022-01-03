@@ -85,7 +85,9 @@ class App extends Component {
     return (
       <Container className="App">
         <Row className='calendar-row'>
-          <Calendar/>
+          <Calendar
+            current_user = {this.state.current_user}
+          />
         </Row>
         <Row className='buttons-row'>
           <Buttons
