@@ -3,6 +3,8 @@ import './Calendar.css';
 import React, { Component } from 'react';
 import { Table, Container } from 'reactstrap';
 
+// Play around with Calendar components in bookmark
+
 class Calendar extends Component {
     constructor(props) {
         super(props);
@@ -10,6 +12,8 @@ class Calendar extends Component {
             calendar_rows: []
         }
     }
+
+    // Create a function that puts all the user's events on the calendar
 
     componentDidMount() {
         this.initializeCalendar(23, 7);

@@ -1,7 +1,7 @@
 import './Buttons.css';
 
 import React, { Component } from 'react';
-import { Col, Button, Popover, PopoverHeader, UncontrolledPopover, PopoverBody } from 'reactstrap';
+import { Col, Button, PopoverHeader, UncontrolledPopover, PopoverBody } from 'reactstrap';
 
 class Buttons extends Component {
     constructor(props) {
@@ -36,6 +36,7 @@ class Buttons extends Component {
         })
         .then(response => response.json())
         .then(json => {
+            // re-render the calendar
             console.log(json);
         })
     }

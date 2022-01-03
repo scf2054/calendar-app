@@ -23,6 +23,8 @@ class EditSleepSchedule extends Component {
         }
     }
 
+    // Create a function that changed each sleep time frame for each day inputted for the specific user
+
     selectDayOfWeek=(event)=> {
         const key = event.target.value;
         const value = !this.state.days_selected[key];

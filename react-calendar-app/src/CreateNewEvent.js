@@ -36,6 +36,9 @@ class CreateNewEvent extends Component {
         }
     }
 
+    // Create a function that adds all data inputted to the database
+    // Create a database that initializes all of the data in the state to what it originally was
+
     toggleEventTypeDropdown=(event)=> {
         this.setState({view_event_type_dropdown: !this.state.view_event_type_dropdown});
     }
@@ -334,6 +337,7 @@ class CreateNewEvent extends Component {
             </ModalBody>
             <ModalFooter>
                 <Button color='primary' onClick={this.props.toggleCreateEvent}>
+                    {/* Instead of calling "toggleCreateEvent", call a function that add the new event's data to the database */}
                     Save
                 </Button>
             </ModalFooter>
