@@ -78,11 +78,19 @@ class EditSleepSchedule extends Component {
                         When would you like to wake up on {this.props.getDayStr(this.state.days_selected)}?
                     </label>      
                     <Input placeholder='00:00' onChange={this.setWakeUpTime} />    
+                    <ButtonGroup>
+                        <Button className='wake' value='am' onClick={this.selectEventFrame}>AM</Button>
+                        <Button className='wake' value='pm' onClick={this.selectEventFrame}>PM</Button>
+                    </ButtonGroup>
                     <br/>
                     <label>
                         When would you like to go to sleep on {this.props.getDayStr(this.state.days_selected)}?
                     </label>      
-                    <Input placeholder='00:00' onChange={this.setWakeUpTime} />         
+                    <Input placeholder='00:00' onChange={this.setWakeUpTime} />  
+                    <ButtonGroup>
+                        <Button className='sleep' value='am' onClick={this.selectEventFrame}>AM</Button>
+                        <Button className='sleep' value='pm' onClick={this.selectEventFrame}>PM</Button>
+                    </ButtonGroup>       
                 </ModalBody>
                 <ModalFooter>
                     <Button color='primary' onClick={this.props.toggleEditSleep}>
