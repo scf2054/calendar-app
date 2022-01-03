@@ -134,7 +134,7 @@ class CreateNewEvent extends Component {
         return (
             <Modal className='create-event-modal' isOpen={this.props.view_create_event}>
             <ModalHeader close={<Button onClick={this.props.toggleCreateEvent} close/>}>
-                Create New Event
+                Create New Event for {this.props.current_user ? this.props.current_user[1] : null}:
             </ModalHeader>
             <ModalBody>
                 <InputGroup>

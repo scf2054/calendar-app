@@ -11,6 +11,19 @@ class Buttons extends Component {
         }
     }
 
+    checkSignedIn=(event)=> {
+        console.log(this.props.current_user);
+        if(this.props.current_user) {
+            const button_clicked = event.target.className.split(" ")[0];
+            if(button_clicked === 'edit-sleep-button') {
+                this.props.toggleEditSleep();
+            } else if(button_clicked === 'create-event-button') {
+                this.props.toggleCreateEvent()
+            }   
+        } else {
+            alert("You must create an account or sign in to use this functionality.");
+        }
+    }
     
     render() {
         return (
@@ -20,6 +33,7 @@ class Buttons extends Component {
                         color='info'
                         outline
                         onClick={this.props.toggleAccountPage}
+                        className='account-button'
                     >
                         Sign-In/Create Account
                     </Button>
@@ -28,7 +42,8 @@ class Buttons extends Component {
                     <Button
                         color='info'
                         outline
-                        onClick={this.props.toggleEditSleep}
+                        onClick={this.checkSignedIn}
+                        className='edit-sleep-button'
                     >
                         Edit Sleep Schedule
                     </Button>
@@ -37,7 +52,8 @@ class Buttons extends Component {
                     <Button
                         color='info'
                         outline
-                        onClick={this.props.toggleCreateEvent}
+                        onClick={this.checkSignedIn}
+                        className='create-event-button'
                     >
                         Create Event
                     </Button>

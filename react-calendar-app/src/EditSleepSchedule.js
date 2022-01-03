@@ -44,7 +44,7 @@ class EditSleepSchedule extends Component {
         return (
             <Modal className='edit-sleep-modal' isOpen={this.props.view_edit_sleep}>
                 <ModalHeader close={<Button onClick={this.props.toggleEditSleep} close/>}>
-                    Edit Sleep Schedule
+                    Edit Sleep Schedule for {this.props.current_user ? this.props.current_user[1] : null}:
                 </ModalHeader>
                 <ModalBody>
                     <Row>

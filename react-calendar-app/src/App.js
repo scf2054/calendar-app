@@ -24,11 +24,11 @@ class App extends Component {
     this.setState({current_user: user});
   }
 
-  toggleAccountPage=(event)=> {
+  toggleAccountPage=()=> {
     this.setState({view_account_page: !this.state.view_account_page});
   }
 
-  toggleEditSleep=(event)=> {
+  toggleEditSleep=()=> {
     this.setState({view_edit_sleep: !this.state.view_edit_sleep});
   }
 
@@ -89,6 +89,7 @@ class App extends Component {
         </Row>
         <Row className='buttons-row'>
           <Buttons
+            current_user = {this.state.current_user}
             toggleAccountPage = {this.toggleAccountPage}
             toggleEditSleep = {this.toggleEditSleep}
             toggleCreateEvent = {this.toggleCreateEvent}
@@ -100,11 +101,13 @@ class App extends Component {
           setUser = {this.setUser}
         />
         <EditSleepSchedule 
+          current_user = {this.state.current_user}
           view_edit_sleep = {this.state.view_edit_sleep}
           toggleEditSleep = {this.toggleEditSleep}
           getDayStr = {this.getDayStr}
         />
         <CreateNewEvent 
+          current_user = {this.state.current_user}
           view_create_event = {this.state.view_create_event}
           toggleCreateEvent = {this.toggleCreateEvent}
           getDayStr = {this.getDayStr}
