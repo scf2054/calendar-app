@@ -18,6 +18,7 @@ api.add_resource(User, '/users/<int:id>')
 api.add_resource(Events, '/events')
 api.add_resource(Event, '/events/<int:id>')
 api.add_resource(User_Events, '/events/user/<int:u_id>')
+api.add_resource(Sleep, '/events/user/<int:u_id>/sleep/<int:day_id>')
 
 # Day
 api.add_resource(Days, '/days')

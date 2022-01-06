@@ -191,3 +191,7 @@ class User_Events(Resource):
             return f"User #{u_id} doesn't have permission to delete course #{id}.", 403
         exec_commit(f"DELETE FROM {EVENT_TABLE} WHERE {ID} = {id};")
         return f"User #{u_id} has deleted course #{id}."
+
+class Sleep(Resource):
+    def get(self, u_id, day_id):
+        return exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {day_id} AND {EVENT_NAME} = 'Sleep';")
