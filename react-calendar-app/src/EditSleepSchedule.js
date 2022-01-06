@@ -19,13 +19,64 @@ class EditSleepSchedule extends Component {
             wake_up_time: '7:00',
             wake_up_frame: 'am',
             sleep_time: '11:00',
-            sleep_frame: 'pm'
+            sleep_frame: 'pm',
+            save_error_message: null,
+            view_save_error_message: false
         }
     }
 
     // Create a function that changed each sleep time frame for each day inputted for the specific user
-    updateSleep=()=> {
+    saveSleep=()=> {
+        try {
+            const wake_up = this.props.convertTime(this.state.wake_up_time, this.state.wake_up_frame);
+            const sleep = this.props.convertTime(this.state.sleep_time, this.state.sleep_frame);
+            let no_days_selected = true;
+            for(let day_id in this.state.days_selected) {
+                if(this.state.days_selected[day_id]) {
+                    no_days_selected = false;
+                    this.putSleep(day_id, wake_up, sleep);
+                }
+            }
+            if(no_days_selected) {
+                throw SyntaxError("No days have been selected.");
+            }
+            this.props.toggleEditSleep();
+            this.resetInputs();
+        } catch(e) {
+            this.setState({save_error_message: e.message});
+            this.setState({view_save_error_message: true});
+            console.log(e);
+        }
+    }
 
+    putSleep=(day_id, wake_up, sleep)=> {
+        fetch('/events/user/' + this.props.current_user[0] + '/sleep/' + day_id)
+        .then(response => response.json())
+        .then(data => {
+            const event_id = data[0];
+            return fetch('/events/' + event_id, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    'start_time': sleep,
+                    'end_time': wake_up
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            })
+        })
+        .then(response => {
+            if(response.status >= 200 && response.status < 300) {
+                return response.json();
+            } else {
+                const r = response.json();
+                console.log(r);
+                throw Error(r);
+            }
+        }) 
+        .catch(err => {
+            console.error("Request failed", err);
+        })
     }
 
     selectDayOfWeek=(event)=> {
@@ -69,10 +120,10 @@ class EditSleepSchedule extends Component {
             '6': false,
             '7': false
         }});
-        this.setState({wake_up_time: null});
-        this.setState({wake_up_frame: null});
-        this.setState({sleep_time: null});
-        this.setState({sleep_frame: null});
+        this.setState({wake_up_time: '7:00'});
+        this.setState({wake_up_frame: 'am'});
+        this.setState({sleep_time: '11:00'});
+        this.setState({sleep_frame: 'pm'});
     }
 
     render() {
@@ -110,15 +161,6 @@ class EditSleepSchedule extends Component {
                     </Row>
                     <br/>
                     <label>
-                        When would you like to wake up?
-                    </label>      
-                    <Input className='wake' placeholder='00:00' onChange={this.setTime} />    
-                    <ButtonGroup>
-                        <Button className='wake' value='am' onClick={this.selectEventFrame}>AM</Button>
-                        <Button className='wake' value='pm' onClick={this.selectEventFrame}>PM</Button>
-                    </ButtonGroup>
-                    <br/>
-                    <label>
                         When would you like to go to sleep?
                     </label>      
                     <Input className='sleep' placeholder='00:00' onChange={this.setTime} />  
@@ -126,6 +168,15 @@ class EditSleepSchedule extends Component {
                         <Button className='sleep' value='am' onClick={this.selectEventFrame}>AM</Button>
                         <Button className='sleep' value='pm' onClick={this.selectEventFrame}>PM</Button>
                     </ButtonGroup> 
+                    <br/>
+                    <label>
+                        When would you like to wake up?
+                    </label>      
+                    <Input className='wake' placeholder='00:00' onChange={this.setTime} />    
+                    <ButtonGroup>
+                        <Button className='wake' value='am' onClick={this.selectEventFrame}>AM</Button>
+                        <Button className='wake' value='pm' onClick={this.selectEventFrame}>PM</Button>
+                    </ButtonGroup>
                     <br/>
                     <br/>
                     <ListGroup>
@@ -141,15 +192,15 @@ class EditSleepSchedule extends Component {
                             Day(s) of the Week: {this.props.getDayStr(this.state.days_selected)}
                         </ListGroupItem>
                         <ListGroupItem>
-                            Waking up: {this.state.wake_up_time}{this.state.wake_up_frame}
+                            Going to Sleep: {this.state.sleep_time}{this.state.sleep_frame}
                         </ListGroupItem>
                         <ListGroupItem>
-                            Going to Sleep: {this.state.sleep_time}{this.state.sleep_frame}
+                            Waking up: {this.state.wake_up_time}{this.state.wake_up_frame}
                         </ListGroupItem>
                     </ListGroup>      
                 </ModalBody>
                 <ModalFooter>
-                    <Button color='primary' onClick={this.props.toggleEditSleep}>
+                    <Button color='primary' onClick={this.saveSleep}>
                         Save
                     </Button>
                 </ModalFooter>
