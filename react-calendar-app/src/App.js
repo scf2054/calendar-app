@@ -84,6 +84,33 @@ class App extends Component {
     return day_str;
   }
 
+  convertTime=(time, frame)=> {
+    if(frame === null) {
+      throw TypeError("You must select 'am' or 'pm' for your times.");
+    }
+    const split = time.split(':');
+    if(split.length === 1) {
+        throw SyntaxError("Time must be in format: hh:mm.");
+    }
+    let hr = parseInt(split[0]);
+    let min = parseInt(split[1]);
+    if(!min) {
+        min = 0;
+    }
+    let hrs_greater = Math.floor(min / 60);
+    hr += hrs_greater;
+    min -= (60 * hrs_greater);
+    if(frame === 'pm' && hr !== 12) {
+        hr += 12
+    } else if(frame === 'am' && hr === 12) {
+        hr = 0;
+    }
+    if(min < 10) {
+        min = '0' + min;
+    }
+    return hr + ':' + min;
+  }
+
   render() {
     return (
       <Container className="App">
@@ -110,12 +137,14 @@ class App extends Component {
           view_edit_sleep = {this.state.view_edit_sleep}
           toggleEditSleep = {this.toggleEditSleep}
           getDayStr = {this.getDayStr}
+          convertTime = {this.convertTime}
         />
         <CreateNewEvent 
           current_user = {this.state.current_user}
           view_create_event = {this.state.view_create_event}
           toggleCreateEvent = {this.toggleCreateEvent}
           getDayStr = {this.getDayStr}
+          convertTime = {this.convertTime}
         />
       </Container>
     );

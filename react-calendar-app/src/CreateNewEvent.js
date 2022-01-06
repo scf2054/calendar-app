@@ -40,10 +40,10 @@ class CreateNewEvent extends Component {
 
     saveEvent=(event)=> {
         try {
-            const start_time = this.convertTime(this.state.event_start_input, true);
+            const start_time = this.props.convertTime(this.state.event_start_input, this.state.event_start_frame_selected);
             let end_time = null;
             if(this.state.event_end_input) {
-                end_time = this.convertTime(this.state.event_end_input, false, true);
+                end_time = this.props.convertTime(this.state.event_end_input, this.state.event_end_frame_selected);
             }
             let no_days_selected = true;
             for(let day_id in this.state.days_selected) {
@@ -80,47 +80,6 @@ class CreateNewEvent extends Component {
                 "Content-type": "application/json; charset=UTF-8"
             }
         })
-    }
-
-    convertTime=(time, start=false, end=false)=> {
-        let frame_selected;
-        if(start) {
-            frame_selected = this.state.event_start_frame_selected;
-            if(time === null) {
-                throw TypeError("Start time is required.");
-            }
-            if(frame_selected === null) {
-                throw TypeError("You must select 'am' or 'pm' for the start time.");
-            }
-        } else if(end) {
-            frame_selected = this.state.event_end_frame_selected;
-            if(frame_selected === null) {
-                throw TypeError("You must select 'am' or 'pm' for the end time.");
-            }
-        } else {
-            throw ReferenceError("You must input either 'start' or 'end' when calling this function.");
-        }
-        const split = time.split(':');
-        if(split.length === 1) {
-            throw SyntaxError("Time must be in format: hh:mm.");
-        }
-        let hr = parseInt(split[0]);
-        let min = parseInt(split[1]);
-        if(!min) {
-            min = 0;
-        }
-        let hrs_greater = Math.floor(min / 60);
-        hr += hrs_greater;
-        min -= (60 * hrs_greater);
-        if(frame_selected === 'pm' && hr !== 12) {
-            hr += 12
-        } else if(frame_selected === 'am' && hr === 12) {
-            hr = 0;
-        }
-        if(min < 10) {
-            min = '0' + min;
-        }
-        return hr + ':' + min;
     }
 
     initializeData=()=> {

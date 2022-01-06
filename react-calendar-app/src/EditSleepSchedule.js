@@ -16,14 +16,17 @@ class EditSleepSchedule extends Component {
                 '6': false,
                 '7': false
             },
-            wake_up_time: null,
-            wake_up_frame: null,
-            sleep_time: null,
-            sleep_frame: null
+            wake_up_time: '7:00',
+            wake_up_frame: 'am',
+            sleep_time: '11:00',
+            sleep_frame: 'pm'
         }
     }
 
     // Create a function that changed each sleep time frame for each day inputted for the specific user
+    updateSleep=()=> {
+
+    }
 
     selectDayOfWeek=(event)=> {
         const key = event.target.value;
@@ -82,25 +85,25 @@ class EditSleepSchedule extends Component {
                     <Row>
                         <label htmlFor='day-of-week'>Day of the Week (required):</label>
                         <ButtonGroup className='days-of-week' id='day-of-week'>
-                            <Button value={1} onClick={this.selectDayOfWeek} bsStyle={this.getBsStyle('1')}>
+                            <Button value={1} onClick={this.selectDayOfWeek} bsstyle={this.getBsStyle('1')}>
                                 Sun
                             </Button>
-                            <Button value={2} onClick={this.selectDayOfWeek} bsStyle={this.getBsStyle('2')}>
+                            <Button value={2} onClick={this.selectDayOfWeek} bsstyle={this.getBsStyle('2')}>
                                 Mon
                             </Button>
-                            <Button value={3} onClick={this.selectDayOfWeek} bsStyle={this.getBsStyle('3')}>
+                            <Button value={3} onClick={this.selectDayOfWeek} bsstyle={this.getBsStyle('3')}>
                                 Tue
                             </Button>
-                            <Button value={4} onClick={this.selectDayOfWeek} bsStyle={this.getBsStyle('4')}>
+                            <Button value={4} onClick={this.selectDayOfWeek} bsstyle={this.getBsStyle('4')}>
                                 Wed
                             </Button>
-                            <Button value={5} onClick={this.selectDayOfWeek} bsStyle={this.getBsStyle('5')}>
+                            <Button value={5} onClick={this.selectDayOfWeek} bsstyle={this.getBsStyle('5')}>
                                 Thur
                             </Button>
-                            <Button value={6} onClick={this.selectDayOfWeek} bsStyle={this.getBsStyle('6')}>
+                            <Button value={6} onClick={this.selectDayOfWeek} bsstyle={this.getBsStyle('6')}>
                                 Fri
                             </Button>
-                            <Button value={7} onClick={this.selectDayOfWeek} bsStyle={this.getBsStyle('7')}>
+                            <Button value={7} onClick={this.selectDayOfWeek} bsstyle={this.getBsStyle('7')}>
                                 Sat
                             </Button>
                         </ButtonGroup> 
