@@ -80,6 +80,13 @@ class CreateNewEvent extends Component {
                 "Content-type": "application/json; charset=UTF-8"
             }
         })
+        .then(response => {
+            if(response.status >= 200 && response.status < 300) {
+                return response.json();
+            } else if(response.status === 406) {
+                alert("This new event overlaps with a high priority event, failed to update.")
+            }
+        })
     }
 
     initializeData=()=> {
@@ -405,11 +412,11 @@ class CreateNewEvent extends Component {
                 </ListGroup>
             </ModalBody>
             <ModalFooter>
-                <Button id='save-button' color='primary' onClick={this.saveEvent}>
+                <Button id='event-save-button' color='primary' onClick={this.saveEvent}>
                     {/* Instead of calling "toggleCreateEvent", call a function that add the new event's data to the database */}
                     Save
                 </Button>
-                <Popover target='save-button' isOpen={this.state.view_save_error_message}>
+                <Popover target='event-save-button' isOpen={this.state.view_save_error_message}>
                     <PopoverHeader>
                         Error:
                     </PopoverHeader>

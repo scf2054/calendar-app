@@ -1,7 +1,7 @@
 import './EditSleepSchedule.css';
 
 import React, { Component } from 'react';
-import { Button, Modal, ModalBody, ModalHeader, ButtonGroup, Row, Input, ModalFooter, ListGroup, ListGroupItem } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalHeader, ButtonGroup, Row, Input, ModalFooter, ListGroup, ListGroupItem, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 
 class EditSleepSchedule extends Component {
     constructor(props) {
@@ -68,15 +68,10 @@ class EditSleepSchedule extends Component {
         .then(response => {
             if(response.status >= 200 && response.status < 300) {
                 return response.json();
-            } else {
-                const r = response.json();
-                console.log(r);
-                throw Error(r);
+            } else if(response.status === 406) {
+                alert("This new time overlaps with a high priority event, failed to update calendar...");
             }
         }) 
-        .catch(err => {
-            console.error("Request failed", err);
-        })
     }
 
     selectDayOfWeek=(event)=> {
@@ -132,7 +127,7 @@ class EditSleepSchedule extends Component {
                 <ModalHeader close={<Button onClick={this.props.toggleEditSleep} close/>}>
                     Edit Sleep Schedule for {this.props.current_user ? this.props.current_user[1] : null}:
                 </ModalHeader>
-                <ModalBody>
+                <ModalBody onClick={() => this.setState({view_save_error_message: false})}>
                     <Row>
                         <label htmlFor='day-of-week'>Day of the Week (required):</label>
                         <ButtonGroup className='days-of-week' id='day-of-week'>
@@ -200,9 +195,17 @@ class EditSleepSchedule extends Component {
                     </ListGroup>      
                 </ModalBody>
                 <ModalFooter>
-                    <Button color='primary' onClick={this.saveSleep}>
+                    <Button id='sleep-save-button' color='primary' onClick={this.saveSleep}>
                         Save
                     </Button>
+                    <Popover target='sleep-save-button' isOpen={this.state.view_save_error_message}>
+                        <PopoverHeader>
+                            Error:
+                        </PopoverHeader>
+                        <PopoverBody>
+                            {this.state.save_error_message}
+                        </PopoverBody>
+                    </Popover>
                 </ModalFooter>
             </Modal>
         );
