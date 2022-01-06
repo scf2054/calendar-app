@@ -38,7 +38,6 @@ class CreateNewEvent extends Component {
         }
     }
 
-    // Create a function that adds all data inputted to the database
     saveEvent=(event)=> {
         try {
             const start_time = this.convertTime(this.state.event_start_input, true);
@@ -56,6 +55,8 @@ class CreateNewEvent extends Component {
             if(no_days_selected) {
                 throw SyntaxError("No days have been selected.");
             }
+            this.props.toggleCreateEvent();
+            this.initializeData();
         } catch(e) {
             this.setState({save_error_message: e.message});
             this.setState({view_save_error_message: true});
@@ -121,7 +122,27 @@ class CreateNewEvent extends Component {
         }
         return hr + ':' + min;
     }
-    // Create a function that initializes all of the data in the state to what it originally was
+
+    initializeData=()=> {
+        this.setState({days_selected: {
+            '1': true,
+            '2': false,
+            '3': false,
+            '4': false,
+            '5': false,
+            '6': false,
+            '7': false
+        }});
+        this.setState({event_type_selected: null});
+        this.setState({event_priority_selected: 1});
+        this.setState({event_start_frame_selected: null});
+        this.setState({event_end_frame_selected: null});
+        this.setState({event_name_input: null});
+        this.setState({event_start_input: null});
+        this.setState({event_end_input: null});
+        this.setState({event_location_input: null});
+        this.setState({save_error_message: null});
+    }
 
     toggleEventTypeDropdown=(event)=> {
         this.setState({view_event_type_dropdown: !this.state.view_event_type_dropdown});
