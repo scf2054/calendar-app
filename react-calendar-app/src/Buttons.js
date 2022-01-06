@@ -27,7 +27,6 @@ class Buttons extends Component {
     }
 
     optimizeCalendar=()=> {
-        console.log(this.props.current_user[0]);
         fetch('/users/' + this.props.current_user[0], {
             method: 'POST',
             headers: {

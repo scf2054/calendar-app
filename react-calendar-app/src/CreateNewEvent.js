@@ -6,7 +6,6 @@ class CreateNewEvent extends Component {
         super(props);
         this.state = {
             view_event_type_dropdown: false,
-
             view_work_popover: false,
             view_school_popover: false,
             view_special_popover: false,
@@ -14,6 +13,7 @@ class CreateNewEvent extends Component {
             view_low_popover: false,
             view_medium_popover: false,
             view_high_popover: false,
+            view_save_error_message: false,
 
             days_selected: {
                 '1': true,
@@ -25,19 +25,103 @@ class CreateNewEvent extends Component {
                 '7': false
             },
 
-            event_type_selected: 'Event Type',
+            event_type_selected: null,
             event_priority_selected: 1,
             event_start_frame_selected: null,
             event_end_frame_selected: null,
-            event_name_input: "'replace me'",
-            event_start_input: '0:00',
-            event_end_input: '0:00',
-            event_location_input: null
+            event_name_input: null,
+            event_start_input: null,
+            event_end_input: null,
+            event_location_input: null,
+
+            save_error_message: null
         }
     }
 
     // Create a function that adds all data inputted to the database
-    // Create a database that initializes all of the data in the state to what it originally was
+    saveEvent=(event)=> {
+        try {
+            const start_time = this.convertTime(this.state.event_start_input, true);
+            let end_time = null;
+            if(this.state.event_end_input) {
+                end_time = this.convertTime(this.state.event_end_input, false, true);
+            }
+            let no_days_selected = true;
+            for(let day_id in this.state.days_selected) {
+                if(this.state.days_selected[day_id]) {
+                    no_days_selected = false;
+                    this.postEvent(start_time, end_time, day_id);
+                }
+            }
+            if(no_days_selected) {
+                throw SyntaxError("No days have been selected.");
+            }
+        } catch(e) {
+            this.setState({save_error_message: e.message});
+            this.setState({view_save_error_message: true});
+            console.log(e);
+        }
+    }
+
+    postEvent=(start_time, end_time, day_id)=> {
+        fetch('/events/user/' + this.props.current_user[0], {
+            method: 'POST',
+            body: JSON.stringify({
+                'event_name': this.state.event_name_input,
+                'event_type': this.state.event_type_selected,
+                'event_priority': this.state.event_priority_selected,
+                'start_time': start_time,
+                'end_time': end_time,
+                'day_id': parseInt(day_id),
+                'event_location': this.state.event_location_input
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+    }
+
+    convertTime=(time, start=false, end=false)=> {
+        let frame_selected;
+        if(start) {
+            frame_selected = this.state.event_start_frame_selected;
+            if(time === null) {
+                throw TypeError("Start time is required.");
+            }
+            if(frame_selected === null) {
+                throw TypeError("You must select 'am' or 'pm' for the start time.");
+            }
+        } else if(end) {
+            frame_selected = this.state.event_end_frame_selected;
+            if(frame_selected === null) {
+                throw TypeError("You must select 'am' or 'pm' for the end time.");
+            }
+        } else {
+            throw ReferenceError("You must input either 'start' or 'end' when calling this function.");
+        }
+        const split = time.split(':');
+        if(split.length === 1) {
+            throw SyntaxError("Time must be in format: hh:mm.");
+        }
+        let hr = parseInt(split[0]);
+        let min = parseInt(split[1]);
+        if(!min) {
+            min = 0;
+        }
+        let hrs_greater = Math.floor(min / 60);
+        hr += hrs_greater;
+        min -= (60 * hrs_greater);
+        if(frame_selected === 'pm' && hr !== 12) {
+            hr += 12
+        } else if(frame_selected === 'am' && hr === 12) {
+            hr = 0;
+        }
+        if(min < 10) {
+            min = '0' + min;
+        }
+        return hr + ':' + min;
+    }
+    // Create a function that initializes all of the data in the state to what it originally was
 
     toggleEventTypeDropdown=(event)=> {
         this.setState({view_event_type_dropdown: !this.state.view_event_type_dropdown});
@@ -65,6 +149,11 @@ class CreateNewEvent extends Component {
         } else if(priority === 3) {
             this.setState({view_high_popover: !this.state.view_high_popover});
         }
+    }
+
+    closeBothModals=(event)=> {
+        this.setState({view_event_created_modal: false});
+        this.props.toggleCreateEvent();
     }
 
     getTypeFromDropdown=(event)=> {
@@ -139,7 +228,7 @@ class CreateNewEvent extends Component {
             <ModalHeader close={<Button onClick={this.props.toggleCreateEvent} close/>}>
                 Create New Event for {this.props.current_user ? this.props.current_user[1] : null}:
             </ModalHeader>
-            <ModalBody>
+            <ModalBody onClick={() => this.setState({view_save_error_message: false})}>
                 <InputGroup>
                     <InputGroupText>
                         Event Name:
@@ -151,7 +240,7 @@ class CreateNewEvent extends Component {
                     <Col>
                         <Dropdown className='event-type-dropdown' onClick={this.toggleEventTypeDropdown} isOpen={this.state.view_event_type_dropdown}>
                             <DropdownToggle caret>
-                                {this.state.event_type_selected}
+                                Event Type
                             </DropdownToggle>
                             <DropdownMenu>
                                 <DropdownItem header>
@@ -336,10 +425,18 @@ class CreateNewEvent extends Component {
                 </ListGroup>
             </ModalBody>
             <ModalFooter>
-                <Button color='primary' onClick={this.props.toggleCreateEvent}>
+                <Button id='save-button' color='primary' onClick={this.saveEvent}>
                     {/* Instead of calling "toggleCreateEvent", call a function that add the new event's data to the database */}
                     Save
                 </Button>
+                <Popover target='save-button' isOpen={this.state.view_save_error_message}>
+                    <PopoverHeader>
+                        Error:
+                    </PopoverHeader>
+                    <PopoverBody>
+                        {this.state.save_error_message}
+                    </PopoverBody>
+                </Popover>
             </ModalFooter>
         </Modal>
         );

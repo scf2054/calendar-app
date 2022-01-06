@@ -179,7 +179,8 @@ class User_Events(Resource):
                 return f"Event type '{event_type}' does not exist.", 404
         values += f"('{event_name}', '{event_type}', {event_priority}, '{start_time}', '{end_time}', {u_id}, {day_id}, '{event_location}')"
         if overlaps_high_priority(u_id, day_id, start_time, end_time):
-            return f"This new event overlaps a high priority event, failed to add to calendar...", 406
+            day_name = exec_get_one(f"SELECT * FROM {DAY_OF_WEEK} WHERE {ID} = {day_id};")
+            return f"This new event overlaps a high priority event, failed to add to {day_name}...", 406
         exec_commit(f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}, {EVENT_LOCATION}) VALUES {values};")
         return "Event successfully added to calendar!"
 
