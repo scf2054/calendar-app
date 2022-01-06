@@ -95,7 +95,6 @@ class Event(Resource):
         # Same for end time and day id
         start_time = args[START_TIME]
         end_time = args[END_TIME]
-        print(start_time + " - " + end_time)
         day_id = args[DAY_ID]
         temp = [START_TIME, END_TIME, DAY_ID]
         start_changed = True
@@ -120,8 +119,8 @@ class Event(Resource):
                 temp.append(END_TIME)
             elif start_changed and end_changed and event_name != 'Sleep':
                 return f"The start time must come before the end time: {start_time}, {end_time}", 406
-        if event_name == 'Sleep':
-            if start_time > end_time and overlaps_high_priority(unchanged_event[6], day_id, start_time, '23:59', unchanged_event[0]) and overlaps_high_priority(unchanged_event[6], day_id, '0:00', end_time, unchanged_event[0]):
+        if start_time > end_time:
+            if overlaps_high_priority(unchanged_event[6], day_id, start_time, '23:59', unchanged_event[0]) and overlaps_high_priority(unchanged_event[6], day_id, '0:00', end_time, unchanged_event[0]):
                 return f"This new time overlaps a high priority event, failed to update calendar...", 406
         elif overlaps_high_priority(unchanged_event[6], day_id, start_time, end_time, unchanged_event[0]):
             return f"This new time overlaps a high priority event, failed to update calendar...", 406
