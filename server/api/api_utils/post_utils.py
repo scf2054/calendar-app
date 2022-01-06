@@ -13,7 +13,7 @@ def optimize_calendar(u_id):
     added by the user.
 
     Args:
-        calendar (list): A list of tuples which are each event
+        u_id (int): The ID of the user who is optimizing their calendar
     """
     # Initialize all data that will be used
     days = initialize_days(u_id)
