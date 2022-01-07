@@ -16,7 +16,9 @@ class App extends Component {
       view_edit_sleep: false,
       view_create_event: false,
       current_user: null,
-      events: {}
+      events: {},
+      semester_start: new Date().toISOString(),
+      semester_end: new Date().toISOString()
     }
   }
 
@@ -26,6 +28,14 @@ class App extends Component {
 
   setUser=(user)=> {
     this.setState({current_user: user});
+  }
+
+  setSemesterStart=(event)=> {
+    this.setState({semester_start: event.target.value});
+  }
+
+  setSemesterEnd=(event)=> {
+    this.setState({semester_end: event.target.value});
   }
 
   toggleAccountPage=()=> {
@@ -133,6 +143,8 @@ class App extends Component {
           view_account_page = {this.state.view_account_page}
           toggleAccountPage = {this.toggleAccountPage}
           setUser = {this.setUser}
+          setSemesterStart = {this.setSemesterStart}
+          setSemesterEnd = {this.setSemesterEnd}
         />
         <EditSleepSchedule 
           current_user = {this.state.current_user}

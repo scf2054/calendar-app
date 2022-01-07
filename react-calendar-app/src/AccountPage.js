@@ -1,7 +1,7 @@
 import './AccountPage.css';
 
 import React, { Component } from 'react';
-import { Modal, ModalHeader, Button, ModalBody, InputGroup, Input, Popover, PopoverHeader, PopoverBody, ButtonGroup } from 'reactstrap';
+import { Modal, ModalHeader, Button, ModalBody, InputGroup, Input, Popover, PopoverHeader, PopoverBody, ButtonGroup, InputGroupText, ModalFooter } from 'reactstrap';
 
 class AccountPage extends Component {
     constructor(props) {
@@ -11,6 +11,8 @@ class AccountPage extends Component {
             username_created: null,
             id_entered: null,
             id_created: null,
+            semester_start: new Date().toISOString(),
+            semester_end: new Date().toISOString(),
             view_create_user_success: false,
             view_are_you_sure: false,
             view_id_doesnt_exist: false,
@@ -82,10 +84,46 @@ class AccountPage extends Component {
         this.setState({view_are_you_sure: !this.state.view_are_you_sure});
     }
 
+    setSemesterStart=(event)=> {
+        this.setState({semester_start: event.target.value});
+      }
+    
+      setSemesterEnd=(event)=> {
+        this.setState({semester_end: event.target.value});
+      }
+
+    saveSemesterDates=(event)=> {
+        try {
+            const start_split = this.state.semester_start.split("-");
+            const end_split = this.state.semester_end.split("-");
+            const start_d = start_split[0];
+            const start_m = start_split[1];
+            const start_y = start_split[2];
+            const end_d = end_split[0];
+            const end_m = end_split[1];
+            const end_y = end_split[2];
+            if(start_d.length !== 2 || end_d.length !== 2 || start_m.length !== 2 || end_m.length !== 2 || start_y.length !== 4 || end_y.length !== 4) {
+                throw TypeError("Time inputted does not fit format 'dd-mm-yyyy'.");
+            }
+            this.props.setSemesterStart({
+                'day': parseInt(start_d), 
+                'month': parseInt(start_m), 
+                'year': parseInt(start_y)
+            });
+            this.props.setSemesterEnd({
+                'day': parseInt(end_d), 
+                'month': parseInt(end_m), 
+                'year': parseInt(end_y)
+            });        
+        } catch(e) {
+            console.log(e);
+        }
+    }
+
     render() {
         return (
             <Modal isOpen={this.props.view_account_page}>
-                <ModalHeader close={<Button onClick={this.props.toggleAccountPage} close/>}>
+                <ModalHeader>
                     Create and account or sign-in to an existing one
                 </ModalHeader>
                 <ModalBody>
@@ -113,8 +151,28 @@ class AccountPage extends Component {
                                 <div className='id'>{this.state.id_created}</div>
                                 <br/>
                                 <div>Use this to save your calendar so you can sign back into Schedgy.</div>
-                                <div className='happy-planning'>Happy planning!</div>
+                                <br />
+                                <label htmlFor='semester-start'>(These values cannot be changed once saved)</label>
+                                <InputGroup id='semester-start'>
+                                    <InputGroupText>
+                                        When does your semester start?
+                                    </InputGroupText>
+                                    <Input classname='semester-start' onChange={this.setSemesterStart} placeholder='dd-mm-yyyy' />
+                                </InputGroup>
+                                <br />
+                                <InputGroup>
+                                    <InputGroupText>
+                                        When does your semester end?
+                                    </InputGroupText>
+                                    <Input className='semester-end' onChange={this.setSemesterEnd} placeholder='dd-mm-yyyy' />
+                                </InputGroup>
+                                <br />
                             </ModalBody>
+                            <ModalFooter>
+                                <Button onClick={this.props.toggleAccountPage} color='primary' className='happy-planning'>
+                                    Happy planning!
+                                </Button>
+                            </ModalFooter>
                         </Modal>
                     </InputGroup>
                     <br/>
