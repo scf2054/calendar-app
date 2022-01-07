@@ -45,7 +45,7 @@ class AccountPage extends Component {
         .then(json => {
             this.setState({id_created: json});
             this.toggleCreateUserSuccess();
-            // Call the function from App that puts all the events onto the calendar
+            // re-render the calendar
         })
         .catch(error => {
             this.setState({view_username_exists: true});
@@ -66,7 +66,7 @@ class AccountPage extends Component {
             const user = jsonOutput[0];
             this.toggleAreYouSure();
             this.setState({user_entered: user});
-            // Call the function from App that puts all events onto the calendar
+            // re-render the calendar
         })
         .catch(error => {
             this.setState({view_id_doesnt_exist: true});

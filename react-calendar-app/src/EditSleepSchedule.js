@@ -25,7 +25,6 @@ class EditSleepSchedule extends Component {
         }
     }
 
-    // Create a function that changed each sleep time frame for each day inputted for the specific user
     saveSleep=()=> {
         try {
             const wake_up = this.props.convertTime(this.state.wake_up_time, this.state.wake_up_frame);
@@ -42,6 +41,7 @@ class EditSleepSchedule extends Component {
             }
             this.props.toggleEditSleep();
             this.resetInputs();
+            // re-render the calendar
         } catch(e) {
             this.setState({save_error_message: e.message});
             this.setState({view_save_error_message: true});
@@ -74,6 +74,22 @@ class EditSleepSchedule extends Component {
         }) 
     }
 
+    resetInputs=()=> {
+        this.setState({days_selected: {
+            '1': true,
+            '2': false,
+            '3': false,
+            '4': false,
+            '5': false,
+            '6': false,
+            '7': false
+        }});
+        this.setState({wake_up_time: '7:00'});
+        this.setState({wake_up_frame: 'am'});
+        this.setState({sleep_time: '11:00'});
+        this.setState({sleep_frame: 'pm'});
+    }
+
     selectDayOfWeek=(event)=> {
         const key = event.target.value;
         const value = !this.state.days_selected[key];
@@ -103,22 +119,6 @@ class EditSleepSchedule extends Component {
         } else if(wake_sleep === 'sleep') {
             this.setState({sleep_frame: frame});
         }
-    }
-
-    resetInputs=()=> {
-        this.setState({days_selected: {
-            '1': true,
-            '2': false,
-            '3': false,
-            '4': false,
-            '5': false,
-            '6': false,
-            '7': false
-        }});
-        this.setState({wake_up_time: '7:00'});
-        this.setState({wake_up_frame: 'am'});
-        this.setState({sleep_time: '11:00'});
-        this.setState({sleep_frame: 'pm'});
     }
 
     render() {

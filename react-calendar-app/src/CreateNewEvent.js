@@ -57,6 +57,7 @@ class CreateNewEvent extends Component {
             }
             this.props.toggleCreateEvent();
             this.initializeData();
+            // re-render the calendar
         } catch(e) {
             this.setState({save_error_message: e.message});
             this.setState({view_save_error_message: true});
@@ -138,7 +139,7 @@ class CreateNewEvent extends Component {
         }
     }
 
-    closeBothModals=(event)=> {
+    closeBothModals=()=> {
         this.setState({view_event_created_modal: false});
         this.props.toggleCreateEvent();
     }
