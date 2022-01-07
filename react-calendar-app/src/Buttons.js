@@ -1,13 +1,14 @@
 import './Buttons.css';
 
 import React, { Component } from 'react';
-import { Col, Button, PopoverHeader, UncontrolledPopover, PopoverBody } from 'reactstrap';
+import { Col, Button, PopoverHeader, UncontrolledPopover, PopoverBody, Modal, ModalHeader, ModalBody, ModalFooter, InputGroup, InputGroupText, Input, Popover } from 'reactstrap';
 
 class Buttons extends Component {
     constructor(props) {
         super(props);
         this.state = {
             view_edit_sleep: false,
+            view_edit_semester: false
         }
     }
 
@@ -20,6 +21,8 @@ class Buttons extends Component {
                 this.props.toggleCreateEvent()
             } else if(button_clicked === 'optimize-calendar-button') {
                 this.optimizeCalendar();
+            } else if(button_clicked === 'semester-button') {
+                this.setState({view_edit_semester: true});
             }
         } else {
             alert("You must sign in to an account in order to use this functionality.");
@@ -39,7 +42,17 @@ class Buttons extends Component {
             console.log(json);
         })
     }
-    
+
+    saveSemester=()=> {
+        if(this.props.saveSemesterDates() === 'success') {
+            this.toggleEditSemester();
+        }
+    }
+
+    toggleEditSemester=()=> {
+        this.setState({view_edit_semester: !this.state.view_edit_semester});
+    }
+
     render() {
         return (
             <>
@@ -52,6 +65,51 @@ class Buttons extends Component {
                     >
                         Sign-In/Create Account
                     </Button>
+                </Col>
+                <Col>
+                    <Button
+                        color='info'
+                        outline
+                        onClick={this.checkSignedIn}
+                        className='semester-button'
+                    >
+                        Edit Semester Dates
+                    </Button>
+                    <Modal isOpen={this.state.view_edit_semester}>
+                        <ModalHeader close={<Button onClick={this.toggleEditSemester} close/>}>
+                            Edit Semester:
+                        </ModalHeader>
+                        <ModalBody>
+                        <br />
+                        <InputGroup id='semester-start'>
+                            <InputGroupText>
+                                When does your semester start?
+                            </InputGroupText>
+                            <Input className='semester-start' onClick={this.props.closeDateError} onChange={this.props.setSemesterStartStr} placeholder='dd-mm-yyyy' />
+                        </InputGroup>
+                        <br />
+                        <InputGroup>
+                            <InputGroupText>
+                                When does your semester end?
+                            </InputGroupText>
+                            <Input className='semester-end' onClick={this.props.closeDateError} onChange={this.props.setSemesterEndStr} placeholder='dd-mm-yyyy' />
+                        </InputGroup>
+                        <br />
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button onClick={this.saveSemester} color='primary' className='save-semester' id='save-semester'>
+                                Save
+                            </Button>
+                            <Popover target='save-semester' isOpen={this.props.view_date_error}>
+                                <PopoverHeader>
+                                    Error:
+                                </PopoverHeader>
+                                <PopoverBody>
+                                    {this.props.date_error_message}
+                                </PopoverBody>
+                            </Popover>
+                        </ModalFooter>
+                    </Modal>
                 </Col>
                 <Col>
                     <Button

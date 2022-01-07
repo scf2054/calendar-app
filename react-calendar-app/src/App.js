@@ -84,8 +84,6 @@ class App extends Component {
       const end_d = end_split[0];
       const end_m = end_split[1];
       const end_y = end_split[2];
-      console.log(start_y);
-      console.log(start_y.length);
       if(start_d.length !== 2 || end_d.length !== 2 || start_m.length !== 2 || end_m.length !== 2 || start_y.length !== 4 || end_y.length !== 4) {
         throw TypeError("Time inputted does not fit format 'dd-mm-yyyy'.");
       }
@@ -132,8 +130,8 @@ class App extends Component {
         'month': end_m_num, 
         'year': end_y_num
       });        
-      this.toggleAccountPage();
-      this.toggleCreateUserSuccess();
+      this.setState({view_account_page: false});
+      return 'success';
     } catch(e) {
       if(e instanceof TypeError) {
         this.setState({date_error_message: e.message})
@@ -142,6 +140,7 @@ class App extends Component {
       }
       this.setState({view_date_error: true});
       console.log(e);
+      return e;
     }
   }
 
@@ -229,9 +228,15 @@ class App extends Component {
         <Row className='buttons-row'>
           <Buttons
             current_user = {this.state.current_user}
+            view_date_error = {this.state.view_date_error}
+            date_error_message = {this.state.date_error_message}
             toggleAccountPage = {this.toggleAccountPage}
             toggleEditSleep = {this.toggleEditSleep}
             toggleCreateEvent = {this.toggleCreateEvent}
+            setSemesterStartStr = {this.setSemesterStartStr}
+            setSemesterEndStr = {this.setSemesterEndStr}
+            saveSemesterDates = {this.saveSemesterDates}
+            closeDateError = {this.closeDateError}
           />
         </Row>
         <AccountPage
