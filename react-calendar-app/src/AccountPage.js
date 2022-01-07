@@ -122,24 +122,27 @@ class AccountPage extends Component {
             const start_is_leap_year = start_y_num % 4 === 0;
             const end_is_leap_year = end_y_num % 4 === 0;
             if(start_m_num === 2 && ((start_is_leap_year && start_d_num > 29) || (!start_is_leap_year && start_d_num > 28))) {
-                throw MediaError("Start date is out of range.");
+                throw TypeError("Start date is out of range.");
             } else if(
                 start_y_num < 1900 || start_y_num > 2100 ||
                 (months_31.includes(start_m_num) && start_d_num > 31) ||
                 (months_30.includes(start_m_num) && start_d_num > 30) ||
                 start_d_num < 1
             ) {
-                throw MediaError("Start date is out of range.");
+                throw TypeError("Start date is out of range.");
             }
             if(end_m_num === 2 && ((end_is_leap_year && end_d_num > 29) || (!end_is_leap_year && end_d_num > 28))) {
-                throw MediaError("End date is out of range.");
+                throw TypeError("End date is out of range.");
             } else if(
                 end_y_num < 1900 || end_y_num > 2100 ||
                 (months_31.includes(end_m_num) && end_d_num > 31) ||
                 (months_30.includes(end_m_num) && end_d_num > 30) ||
                 end_d_num < 1
             ) {
-                throw MediaError("End date is out of range.");
+                throw TypeError("End date is out of range.");
+            } 
+            if(new Date(this.state.semester_start) > new Date(this.state.semester_end)) {
+                throw TypeError("The end date must come after the start date.")
             }
             this.props.setSemesterStart({
                 'day': start_d_num, 
@@ -154,8 +157,8 @@ class AccountPage extends Component {
             this.props.toggleAccountPage();
             this.toggleCreateUserSuccess();
         } catch(e) {
-            if(e instanceof MediaError) {
-                this.setState({date_error_message: e})
+            if(e instanceof TypeError) {
+                this.setState({date_error_message: e.message})
             } else {
                 this.setState({date_error_message: "Make sure the dates you input are in correct formatting: 'dd-mm-yyyy'"});
             }

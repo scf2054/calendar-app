@@ -31,11 +31,11 @@ class App extends Component {
   }
 
   setSemesterStart=(date_dict)=> {
-    this.setState({semester_start: date_dict}, () => {console.log("Start: " + this.state.semester_start)});
+    this.setState({semester_start: date_dict});
   }
 
   setSemesterEnd=(date_dict)=> {
-    this.setState({semester_end: date_dict}, () => {console.log("End: " + this.state.semester_end)});
+    this.setState({semester_end: date_dict});
   }
 
   toggleAccountPage=()=> {
