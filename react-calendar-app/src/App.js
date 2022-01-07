@@ -7,6 +7,7 @@ import CreateNewEvent from './CreateNewEvent';
 import EditSleepSchedule from './EditSleepSchedule';
 import AccountPage from './AccountPage';
 import { Container, Row } from 'reactstrap';
+import Calend from 'calend';
 
 class App extends Component {
   constructor(props) {
