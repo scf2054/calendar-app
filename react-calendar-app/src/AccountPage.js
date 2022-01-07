@@ -17,8 +17,6 @@ class AccountPage extends Component {
             view_are_you_sure: false,
             view_id_doesnt_exist: false,
             view_username_exists: false,
-            view_date_error: false,
-            date_error_message: "Make sure the dates you input are in correct formatting: 'dd-mm-yyyy'"
         }
     }
 
@@ -86,87 +84,6 @@ class AccountPage extends Component {
         this.setState({view_are_you_sure: !this.state.view_are_you_sure});
     }
 
-    closeDateError=()=> {
-        this.setState({view_date_error: false});
-    }
-
-    setSemesterStart=(event)=> {
-        this.setState({semester_start: event.target.value});
-      }
-    
-      setSemesterEnd=(event)=> {
-        this.setState({semester_end: event.target.value});
-      }
-
-    saveSemesterDates=()=> {
-        try {
-            const start_split = this.state.semester_start.split("-");
-            const end_split = this.state.semester_end.split("-");
-            const start_d = start_split[0];
-            const start_m = start_split[1];
-            const start_y = start_split[2];
-            const end_d = end_split[0];
-            const end_m = end_split[1];
-            const end_y = end_split[2];
-            if(start_d.length !== 2 || end_d.length !== 2 || start_m.length !== 2 || end_m.length !== 2 || start_y.length !== 4 || end_y.length !== 4) {
-                throw TypeError("Time inputted does not fit format 'dd-mm-yyyy'.");
-            }
-            const start_d_num = parseInt(start_d);
-            const start_m_num = parseInt(start_m);
-            const start_y_num = parseInt(start_y);
-            const end_d_num = parseInt(end_d);
-            const end_m_num = parseInt(end_m);
-            const end_y_num = parseInt(end_y);
-            const months_31 = [1, 3, 5, 7, 8, 10, 12];
-            const months_30 = [4, 6, 9, 11];
-            const start_is_leap_year = start_y_num % 4 === 0;
-            const end_is_leap_year = end_y_num % 4 === 0;
-            if(start_m_num === 2 && ((start_is_leap_year && start_d_num > 29) || (!start_is_leap_year && start_d_num > 28))) {
-                throw TypeError("Start date is out of range.");
-            } else if(
-                start_y_num < 1900 || start_y_num > 2100 ||
-                (months_31.includes(start_m_num) && start_d_num > 31) ||
-                (months_30.includes(start_m_num) && start_d_num > 30) ||
-                start_d_num < 1
-            ) {
-                throw TypeError("Start date is out of range.");
-            }
-            if(end_m_num === 2 && ((end_is_leap_year && end_d_num > 29) || (!end_is_leap_year && end_d_num > 28))) {
-                throw TypeError("End date is out of range.");
-            } else if(
-                end_y_num < 1900 || end_y_num > 2100 ||
-                (months_31.includes(end_m_num) && end_d_num > 31) ||
-                (months_30.includes(end_m_num) && end_d_num > 30) ||
-                end_d_num < 1
-            ) {
-                throw TypeError("End date is out of range.");
-            } 
-            if(new Date(this.state.semester_start) > new Date(this.state.semester_end)) {
-                throw TypeError("The end date must come after the start date.")
-            }
-            this.props.setSemesterStart({
-                'day': start_d_num, 
-                'month': start_m_num, 
-                'year': start_y_num
-            });
-            this.props.setSemesterEnd({
-                'day': end_d_num, 
-                'month': end_m_num, 
-                'year': end_y_num
-            });        
-            this.props.toggleAccountPage();
-            this.toggleCreateUserSuccess();
-        } catch(e) {
-            if(e instanceof TypeError) {
-                this.setState({date_error_message: e.message})
-            } else {
-                this.setState({date_error_message: "Make sure the dates you input are in correct formatting: 'dd-mm-yyyy'"});
-            }
-            this.setState({view_date_error: true});
-            console.log(e);
-        }
-    }
-
     render() {
         return (
             <Modal isOpen={this.props.view_account_page}>
@@ -199,32 +116,31 @@ class AccountPage extends Component {
                                 <br/>
                                 <div>Use this to save your calendar so you can sign back into Schedgy.</div>
                                 <br />
-                                <label htmlFor='semester-start'>(These values cannot be changed once saved)</label>
                                 <InputGroup id='semester-start'>
                                     <InputGroupText>
                                         When does your semester start?
                                     </InputGroupText>
-                                    <Input className='semester-start' onClick={this.closeDateError} onChange={this.setSemesterStart} placeholder='dd-mm-yyyy' />
+                                    <Input className='semester-start' onClick={this.props.closeDateError} onChange={this.props.setSemesterStartStr} placeholder='dd-mm-yyyy' />
                                 </InputGroup>
                                 <br />
                                 <InputGroup>
                                     <InputGroupText>
                                         When does your semester end?
                                     </InputGroupText>
-                                    <Input className='semester-end' onClick={this.closeDateError} onChange={this.setSemesterEnd} placeholder='dd-mm-yyyy' />
+                                    <Input className='semester-end' onClick={this.props.closeDateError} onChange={this.props.setSemesterEndStr} placeholder='dd-mm-yyyy' />
                                 </InputGroup>
                                 <br />
                             </ModalBody>
                             <ModalFooter>
-                                <Button onClick={this.saveSemesterDates} color='primary' className='happy-planning' id='happy-planning'>
+                                <Button onClick={this.props.saveSemesterDates} color='primary' className='happy-planning' id='happy-planning'>
                                     Happy planning!
                                 </Button>
-                                <Popover target='happy-planning' isOpen={this.state.view_date_error}>
+                                <Popover target='happy-planning' isOpen={this.props.view_date_error}>
                                     <PopoverHeader>
                                         Error:
                                     </PopoverHeader>
                                     <PopoverBody>
-                                        {this.state.date_error_message}
+                                        {this.props.date_error_message}
                                     </PopoverBody>
                                 </Popover>
                             </ModalFooter>

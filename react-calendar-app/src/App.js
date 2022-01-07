@@ -15,10 +15,22 @@ class App extends Component {
       view_account_page: false,
       view_edit_sleep: false,
       view_create_event: false,
+      view_date_error: false,
+      date_error_message: "Make sure the dates you input are in correct formatting: 'dd-mm-yyyy'",
       current_user: null,
       events: {},
-      semester_start: new Date().toISOString(),
-      semester_end: new Date().toISOString()
+      semester_start_dict: {
+        'day': 0,
+        'month': 0,
+        'year': 0
+      },
+      semester_end_dict: {
+        'day': 0,
+        'month': 0,
+        'year': 0
+      },
+      semester_start_str: '00-00-0000',
+      semester_end_str: '00-00-0000'
     }
   }
 
@@ -30,12 +42,20 @@ class App extends Component {
     this.setState({current_user: user});
   }
 
-  setSemesterStart=(date_dict)=> {
-    this.setState({semester_start: date_dict});
+  setSemesterStartStr=(event)=> {
+    this.setState({semester_start_str: event.target.value});
   }
 
-  setSemesterEnd=(date_dict)=> {
-    this.setState({semester_end: date_dict});
+  setSemesterEndStr=(event)=> {
+    this.setState({semester_end_str: event.target.value});
+  }
+
+  setSemesterStartDict=(date_dict)=> {
+    this.setState({semester_start_dict: date_dict});
+  }
+
+  setSemesterEndDict=(date_dict)=> {
+    this.setState({semester_end_dict: date_dict});
   }
 
   toggleAccountPage=()=> {
@@ -48,6 +68,81 @@ class App extends Component {
 
   toggleCreateEvent=()=> {
     this.setState({view_create_event: !this.state.view_create_event});
+  }
+  
+  closeDateError=()=> {
+    this.setState({view_date_error: false});
+  }
+
+  saveSemesterDates=()=> {
+    try {
+      const start_split = this.state.semester_start_str.split("-");
+      const end_split = this.state.semester_end_str.split("-");
+      const start_d = start_split[0];
+      const start_m = start_split[1];
+      const start_y = start_split[2];
+      const end_d = end_split[0];
+      const end_m = end_split[1];
+      const end_y = end_split[2];
+      console.log(start_y);
+      console.log(start_y.length);
+      if(start_d.length !== 2 || end_d.length !== 2 || start_m.length !== 2 || end_m.length !== 2 || start_y.length !== 4 || end_y.length !== 4) {
+        throw TypeError("Time inputted does not fit format 'dd-mm-yyyy'.");
+      }
+      const start_d_num = parseInt(start_d);
+      const start_m_num = parseInt(start_m);
+      const start_y_num = parseInt(start_y);
+      const end_d_num = parseInt(end_d);
+      const end_m_num = parseInt(end_m);
+      const end_y_num = parseInt(end_y);
+      const months_31 = [1, 3, 5, 7, 8, 10, 12];
+      const months_30 = [4, 6, 9, 11];
+      const start_is_leap_year = start_y_num % 4 === 0;
+      const end_is_leap_year = end_y_num % 4 === 0;
+      if(start_m_num === 2 && ((start_is_leap_year && start_d_num > 29) || (!start_is_leap_year && start_d_num > 28))) {
+        throw TypeError("Start date is out of range.");
+      } else if(
+          start_y_num < 1900 || start_y_num > 2100 ||
+          (months_31.includes(start_m_num) && start_d_num > 31) ||
+          (months_30.includes(start_m_num) && start_d_num > 30) ||
+          start_d_num < 1
+      ) {
+        throw TypeError("Start date is out of range.");
+      }
+      if(end_m_num === 2 && ((end_is_leap_year && end_d_num > 29) || (!end_is_leap_year && end_d_num > 28))) {
+        throw TypeError("End date is out of range.");
+      } else if(
+        end_y_num < 1900 || end_y_num > 2100 ||
+        (months_31.includes(end_m_num) && end_d_num > 31) ||
+        (months_30.includes(end_m_num) && end_d_num > 30) ||
+        end_d_num < 1
+      ) {
+        throw TypeError("End date is out of range.");
+      } 
+      if(new Date(this.state.semester_start_str) > new Date(this.state.semester_end_str)) {
+        throw TypeError("The end date must come after the start date.")
+      }
+      this.setSemesterStartDict({
+        'day': start_d_num, 
+        'month': start_m_num, 
+        'year': start_y_num
+      });
+      this.setSemesterEndDict({
+        'day': end_d_num, 
+        'month': end_m_num, 
+        'year': end_y_num
+      });        
+      this.toggleAccountPage();
+      this.toggleCreateUserSuccess();
+    } catch(e) {
+      if(e instanceof TypeError) {
+        this.setState({date_error_message: e.message})
+      } else {
+        this.setState({date_error_message: "Internal Error"});
+      }
+      this.setState({view_date_error: true});
+      console.log(e);
+    }
   }
 
   getDayStr=(days_dict)=> {
@@ -128,7 +223,7 @@ class App extends Component {
         <Row className='calendar-row'>
           <Calendar
             current_user = {this.state.current_user}
-            events = {this.props.events}
+            events = {this.state.events}
           />
         </Row>
         <Row className='buttons-row'>
@@ -141,10 +236,14 @@ class App extends Component {
         </Row>
         <AccountPage
           view_account_page = {this.state.view_account_page}
+          view_date_error = {this.state.view_date_error}
+          date_error_message = {this.state.date_error_message}
           toggleAccountPage = {this.toggleAccountPage}
           setUser = {this.setUser}
-          setSemesterStart = {this.setSemesterStart}
-          setSemesterEnd = {this.setSemesterEnd}
+          setSemesterStartStr = {this.setSemesterStartStr}
+          setSemesterEndStr = {this.setSemesterEndStr}
+          saveSemesterDates = {this.saveSemesterDates}
+          closeDateError = {this.closeDateError}
         />
         <EditSleepSchedule 
           current_user = {this.state.current_user}
