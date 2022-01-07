@@ -3,6 +3,7 @@ body {
   font-family: 'Delius Swash Caps', cursive;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: aqua;
 }
 
 code {

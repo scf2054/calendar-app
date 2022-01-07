@@ -7,8 +7,6 @@ import CreateNewEvent from './CreateNewEvent';
 import EditSleepSchedule from './EditSleepSchedule';
 import AccountPage from './AccountPage';
 import { Container, Row } from 'reactstrap';
-import Kalend from 'kalend';
-import 'kalend/dist/styles/index.css';
 
 class App extends Component {
   constructor(props) {
@@ -114,21 +112,14 @@ class App extends Component {
     return hr + ':' + min;
   }
 
-  calendarHeading=()=> {
-    return this.state.current_user ? this.state.current_user[1] + "'s Schedgy" : "Schedgy"
-  }
-
   render() {
     return (
       <Container className="App">
         <Row className='calendar-row'>
-          <h1>{this.calendarHeading()}</h1>
-          <Kalend
-            events = {this.state.events}
-          />
-          {/* <Calendar
+          <Calendar
             current_user = {this.state.current_user}
-          /> */}
+            events = {this.props.events}
+          />
         </Row>
         <Row className='buttons-row'>
           <Buttons
