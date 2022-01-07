@@ -16,7 +16,9 @@ class AccountPage extends Component {
             view_create_user_success: false,
             view_are_you_sure: false,
             view_id_doesnt_exist: false,
-            view_username_exists: false
+            view_username_exists: false,
+            view_date_error: false,
+            date_error_message: "Make sure the dates you input are in correct formatting: 'dd-mm-yyyy'"
         }
     }
 
@@ -84,6 +86,10 @@ class AccountPage extends Component {
         this.setState({view_are_you_sure: !this.state.view_are_you_sure});
     }
 
+    closeDateError=()=> {
+        this.setState({view_date_error: false});
+    }
+
     setSemesterStart=(event)=> {
         this.setState({semester_start: event.target.value});
       }
@@ -92,7 +98,7 @@ class AccountPage extends Component {
         this.setState({semester_end: event.target.value});
       }
 
-    saveSemesterDates=(event)=> {
+    saveSemesterDates=()=> {
         try {
             const start_split = this.state.semester_start.split("-");
             const end_split = this.state.semester_end.split("-");
@@ -105,17 +111,55 @@ class AccountPage extends Component {
             if(start_d.length !== 2 || end_d.length !== 2 || start_m.length !== 2 || end_m.length !== 2 || start_y.length !== 4 || end_y.length !== 4) {
                 throw TypeError("Time inputted does not fit format 'dd-mm-yyyy'.");
             }
+            const start_d_num = parseInt(start_d);
+            const start_m_num = parseInt(start_m);
+            const start_y_num = parseInt(start_y);
+            const end_d_num = parseInt(end_d);
+            const end_m_num = parseInt(end_m);
+            const end_y_num = parseInt(end_y);
+            const months_31 = [1, 3, 5, 7, 8, 10, 12];
+            const months_30 = [4, 6, 9, 11];
+            const start_is_leap_year = start_y_num % 4 === 0;
+            const end_is_leap_year = end_y_num % 4 === 0;
+            if(start_m_num === 2 && ((start_is_leap_year && start_d_num > 29) || (!start_is_leap_year && start_d_num > 28))) {
+                throw MediaError("Start date is out of range.");
+            } else if(
+                start_y_num < 1900 || start_y_num > 2100 ||
+                (months_31.includes(start_m_num) && start_d_num > 31) ||
+                (months_30.includes(start_m_num) && start_d_num > 30) ||
+                start_d_num < 1
+            ) {
+                throw MediaError("Start date is out of range.");
+            }
+            if(end_m_num === 2 && ((end_is_leap_year && end_d_num > 29) || (!end_is_leap_year && end_d_num > 28))) {
+                throw MediaError("End date is out of range.");
+            } else if(
+                end_y_num < 1900 || end_y_num > 2100 ||
+                (months_31.includes(end_m_num) && end_d_num > 31) ||
+                (months_30.includes(end_m_num) && end_d_num > 30) ||
+                end_d_num < 1
+            ) {
+                throw MediaError("End date is out of range.");
+            }
             this.props.setSemesterStart({
-                'day': parseInt(start_d), 
-                'month': parseInt(start_m), 
-                'year': parseInt(start_y)
+                'day': start_d_num, 
+                'month': start_m_num, 
+                'year': start_y_num
             });
             this.props.setSemesterEnd({
-                'day': parseInt(end_d), 
-                'month': parseInt(end_m), 
-                'year': parseInt(end_y)
+                'day': end_d_num, 
+                'month': end_m_num, 
+                'year': end_y_num
             });        
+            this.props.toggleAccountPage();
+            this.toggleCreateUserSuccess();
         } catch(e) {
+            if(e instanceof MediaError) {
+                this.setState({date_error_message: e})
+            } else {
+                this.setState({date_error_message: "Make sure the dates you input are in correct formatting: 'dd-mm-yyyy'"});
+            }
+            this.setState({view_date_error: true});
             console.log(e);
         }
     }
@@ -157,21 +201,29 @@ class AccountPage extends Component {
                                     <InputGroupText>
                                         When does your semester start?
                                     </InputGroupText>
-                                    <Input classname='semester-start' onChange={this.setSemesterStart} placeholder='dd-mm-yyyy' />
+                                    <Input className='semester-start' onClick={this.closeDateError} onChange={this.setSemesterStart} placeholder='dd-mm-yyyy' />
                                 </InputGroup>
                                 <br />
                                 <InputGroup>
                                     <InputGroupText>
                                         When does your semester end?
                                     </InputGroupText>
-                                    <Input className='semester-end' onChange={this.setSemesterEnd} placeholder='dd-mm-yyyy' />
+                                    <Input className='semester-end' onClick={this.closeDateError} onChange={this.setSemesterEnd} placeholder='dd-mm-yyyy' />
                                 </InputGroup>
                                 <br />
                             </ModalBody>
                             <ModalFooter>
-                                <Button onClick={this.props.toggleAccountPage} color='primary' className='happy-planning'>
+                                <Button onClick={this.saveSemesterDates} color='primary' className='happy-planning' id='happy-planning'>
                                     Happy planning!
                                 </Button>
+                                <Popover target='happy-planning' isOpen={this.state.view_date_error}>
+                                    <PopoverHeader>
+                                        Error:
+                                    </PopoverHeader>
+                                    <PopoverBody>
+                                        {this.state.date_error_message}
+                                    </PopoverBody>
+                                </Popover>
                             </ModalFooter>
                         </Modal>
                     </InputGroup>

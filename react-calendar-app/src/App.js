@@ -30,12 +30,12 @@ class App extends Component {
     this.setState({current_user: user});
   }
 
-  setSemesterStart=(event)=> {
-    this.setState({semester_start: event.target.value});
+  setSemesterStart=(date_dict)=> {
+    this.setState({semester_start: date_dict}, () => {console.log("Start: " + this.state.semester_start)});
   }
 
-  setSemesterEnd=(event)=> {
-    this.setState({semester_end: event.target.value});
+  setSemesterEnd=(date_dict)=> {
+    this.setState({semester_end: date_dict}, () => {console.log("End: " + this.state.semester_end)});
   }
 
   toggleAccountPage=()=> {
