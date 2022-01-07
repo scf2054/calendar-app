@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS user_table CASCADE;
 
 CREATE TABLE user_table (
         id BIGSERIAL NOT NULL PRIMARY KEY,
-        username VARCHAR(20),
+        username VARCHAR(50),
         user_type VARCHAR(14) DEFAULT 'student'
 );
 
