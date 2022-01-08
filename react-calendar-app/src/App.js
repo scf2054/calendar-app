@@ -78,6 +78,8 @@ class App extends Component {
     try {
       const start_split = this.state.semester_start_str.split("-");
       const end_split = this.state.semester_end_str.split("-");
+      console.log(start_split);
+      console.log(end_split);
       const start_d = start_split[0];
       const start_m = start_split[1];
       const start_y = start_split[2];
@@ -129,7 +131,8 @@ class App extends Component {
         'day': end_d_num, 
         'month': end_m_num, 
         'year': end_y_num
-      });        
+      });      
+      this.renderEvents(this.state.current_user[0]);
       this.setState({view_account_page: false});
       return 'success';
     } catch(e) {
@@ -216,13 +219,62 @@ class App extends Component {
     return hr + ':' + min;
   }
 
-  renderEvents=(u_id)=> {
+  renderEvents=(u_id, semester_start=this.state.semester_start_str, semester_end=this.state.semester_end_str)=> {
     console.log("renderEvents called");
     fetch('/events/user/' + u_id)
     .then(response => response.json())
     .then(json => {
+      const start_date = new Date(semester_start);
+      const starting_days = this.getStartingDays(start_date, start_date.getDay() + 1);
+      const end_date = new Date(semester_end);
+      const ending_days = this.getEndingDays(end_date, end_date.getDay() + 1);
+      let new_events = {}
+      let current_event;
+      json.sort(function(a, b){return a[7]-b[7]});
       console.log(json);
+      for(let i = 0; i < json.length; i++) {
+        current_event = json[i];
+        const day_id = current_event[7];
+      }
     })
+  }
+
+  getStartingDays=(start_date, day_id)=> {
+    let starts = [new Date(), new Date(), new Date(), new Date(), new Date(), new Date(), new Date()];
+    let day;
+    const start_year = start_date.getFullYear();
+    const start_month = start_date.getMonth();
+    for(let i = 1; i < 8; i++) {
+      day = starts[i-1];
+      day.setFullYear(start_year, start_month);
+      if(i < day_id) {
+        day.setDate(start_date.getDate() + 7 - (day_id-i));
+      } else if(i > day_id) {
+        day.setDate(start_date.getDate() + (i-day_id));
+      } else {
+        day.setDate(start_date.getDate());
+      }
+    }
+    return starts;
+  }
+
+  getEndingDays=(end_date, day_id)=> {
+    let ends = [new Date(), new Date(), new Date(), new Date(), new Date(), new Date(), new Date()];
+    let day;
+    const end_year = end_date.getFullYear();
+    const end_month = end_date.getMonth();
+    for(let i = 1; i < 8; i++) {  
+      day = ends[i-1];
+      day.setFullYear(end_year, end_month);
+      if(i < day_id) {
+        day.setDate(end_date.getDate() - (day_id-i));
+      } else if(i > day_id) {
+        day.setDate(end_date.getDate() - 7 + (i-day_id));
+      } else {
+        day.setDate(end_date.getDate());
+      }
+    }
+    return ends;
   }
 
   render() {
