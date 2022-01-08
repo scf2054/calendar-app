@@ -224,6 +224,11 @@ class App extends Component {
     let ending_days = this.getEndingDays(end_date, end_date.getDay() + 1);
     let new_events = {}
     let current_event;
+    let event_dict;
+    let day_id;
+    let start_str;
+    let end_str;
+    let current_week;
     starting_days.sort(function(a, b){return a.getDay() - b.getDay()})
     ending_days.sort(function(a, b){return a.getDay() - b.getDay()})
     fetch('/events/user/' + u_id)
@@ -231,8 +236,12 @@ class App extends Component {
     .then(json => {
       for(let i = 0; i < json.length; i++) {
         current_event = json[i];
-        const day_id = current_event[7];
-        this.dateToString(starting_days[day_id-1]);
+        day_id = current_event[7];
+        start_str = this.dateToString(starting_days[day_id-1], true);
+        end_str = this.dateToString(ending_days[day_id-1], true);
+        current_week = start_str;
+        while(new Date(current_week) <= new Date(end_str)) {
+        }
       }
     })
   }
@@ -275,7 +284,7 @@ class App extends Component {
     return ends;
   }
 
-  dateToString=(date)=> {
+  dateToString=(date, yr_start=false)=> {
     let day_id = date.getDate();
     let month_id = date.getMonth() + 1;
     if(day_id < 10) {
@@ -284,7 +293,26 @@ class App extends Component {
     if(month_id < 10) {
       month_id = "0" + month_id;
     }
-    return day_id + "-" + month_id + "-" + date.getFullYear();
+    return yr_start ? date.getFullYear() + "-" + month_id + "-" + day_id: day_id + "-" + month_id + "-" + date.getFullYear();
+  }
+
+  createEventDict=(event, date)=> {
+    let event_color;
+    const event_priority = event[3];
+    if(event_priority === 3) {
+      event_color = 'red'
+    } else if(event_priority === 2) {
+      event_color = 'green'
+    } else {
+      event_color = 'blue'
+    }
+    return {
+      id: event[0],
+      startAt: date + "T" + event[4] + ":00.000Z",
+      endAt: date + "T" + event[5] + ":00.000Z",
+      summary: event[1],
+      color: event_color
+    }
   }
 
   render() {
