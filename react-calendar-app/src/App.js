@@ -78,8 +78,6 @@ class App extends Component {
     try {
       const start_split = this.state.semester_start_str.split("-");
       const end_split = this.state.semester_end_str.split("-");
-      console.log(start_split);
-      console.log(end_split);
       const start_d = start_split[0];
       const start_m = start_split[1];
       const start_y = start_split[2];
@@ -220,21 +218,21 @@ class App extends Component {
   }
 
   renderEvents=(u_id, semester_start=this.state.semester_start_str, semester_end=this.state.semester_end_str)=> {
-    console.log("renderEvents called");
+    const start_date = new Date(semester_start);
+    let starting_days = this.getStartingDays(start_date, start_date.getDay() + 1);
+    const end_date = new Date(semester_end);
+    let ending_days = this.getEndingDays(end_date, end_date.getDay() + 1);
+    let new_events = {}
+    let current_event;
+    starting_days.sort(function(a, b){return a.getDay() - b.getDay()})
+    ending_days.sort(function(a, b){return a.getDay() - b.getDay()})
     fetch('/events/user/' + u_id)
     .then(response => response.json())
     .then(json => {
-      const start_date = new Date(semester_start);
-      const starting_days = this.getStartingDays(start_date, start_date.getDay() + 1);
-      const end_date = new Date(semester_end);
-      const ending_days = this.getEndingDays(end_date, end_date.getDay() + 1);
-      let new_events = {}
-      let current_event;
-      json.sort(function(a, b){return a[7]-b[7]});
-      console.log(json);
       for(let i = 0; i < json.length; i++) {
         current_event = json[i];
         const day_id = current_event[7];
+        this.dateToString(starting_days[day_id-1]);
       }
     })
   }
@@ -275,6 +273,18 @@ class App extends Component {
       }
     }
     return ends;
+  }
+
+  dateToString=(date)=> {
+    let day_id = date.getDate();
+    let month_id = date.getMonth() + 1;
+    if(day_id < 10) {
+      day_id = "0" + day_id;
+    }
+    if(month_id < 10) {
+      month_id = "0" + month_id;
+    }
+    return day_id + "-" + month_id + "-" + date.getFullYear();
   }
 
   render() {
