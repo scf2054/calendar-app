@@ -24,6 +24,7 @@ class AccountPage extends Component {
         this.props.setUser(this.state.user_entered);
         this.toggleAreYouSure();
         this.props.toggleAccountPage();
+        this.props.renderEvents(this.state.user_entered[0])
     }
 
     createNewUser=()=> {
@@ -48,6 +49,7 @@ class AccountPage extends Component {
             this.setState({id_created: json});
             this.toggleCreateUserSuccess();
             // re-render the calendar
+            this.props.renderEvents(this.state.id_created);
         })
         .catch(error => {
             this.setState({view_username_exists: true});
@@ -68,7 +70,6 @@ class AccountPage extends Component {
             const user = jsonOutput[0];
             this.toggleAreYouSure();
             this.setState({user_entered: user});
-            // re-render the calendar
         })
         .catch(error => {
             this.setState({view_id_doesnt_exist: true});
@@ -176,7 +177,7 @@ class AccountPage extends Component {
                                 Error
                             </PopoverHeader>
                             <PopoverBody>
-                                This ID does not have a user...
+                                This ID does not belong to a user...
                             </PopoverBody>
                         </Popover>
                     </InputGroup>

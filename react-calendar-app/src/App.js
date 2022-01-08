@@ -216,6 +216,15 @@ class App extends Component {
     return hr + ':' + min;
   }
 
+  renderEvents=(u_id)=> {
+    console.log("renderEvents called");
+    fetch('/events/user/' + u_id)
+    .then(response => response.json())
+    .then(json => {
+      console.log(json);
+    })
+  }
+
   render() {
     return (
       <Container className="App">
@@ -223,6 +232,7 @@ class App extends Component {
           <Calendar
             current_user = {this.state.current_user}
             events = {this.state.events}
+            renderEvents = {this.renderEvents}
           />
         </Row>
         <Row className='buttons-row'>
@@ -237,6 +247,7 @@ class App extends Component {
             setSemesterEndStr = {this.setSemesterEndStr}
             saveSemesterDates = {this.saveSemesterDates}
             closeDateError = {this.closeDateError}
+            renderEvents = {this.renderEvents}
           />
         </Row>
         <AccountPage
@@ -249,6 +260,7 @@ class App extends Component {
           setSemesterEndStr = {this.setSemesterEndStr}
           saveSemesterDates = {this.saveSemesterDates}
           closeDateError = {this.closeDateError}
+          renderEvents = {this.renderEvents}
         />
         <EditSleepSchedule 
           current_user = {this.state.current_user}
@@ -256,6 +268,7 @@ class App extends Component {
           toggleEditSleep = {this.toggleEditSleep}
           getDayStr = {this.getDayStr}
           convertTime = {this.convertTime}
+          renderEvents = {this.renderEvents}
         />
         <CreateNewEvent 
           current_user = {this.state.current_user}
@@ -263,6 +276,7 @@ class App extends Component {
           toggleCreateEvent = {this.toggleCreateEvent}
           getDayStr = {this.getDayStr}
           convertTime = {this.convertTime}
+          renderEvents = {this.renderEvents}
         />
       </Container>
     );
