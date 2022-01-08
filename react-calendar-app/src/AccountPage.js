@@ -48,8 +48,13 @@ class AccountPage extends Component {
         .then(json => {
             this.setState({id_created: json});
             this.toggleCreateUserSuccess();
-            // re-render the calendar
-            this.props.renderEvents(this.state.id_created);
+            fetch('/users/' + json)
+            .then(response => response.json())
+            .then(jsonOutput => {
+                const user = jsonOutput[0];
+                this.setState({user_entered: user});
+                this.props.setUser(user);
+            })
         })
         .catch(error => {
             this.setState({view_username_exists: true});
