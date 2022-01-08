@@ -126,14 +126,14 @@ class AccountPage extends Component {
                                     <InputGroupText>
                                         What is the first day of your semester?
                                     </InputGroupText>
-                                    <Input className='semester-start' onClick={this.props.closeDateError} onChange={this.props.setSemesterStartStr} placeholder='dd-mm-yyyy' />
+                                    <Input className='semester-start' onClick={this.props.closeDateError} onChange={this.props.setSemesterStartStr} placeholder='mm-dd-yyyy' />
                                 </InputGroup>
                                 <br />
                                 <InputGroup>
                                     <InputGroupText>
                                         What is the last day of your semester?
                                     </InputGroupText>
-                                    <Input className='semester-end' onClick={this.props.closeDateError} onChange={this.props.setSemesterEndStr} placeholder='dd-mm-yyyy' />
+                                    <Input className='semester-end' onClick={this.props.closeDateError} onChange={this.props.setSemesterEndStr} placeholder='mm-dd-yyyy' />
                                 </InputGroup>
                                 <br />
                             </ModalBody>
