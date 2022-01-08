@@ -224,6 +224,9 @@ class App extends Component {
     let ending_days = this.getEndingDays(end_date, end_date.getDay() + 1);
     let new_events = {}
     let current_event;
+    let current_date;
+    let current_date_str;
+    let end_semester_date;
     let event_dict;
     let day_id;
     let start_str;
@@ -236,13 +239,34 @@ class App extends Component {
     .then(json => {
       for(let i = 0; i < json.length; i++) {
         current_event = json[i];
+        console.log(current_event);
         day_id = current_event[7];
+        console.log(day_id)
         start_str = this.dateToString(starting_days[day_id-1], true);
+        console.log(start_str);
         end_str = this.dateToString(ending_days[day_id-1], true);
+        console.log(end_str)
         current_week = start_str;
-        while(new Date(current_week) <= new Date(end_str)) {
+        current_date = new Date(current_week);
+        current_date.setDate(current_date.getDate() + 1);
+        end_semester_date = new Date(end_str);
+        end_semester_date.setDate(end_semester_date.getDate() + 1);
+        console.log(end_semester_date);
+        while(current_date <= end_semester_date) {
+          current_date_str = this.dateToString(current_date);
+          console.log(current_date_str);
+          event_dict = this.createEventDict(current_event, current_date_str);
+          if(!new_events[current_date_str]) {
+            console.log("No events on this day, creating a list.");
+            new_events[current_date_str] = [event_dict];
+          } else {
+            console.log("Events exist on this day, adding to the list.");
+            new_events[current_date_str].push(event_dict);
+          }
+          current_date.setDate(current_date.getDate() + 7);
         }
       }
+      this.setState({events: new_events}, () => console.log(this.state.events));
     })
   }
 

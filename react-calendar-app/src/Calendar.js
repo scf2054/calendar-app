@@ -27,7 +27,7 @@ class Calendar extends Component {
                 <h1 className='calendar-heading'>{this.calendarHeading()}</h1>
                 <Kalend className='calendar'
                     events = {this.props.events}
-                    hourHeight={60}
+                    hourHeight={100}
                     disabledViews={[CalendarView.AGENDA]}
                     weekDayStart={'Sunday'}
                     language={'en'}
