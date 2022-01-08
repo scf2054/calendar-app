@@ -1,12 +1,13 @@
 import './App.css';
 
 import React, { Component } from 'react';
-import Calendar from './Calendar';
 import Buttons from './Buttons';
 import CreateNewEvent from './CreateNewEvent';
 import EditSleepSchedule from './EditSleepSchedule';
 import AccountPage from './AccountPage';
 import { Container, Row } from 'reactstrap';
+import Kalend, { CalendarView } from 'kalend';
+import 'kalend/dist/styles/index.css';
 
 class App extends Component {
   constructor(props) {
@@ -18,7 +19,16 @@ class App extends Component {
       view_date_error: false,
       date_error_message: "Make sure the dates you input are in correct formatting: 'dd-mm-yyyy'",
       current_user: null,
-      events: {},
+      events: {'08-01-2022': [
+        {
+        id: 1,
+        startAt: '2021-01-08T18:00:00.000Z',
+        endAt: '2021-01-08T19:00:00.000Z',
+        summary: 'test',
+        color: 'blue',
+        calendarID: 'work'
+        }
+      ]},
       semester_start_dict: {
         'day': 0,
         'month': 0,
@@ -78,11 +88,11 @@ class App extends Component {
     try {
       const start_split = this.state.semester_start_str.split("-");
       const end_split = this.state.semester_end_str.split("-");
-      const start_d = start_split[0];
-      const start_m = start_split[1];
+      const start_d = start_split[1];
+      const start_m = start_split[0];
       const start_y = start_split[2];
-      const end_d = end_split[0];
-      const end_m = end_split[1];
+      const end_d = end_split[1];
+      const end_m = end_split[0];
       const end_y = end_split[2];
       if(start_d.length !== 2 || end_d.length !== 2 || start_m.length !== 2 || end_m.length !== 2 || start_y.length !== 4 || end_y.length !== 4) {
         throw TypeError("Time inputted does not fit format 'dd-mm-yyyy'.");
@@ -239,28 +249,20 @@ class App extends Component {
     .then(json => {
       for(let i = 0; i < json.length; i++) {
         current_event = json[i];
-        console.log(current_event);
         day_id = current_event[7];
-        console.log(day_id)
         start_str = this.dateToString(starting_days[day_id-1], true);
-        console.log(start_str);
         end_str = this.dateToString(ending_days[day_id-1], true);
-        console.log(end_str)
         current_week = start_str;
         current_date = new Date(current_week);
         current_date.setDate(current_date.getDate() + 1);
         end_semester_date = new Date(end_str);
         end_semester_date.setDate(end_semester_date.getDate() + 1);
-        console.log(end_semester_date);
         while(current_date <= end_semester_date) {
           current_date_str = this.dateToString(current_date);
-          console.log(current_date_str);
-          event_dict = this.createEventDict(current_event, current_date_str);
+          event_dict = this.createEventDict(current_event, this.dateToString(current_date, true));
           if(!new_events[current_date_str]) {
-            console.log("No events on this day, creating a list.");
             new_events[current_date_str] = [event_dict];
           } else {
-            console.log("Events exist on this day, adding to the list.");
             new_events[current_date_str].push(event_dict);
           }
           current_date.setDate(current_date.getDate() + 7);
@@ -335,19 +337,30 @@ class App extends Component {
       startAt: date + "T" + event[4] + ":00.000Z",
       endAt: date + "T" + event[5] + ":00.000Z",
       summary: event[1],
-      color: event_color
+      color: event_color,
+      calendarID: event[2]
     }
+  }
+
+  calendarHeading=()=> {
+    return this.state.current_user ? this.state.current_user[1] + "'s Schedgy" : "Schedgy"
   }
 
   render() {
     return (
       <Container className="App">
         <Row className='calendar-row'>
-          <Calendar
-            current_user = {this.state.current_user}
-            events = {this.state.events}
-            renderEvents = {this.renderEvents}
-          />
+            <h1 className='calendar-heading'>{this.calendarHeading()}</h1>
+            <Kalend
+              events={this.state.events}
+              initialDate={new Date().toISOString()}
+              hourHeight={60}
+              initialView={CalendarView.WEEK}
+              disabledViews={[CalendarView.AGENDA]}
+              timeFormat={'24'}
+              weekDayStart={'Sunday'}
+              language={'en'}
+            />
         </Row>
         <Row className='buttons-row'>
           <Buttons
