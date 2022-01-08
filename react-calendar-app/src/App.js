@@ -29,16 +29,6 @@ class App extends Component {
         calendarID: 'work'
         }
       ]},
-      semester_start_dict: {
-        'day': 0,
-        'month': 0,
-        'year': 0
-      },
-      semester_end_dict: {
-        'day': 0,
-        'month': 0,
-        'year': 0
-      },
       semester_start_str: '00-00-0000',
       semester_end_str: '00-00-0000'
     }
@@ -58,14 +48,6 @@ class App extends Component {
 
   setSemesterEndStr=(event)=> {
     this.setState({semester_end_str: event.target.value});
-  }
-
-  setSemesterStartDict=(date_dict)=> {
-    this.setState({semester_start_dict: date_dict});
-  }
-
-  setSemesterEndDict=(date_dict)=> {
-    this.setState({semester_end_dict: date_dict});
   }
 
   toggleAccountPage=()=> {
@@ -129,17 +111,7 @@ class App extends Component {
       } 
       if(new Date(this.state.semester_start_str) > new Date(this.state.semester_end_str)) {
         throw TypeError("The end date must come after the start date.")
-      }
-      this.setSemesterStartDict({
-        'day': start_d_num, 
-        'month': start_m_num, 
-        'year': start_y_num
-      });
-      this.setSemesterEndDict({
-        'day': end_d_num, 
-        'month': end_m_num, 
-        'year': end_y_num
-      });      
+      }    
       this.renderEvents(this.state.current_user[0]);
       this.setState({view_account_page: false});
       return 'success';
@@ -349,19 +321,7 @@ class App extends Component {
   render() {
     return (
       <Container className="App">
-        <Row className='calendar-row'>
-            <h1 className='calendar-heading'>{this.calendarHeading()}</h1>
-            <Kalend
-              events={this.state.events}
-              initialDate={new Date().toISOString()}
-              hourHeight={60}
-              initialView={CalendarView.WEEK}
-              disabledViews={[CalendarView.AGENDA]}
-              timeFormat={'24'}
-              weekDayStart={'Sunday'}
-              language={'en'}
-            />
-        </Row>
+        <h1 className='calendar-heading'>{this.calendarHeading()}</h1>
         <Row className='buttons-row'>
           <Buttons
             current_user = {this.state.current_user}
@@ -405,6 +365,18 @@ class App extends Component {
           convertTime = {this.convertTime}
           renderEvents = {this.renderEvents}
         />
+        <Row className='calendar-row'>
+          <Kalend
+            events={this.state.events}
+            initialDate={new Date().toISOString()}
+            hourHeight={60}
+            initialView={CalendarView.WEEK}
+            disabledViews={[CalendarView.AGENDA]}
+            timeFormat={'24'}
+            weekDayStart={'Sunday'}
+            language={'en'}
+          />
+        </Row>
       </Container>
     );
   }

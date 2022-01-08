@@ -3,10 +3,16 @@ body {
   font-family: 'Delius Swash Caps', cursive;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: aqua;
+  width: 100%;
+  height: 100%
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.root {
+  width: 100%;
+  height: 100%
 }
