@@ -150,7 +150,7 @@ class CreateNewEvent extends Component {
 
     selectEventType=(event)=> {
         let type = event.target.value;
-        this.setState({event_type_selected: type});
+        this.setState({event_type_selected: type.toLowerCase()});
         this.toggleTypePopover(type);
     }
 
