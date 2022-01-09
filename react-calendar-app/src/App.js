@@ -209,7 +209,7 @@ class App extends Component {
     let current_date;
     let current_date_str;
     let end_semester_date;
-    let event_dict;
+    let event_dicts;
     let day_id;
     let start_str;
     let end_str;
@@ -231,8 +231,10 @@ class App extends Component {
         end_semester_date.setDate(end_semester_date.getDate() + 1);
         while(current_date <= end_semester_date) {
           current_date_str = this.dateToString(current_date);
-          event_dict = this.createEventDict(current_event, this.dateToString(current_date, true));
-          !new_events[current_date_str] ? new_events[current_date_str] = [event_dict] : new_events[current_date_str].push(event_dict);
+          event_dicts = this.createEventDict(current_event, current_date);
+          for(let j = 0; j < event_dicts.length; j++) {
+            !new_events[current_date_str] ? new_events[current_date_str] = [event_dicts[j]] : new_events[current_date_str].push(event_dicts[j]);
+          }
           current_date.setDate(current_date.getDate() + 7);
         }
       }
@@ -300,14 +302,72 @@ class App extends Component {
     } else {
       event_color = 'blue'
     }
-    return {
-      id: event[0],
-      startAt: date + "T" + event[4] + ":00.000Z",
-      endAt: date + "T" + event[5] + ":00.000Z",
-      summary: event[1],
-      color: event_color,
-      calendarID: event[2]
+    if(this.timeToMin(event[4]) > this.timeToMin(event[5]) && event[1] === 'Sleep') {
+      let bedtime_date = new Date();
+      const bedtime_split = event[4].split(":");
+      bedtime_date.setHours(parseInt(bedtime_split[0]));
+      bedtime_date.setMinutes(parseInt(bedtime_split[1]));
+      bedtime_date.setFullYear(date.getFullYear(), date.getMonth(), date.getDate())
+      let eleven_fifty_nine = new Date();
+      eleven_fifty_nine.setHours(23);
+      eleven_fifty_nine.setMinutes(59);
+      eleven_fifty_nine.setFullYear(date.getFullYear(), date.getMonth(), date.getDate())
+
+      let midnight = new Date();
+      midnight.setHours(0);
+      midnight.setHours(0); 
+      midnight.setFullYear(date.getFullYear(), date.getMonth(), date.getDate())
+      let wake_up_date = new Date();
+      const wake_up_split = event[5].split(":");
+      wake_up_date.setHours(parseInt(wake_up_split[0]));
+      wake_up_date.setMinutes(parseInt(wake_up_split[1]));
+      wake_up_date.setFullYear(date.getFullYear(), date.getMonth(), date.getDate())
+
+      return [
+        {
+          id: event[0] + "a",
+          startAt: bedtime_date.toISOString(),
+          endAt: eleven_fifty_nine.toISOString(),
+          summary: event[1],
+          color: event_color,
+          calendarID: event[2] + "a"
+        },
+        {
+          id: event[0] + "b",
+          startAt: midnight.toISOString(),
+          endAt: wake_up_date.toISOString(),
+          summary: event[1],
+          color: event_color,
+          calendarID: event[2] + "b"
+        }
+      ]
     }
+    let start_date = new Date();
+    const start_split = event[4].split(":");
+    start_date.setHours(parseInt(start_split[0]));
+    start_date.setMinutes(parseInt(start_split[1]));
+    start_date.setFullYear(date.getFullYear(), date.getMonth(), date.getDate())
+    let end_date = new Date();
+    const end_split = event[5].split(":");
+    end_date.setHours(parseInt(end_split[0]));
+    end_date.setMinutes(parseInt(end_split[1]));
+    end_date.setFullYear(date.getFullYear(), date.getMonth(), date.getDate())
+
+    return [
+        {
+        id: event[0],
+        startAt: start_date.toISOString(),
+        endAt: end_date.toISOString(),
+        summary: event[1],
+        color: event_color,
+        calendarID: event[2]
+      }
+    ]
+  }
+
+  timeToMin=(time)=> {
+    const time_split = time.split(":");
+    return (parseInt(time_split[0]) * 60) + parseInt(time_split[1]);
   }
 
   calendarHeading=()=> {

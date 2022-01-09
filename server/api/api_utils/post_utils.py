@@ -433,7 +433,8 @@ def default_user_calendar(u_id):
     for i in range(1, 8):
         exec += f"('Breakfast', 'special', 2, '7:15', '7:45', {u_id}, {i}), "
         exec += f"('Lunch', 'special', 2, '12:15', '12:45', {u_id}, {i}), "
-        exec += f"('Dinner', 'special', 2, '17:15', '17:45', {u_id}, {i})"
+        exec += f"('Dinner', 'special', 2, '17:15', '17:45', {u_id}, {i}), "
+        exec += f"('Sleep', 'special', 2, '23:00', '7:00', {u_id}, {i})"
         if i == 7:
             exec += ";"
         else:
