@@ -90,10 +90,16 @@ class AccountPage extends Component {
         this.setState({view_are_you_sure: !this.state.view_are_you_sure});
     }
 
+    happyPlanning=()=> {
+        this.props.saveSemesterDates();
+        this.toggleCreateUserSuccess();
+        this.props.toggleAccountPage();
+    }
+
     render() {
         return (
             <Modal isOpen={this.props.view_account_page}>
-                <ModalHeader>
+                <ModalHeader close={<Button onClick={this.props.toggleAccountPage} close/>}>
                     Create and account or sign-in to an existing one
                 </ModalHeader>
                 <ModalBody>
@@ -112,7 +118,7 @@ class AccountPage extends Component {
                             </PopoverBody>
                         </Popover>
                         <Modal isOpen={this.state.view_create_user_success}>
-                            <ModalHeader close={<Button onClick={this.toggleCreateUserSuccess} close/>}>
+                            <ModalHeader>
                                 User Successfully Created!
                             </ModalHeader>
                             <ModalBody>
