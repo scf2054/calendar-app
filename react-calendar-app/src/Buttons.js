@@ -39,6 +39,7 @@ class Buttons extends Component {
         .then(response => response.json())
         .then(json => {
             // re-render the calendar
+            this.props.renderEvents(this.props.current_user[0]);
             console.log(json);
         })
     }

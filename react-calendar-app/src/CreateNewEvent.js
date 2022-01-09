@@ -38,7 +38,7 @@ class CreateNewEvent extends Component {
         }
     }
 
-    saveEvent=(event)=> {
+    saveEvent=()=> {
         try {
             const start_time = this.props.convertTime(this.state.event_start_input, this.state.event_start_frame_selected);
             let end_time = null;
@@ -55,9 +55,8 @@ class CreateNewEvent extends Component {
             if(no_days_selected) {
                 throw SyntaxError("No days have been selected.");
             }
-            this.props.toggleCreateEvent();
             this.initializeData();
-            // re-render the calendar
+            this.setState({view_event_created_modal: true});
         } catch(e) {
             this.setState({save_error_message: e.message});
             this.setState({view_save_error_message: true});
@@ -142,6 +141,7 @@ class CreateNewEvent extends Component {
     closeBothModals=()=> {
         this.setState({view_event_created_modal: false});
         this.props.toggleCreateEvent();
+        this.props.renderEvents(this.props.current_user[0]);
     }
 
     getTypeFromDropdown=(event)=> {
@@ -414,7 +414,6 @@ class CreateNewEvent extends Component {
             </ModalBody>
             <ModalFooter>
                 <Button id='event-save-button' color='primary' onClick={this.saveEvent}>
-                    {/* Instead of calling "toggleCreateEvent", call a function that add the new event's data to the database */}
                     Save
                 </Button>
                 <Popover target='event-save-button' isOpen={this.state.view_save_error_message}>
@@ -425,6 +424,11 @@ class CreateNewEvent extends Component {
                         {this.state.save_error_message}
                     </PopoverBody>
                 </Popover>
+                <Modal isOpen={this.state.view_event_created_modal}>
+                    <ModalHeader close={<Button onClick={this.closeBothModals} close/>}>
+                        Event Saved!
+                    </ModalHeader>
+                </Modal>
             </ModalFooter>
         </Modal>
         );

@@ -232,11 +232,7 @@ class App extends Component {
         while(current_date <= end_semester_date) {
           current_date_str = this.dateToString(current_date);
           event_dict = this.createEventDict(current_event, this.dateToString(current_date, true));
-          if(!new_events[current_date_str]) {
-            new_events[current_date_str] = [event_dict];
-          } else {
-            new_events[current_date_str].push(event_dict);
-          }
+          !new_events[current_date_str] ? new_events[current_date_str] = [event_dict] : new_events[current_date_str].push(event_dict);
           current_date.setDate(current_date.getDate() + 7);
         }
       }

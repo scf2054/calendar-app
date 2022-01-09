@@ -42,6 +42,7 @@ class EditSleepSchedule extends Component {
             this.props.toggleEditSleep();
             this.resetInputs();
             // re-render the calendar
+            this.props.renderEvents(this.props.current_user[0]);
         } catch(e) {
             this.setState({save_error_message: e.message});
             this.setState({view_save_error_message: true});
