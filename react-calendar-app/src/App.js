@@ -204,6 +204,10 @@ class App extends Component {
     let starting_days = this.getStartingDays(start_date, start_date.getDay() + 1);
     const end_date = new Date(semester_end);
     let ending_days = this.getEndingDays(end_date, end_date.getDay() + 1);
+    console.log(semester_start);
+    console.log(start_date);
+    console.log(semester_end);
+    console.log(end_date);
     let new_events = {}
     let current_event;
     let current_date;
@@ -397,6 +401,8 @@ class App extends Component {
           view_account_page = {this.state.view_account_page}
           view_date_error = {this.state.view_date_error}
           date_error_message = {this.state.date_error_message}
+          semester_start_str = {this.state.semester_start_str}
+          semester_end_str = {this.state.semester_end_str}
           toggleAccountPage = {this.toggleAccountPage}
           setUser = {this.setUser}
           setSemesterStartStr = {this.setSemesterStartStr}
@@ -425,7 +431,7 @@ class App extends Component {
           <Kalend
             events={this.state.events}
             initialDate={new Date().toISOString()}
-            hourHeight={60}
+            hourHeight={100}
             initialView={CalendarView.WEEK}
             disabledViews={[CalendarView.AGENDA]}
             timeFormat={'24'}

@@ -24,7 +24,7 @@ class AccountPage extends Component {
         this.props.setUser(this.state.user_entered);
         this.toggleAreYouSure();
         this.props.toggleAccountPage();
-        this.props.renderEvents(this.state.user_entered[0])
+        this.props.renderEvents(this.state.user_entered[0]);
     }
 
     createNewUser=()=> {
@@ -91,9 +91,27 @@ class AccountPage extends Component {
     }
 
     happyPlanning=()=> {
-        this.props.saveSemesterDates();
-        this.toggleCreateUserSuccess();
-        this.props.toggleAccountPage();
+        fetch('/users/' + this.state.id_created, {
+            method: 'PUT',
+            body: JSON.stringify({
+                'semester_start': this.props.semester_start_str,
+                'semester_end': this.props.semester_end_str
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+        .then(response => response.json())
+        .then(json => {
+            if(this.props.saveSemesterDates() === 'success') {
+                this.toggleCreateUserSuccess();
+                fetch('/users/' + this.state.id_created)
+                .then(response => response.json())
+                .then(json => {
+                    this.props.setUser(json[0]);
+                })
+            }
+        })
     }
 
     render() {
@@ -144,7 +162,7 @@ class AccountPage extends Component {
                                 <br />
                             </ModalBody>
                             <ModalFooter>
-                                <Button onClick={this.props.saveSemesterDates} color='primary' className='happy-planning' id='happy-planning'>
+                                <Button onClick={this.happyPlanning} color='primary' className='happy-planning' id='happy-planning'>
                                     Happy planning!
                                 </Button>
                                 <Popover target='happy-planning' isOpen={this.props.view_date_error}>
