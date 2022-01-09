@@ -13,16 +13,16 @@ class TestEvent(unittest.TestCase):
 
     def test_post_user_events_default_values(self):
         post_rest_call(self, 'http://127.0.0.1:5000/events/user/1', {START_TIME: '8:00', DAY_ID: 1})
-        expected = (62, 'Custom Event', 'custom', 1, '8:00', '9:00', 1, 1, '')
+        expected = (62, 'Custom Event', 'custom', 1, '8:00', '8:30', 1, 1, '')
         actual = exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 62;")
         self.assertEqual(expected, actual, 'Default values were not entered correctly')
         print("Default values successfully implemented!")
 
     def test_post_user_events_create_homework_event(self):
         post_rest_call(self, 'http://127.0.0.1:5000/events/user/1', {START_TIME: '8:00', DAY_ID: 1, EVENT_TYPE: 'school', EVENT_PRIORITY: 3})
-        expected_hw = (62, 'Class Homework', 'school', 1, '9:15', '9:45', 1, 1, '')
+        expected_hw = (62, 'Class Homework', 'school', 1, '8:45', '9:15', 1, 1, '')
         actual_hw = exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 62;")
-        expected_class = (63, 'Class', 'school', 3, '8:00', '9:00', 1, 1, '')
+        expected_class = (63, 'Class', 'school', 3, '8:00', '8:30', 1, 1, '')
         actual_class = exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 63;")
         self.assertEqual(expected_hw, actual_hw, 'Homework event not added correctly')
         self.assertEqual(expected_class, actual_class, 'Class event was not added correctly')
@@ -35,17 +35,17 @@ class TestEvent(unittest.TestCase):
 
     def test_post_user_events_overlapping_events_middle(self):
         response = post_rest_call(self, 'http://127.0.0.1:5000/events/user/1', {START_TIME: '10:00', END_TIME: '10:50', DAY_ID: 2, EVENT_TYPE: 'work', EVENT_PRIORITY: 3}, {}, 406)
-        self.assertEqual(response, "This new event overlaps a high priority event, failed to add to calendar...")
+        self.assertEqual(response, "This new event overlaps a high priority event, failed to add to (2, 'Monday')...")
         print("Overlapping middle was not added!")
 
     def test_post_user_events_overlapping_events_left(self):
         response = post_rest_call(self, 'http://127.0.0.1:5000/events/user/1', {START_TIME: '11:30', END_TIME: '12:20', DAY_ID: 2, EVENT_TYPE: 'work', EVENT_PRIORITY: 2}, {}, 406)
-        self.assertEqual(response, "This new event overlaps a high priority event, failed to add to calendar...")
+        self.assertEqual(response, "This new event overlaps a high priority event, failed to add to (2, 'Monday')...")
         print("Overlapping left was not added!")
 
     def test_post_user_events_overlapping_events_right(self):
         response = post_rest_call(self, 'http://127.0.0.1:5000/events/user/1', {START_TIME: '14:30', END_TIME: '15:20', DAY_ID: 2, EVENT_TYPE: 'work', EVENT_PRIORITY: 1}, {}, 406)
-        self.assertEqual(response, "This new event overlaps a high priority event, failed to add to calendar...")
+        self.assertEqual(response, "This new event overlaps a high priority event, failed to add to (2, 'Monday')...")
         print("Overlapping right was not added!")
 
     def test_put_event_name(self):

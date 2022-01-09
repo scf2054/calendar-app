@@ -5,7 +5,9 @@ DROP TABLE IF EXISTS user_table CASCADE;
 CREATE TABLE user_table (
         id BIGSERIAL NOT NULL PRIMARY KEY,
         username VARCHAR(50),
-        user_type VARCHAR(14) DEFAULT 'student'
+        user_type VARCHAR(14) DEFAULT 'student',
+        semester_start VARCHAR(10),
+        semester_end VARCHAR(10)
 );
 
 CREATE TABLE day_of_week (

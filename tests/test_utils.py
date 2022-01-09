@@ -20,7 +20,7 @@ class TestUtils(unittest.TestCase):
     def test_default_user_calendar(self):
         exec_commit(f"INSERT INTO {USER_TABLE}({USERNAME}) VALUES ('Jill Conti');")
         default_user_calendar(2)
-        self.assertEqual(21, len(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = 2;")), "Default calendar not created correctly.")
+        self.assertEqual(28, len(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = 2;")), "Default calendar not created correctly.")
         print("Default calendar created!")
 
     def test_create_homework_event(self):
