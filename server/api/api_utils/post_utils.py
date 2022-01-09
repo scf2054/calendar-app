@@ -23,7 +23,7 @@ def optimize_calendar(u_id):
         medium_priorities = day[1]
         low_priorities = day[2]
         day_id = days.index(day) + 2
-        if day_id > len(days) + 1:
+        if day_id == len(days) + 1:
             day_id = 1
         sleep = exec_get_one(f"SELECT {START_TIME}, {END_TIME} FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {day_id} AND {EVENT_PRIORITY} = 2 AND {EVENT_NAME} = 'Sleep';")
         sleep_frame = {sleep[0]: sleep[1]}
