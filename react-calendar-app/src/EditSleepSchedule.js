@@ -21,7 +21,8 @@ class EditSleepSchedule extends Component {
             sleep_time: '11:00',
             sleep_frame: 'pm',
             save_error_message: null,
-            view_save_error_message: false
+            view_save_error_message: false,
+            view_schedule_saved: false
         }
     }
 
@@ -39,15 +40,20 @@ class EditSleepSchedule extends Component {
             if(no_days_selected) {
                 throw SyntaxError("No days have been selected.");
             }
-            this.props.toggleEditSleep();
-            this.resetInputs();
-            // re-render the calendar
-            this.props.renderEvents(this.props.current_user[0]);
+            this.setState({view_schedule_saved: true});
         } catch(e) {
             this.setState({save_error_message: e.message});
             this.setState({view_save_error_message: true});
             console.log(e);
         }
+    }
+
+    exitSleep=()=> {
+        this.props.toggleEditSleep();
+        this.resetInputs();
+        // re-render the calendar
+        this.props.renderEvents(this.props.current_user[0]);
+        this.setState({view_schedule_saved: false});
     }
 
     putSleep=(day_id, wake_up, sleep)=> {
@@ -207,6 +213,11 @@ class EditSleepSchedule extends Component {
                             {this.state.save_error_message}
                         </PopoverBody>
                     </Popover>
+                    <Modal isOpen={this.state.view_schedule_saved}>
+                        <ModalHeader close={<Button onClick={this.exitSleep} close/>}>
+                            Sleep Schedule Saved!
+                        </ModalHeader>
+                    </Modal>
                 </ModalFooter>
             </Modal>
         );
