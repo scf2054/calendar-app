@@ -1,7 +1,7 @@
 import './Buttons.css';
 
 import React, { Component } from 'react';
-import { Col, Button, PopoverHeader, UncontrolledPopover, PopoverBody } from 'reactstrap';
+import { Col, Button, PopoverHeader, UncontrolledPopover, PopoverBody, Modal, ModalHeader } from 'reactstrap';
 // import { Modal, ModalHeader, ModalBody, ModalFooter, InputGroup, InputGroupText, Input, Popover } from 'reactstrap';
 
 class Buttons extends Component {
@@ -51,9 +51,9 @@ class Buttons extends Component {
         }
     }
 
-    toggleEditSemester=()=> {
-        this.setState({view_edit_semester: !this.state.view_edit_semester});
-    }
+    // toggleEditSemester=()=> {
+    //     this.setState({view_edit_semester: !this.state.view_edit_semester});
+    // }
 
     render() {
         return (
@@ -142,18 +142,6 @@ class Buttons extends Component {
                     >
                         Optimize Calendar
                     </Button>
-                    <UncontrolledPopover
-                        target='optimize-calendar-button'
-                        trigger='focus'
-                        placement='top'
-                    >
-                        <PopoverHeader>
-                            Success!
-                        </PopoverHeader>
-                        <PopoverBody>
-                            The calendar for {this.props.current_user ? this.props.current_user[1] : null} has been optimized!
-                        </PopoverBody>
-                    </UncontrolledPopover>
                 </Col>
             </>
         );
