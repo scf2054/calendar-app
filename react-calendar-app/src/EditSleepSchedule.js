@@ -8,7 +8,7 @@ class EditSleepSchedule extends Component {
         super(props);
         this.state =  {
             days_selected: {
-                '1': true,
+                '1': false,
                 '2': false,
                 '3': false,
                 '4': false,
@@ -83,7 +83,7 @@ class EditSleepSchedule extends Component {
 
     resetInputs=()=> {
         this.setState({days_selected: {
-            '1': true,
+            '1': false,
             '2': false,
             '3': false,
             '4': false,
@@ -165,7 +165,7 @@ class EditSleepSchedule extends Component {
                     <label>
                         When would you like to go to sleep?
                     </label>      
-                    <Input className='sleep' placeholder='00:00' onChange={this.setTime} />  
+                    <Input className='sleep' placeholder='11:00' onChange={this.setTime} />  
                     <ButtonGroup>
                         <Button className='sleep' value='am' onClick={this.selectEventFrame}>AM</Button>
                         <Button className='sleep' value='pm' onClick={this.selectEventFrame}>PM</Button>
@@ -174,7 +174,7 @@ class EditSleepSchedule extends Component {
                     <label>
                         When would you like to wake up?
                     </label>      
-                    <Input className='wake' placeholder='00:00' onChange={this.setTime} />    
+                    <Input className='wake' placeholder='07:00' onChange={this.setTime} />    
                     <ButtonGroup>
                         <Button className='wake' value='am' onClick={this.selectEventFrame}>AM</Button>
                         <Button className='wake' value='pm' onClick={this.selectEventFrame}>PM</Button>

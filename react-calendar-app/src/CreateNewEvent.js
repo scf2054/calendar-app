@@ -16,7 +16,7 @@ class CreateNewEvent extends Component {
             view_save_error_message: false,
 
             days_selected: {
-                '1': true,
+                '1': false,
                 '2': false,
                 '3': false,
                 '4': false,
@@ -91,7 +91,7 @@ class CreateNewEvent extends Component {
 
     initializeData=()=> {
         this.setState({days_selected: {
-            '1': true,
+            '1': false,
             '2': false,
             '3': false,
             '4': false,
