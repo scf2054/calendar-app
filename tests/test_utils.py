@@ -34,5 +34,15 @@ class TestUtils(unittest.TestCase):
         self.assertEqual((62, 'Class Homework', 'school', 1, '13:10', '13:40', 1, 4, ""), exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {ID} = 62;"), 'Homework was not added to the database.')
         print("Homework event created successfully!")
 
+    def test_during_event(self):
+        event_frame = ['7:15', '7:45']
+        free_frame = ['0:00', '1:50']
+        free_time = {
+            '0:00': '1:50',
+            '9:50': '23:59'
+        }
+        self.assertEqual(during_event(event_frame, free_frame, free_time), [True, '9:50'], "Function did not catch that this event is during another")
+        print("This event is during another event!")
+
 if __name__ == '__main__':
     unittest.main()
