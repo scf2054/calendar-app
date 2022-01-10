@@ -1,7 +1,8 @@
 import './Buttons.css';
 
 import React, { Component } from 'react';
-import { Col, Button, PopoverHeader, UncontrolledPopover, PopoverBody, Modal, ModalHeader, ModalBody, ModalFooter, InputGroup, InputGroupText, Input, Popover } from 'reactstrap';
+import { Col, Button, PopoverHeader, UncontrolledPopover, PopoverBody } from 'reactstrap';
+// import { Modal, ModalHeader, ModalBody, ModalFooter, InputGroup, InputGroupText, Input, Popover } from 'reactstrap';
 
 class Buttons extends Component {
     constructor(props) {
@@ -67,7 +68,7 @@ class Buttons extends Component {
                         Sign-In/Create Account
                     </Button>
                 </Col>
-                <Col>
+                {/* <Col>
                     <Button
                         color='info'
                         outline
@@ -111,7 +112,7 @@ class Buttons extends Component {
                             </Popover>
                         </ModalFooter>
                     </Modal>
-                </Col>
+                </Col> */}
                 <Col>
                     <Button
                         color='info'
