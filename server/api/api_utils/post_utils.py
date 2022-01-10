@@ -1,3 +1,4 @@
+from logging import error
 from ..db.db_utils import *
 from ..constants import *
 import math
@@ -13,7 +14,7 @@ def optimize_calendar(u_id):
     added by the user.
 
     Args:
-        calendar (list): A list of tuples which are each event
+        u_id (int): The ID of the user who is optimizing their calendar
     """
     # Initialize all data that will be used
     days = initialize_days(u_id)
@@ -22,7 +23,10 @@ def optimize_calendar(u_id):
         high_priorities = day[0]
         medium_priorities = day[1]
         low_priorities = day[2]
-        sleep = exec_get_one(f"SELECT {START_TIME}, {END_TIME} FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {days.index(day) + 1} AND {EVENT_PRIORITY} = 2 AND {EVENT_NAME} = 'Sleep';")
+        day_id = days.index(day) + 2
+        if day_id == len(days) + 1:
+            day_id = 1
+        sleep = exec_get_one(f"SELECT {START_TIME}, {END_TIME} FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {day_id} AND {EVENT_PRIORITY} = 2 AND {EVENT_NAME} = 'Sleep';")
         sleep_frame = {sleep[0]: sleep[1]}
         free_time = {'0:00': '23:59'}
         # Optimize the highest priority group to get the earliest and latest times
@@ -33,8 +37,10 @@ def optimize_calendar(u_id):
         bedtime = list(sleep_frame.keys())[0]
         # The value at sleep's end should now be the earliest time
         free_time[sleep_frame[bedtime]] = earliest_latest[0]
-        # The value at the latest all events go should now be the bedtime
+        remove_dup_free_time(sleep_frame[bedtime], free_time)
+        # The value at the latest that all events go to should now be the bedtime
         free_time[earliest_latest[1]] = bedtime
+        remove_dup_free_time(earliest_latest[1], free_time)
         medium_leftovers = optimize_priority_group(medium_priorities + day_leftovers, free_time, 2)
         day_leftovers = optimize_priority_group(low_priorities + medium_leftovers, free_time, 1)
     return f"The calendar for user #{u_id} has been optimized."
@@ -76,20 +82,58 @@ def optimize_priority_group(priority_group, free_time, priority):
         for free_start in free_time:
             free_time_count += 1
             free_end = free_time[free_start]
-            # Check if the free time is in the desired meal time frame, if not coninue
-            if priority == 2 and not overlaps_at_all(free_start, free_end, meal_frame[0], meal_frame[1]):
-                continue
             # Calculate the length of the event and free time
             event_length = length_between_times(event_start, event_end)
             free_length = length_between_times(free_start, free_end)
+            is_during_event = during_event([event_start, event_end], [free_start, free_end], free_time)
+            # If the event overlaps an event that's already there...
+            if is_during_event[0]:
+                if priority == 3:
+                    raise Exception
+                print(event[1] + " is during event: " + str(is_during_event))
+                overlapped_event_end = is_during_event[1]
+                # Calculate distance between right side and left side
+                length_of_left_side = length_between_times(event_start, free_end)
+                length_of_right_side = length_between_times(event_end, overlapped_event_end)
+                # If distance is shorter on left side...
+                if time_is_greater(length_of_right_side, length_of_left_side, True):
+                    # Set new start/end
+                    new_end = free_end
+                    new_start = subtract_times(new_end, event_length)
+                    # Update free_time
+                    if event_length == free_length:
+                        free_time.pop(free_start)
+                    else:
+                        free_time[free_start] = new_start
+                        remove_dup_free_time(free_start, free_time)
+                    break
+                # If distance is shorter on right side and the free time frame length on the right side is greater than the event's...
+                else:
+                    free_after_overlapped_end = free_time[overlapped_event_end]
+                    free_after_length = length_between_times(overlapped_event_end, free_after_overlapped_end)
+                    if time_is_greater(free_after_length, event_length, True):
+                        # Set new start/end
+                        new_start = overlapped_event_end
+                        new_end = add_times(new_start, event_length)
+                        # Update free_time
+                        if event_length != free_length:
+                            free_time[new_end] = free_time[free_start]
+                            remove_dup_free_time(new_end, free_time)
+                        free_time.pop(free_start)
+                        break
             # As long as the length of free time is greater than or equal to the event...
             if time_is_greater(free_length, event_length, True):
+                # Check if the free time is in the desired meal time frame, if not coninue
+                if priority == 2 and not overlaps_at_all(free_start, free_end, meal_frame[0], meal_frame[1]):
+                    continue
                 # If the event takes place during free time...
                 # This should be the only "if" that passes for the highest priority
                 if overlaps_middle(event_start, event_end, free_start, free_end):
                     # Change the free time and leave the time frame alone
                     free_time[free_start] = event_start
+                    remove_dup_free_time(free_start, free_time)
                     free_time[event_end] = free_end
+                    remove_dup_free_time(event_end, free_time)
                     # Only when the priority is 3 should you update the earliest and latest times
                     if priority == 3:
                         if time_is_greater(earliest, event_start):
@@ -98,37 +142,9 @@ def optimize_priority_group(priority_group, free_time, priority):
                             latest = event_end
                     break
                 elif priority != 3:
-                    is_during_event = during_event([event_start, event_end], [free_start, free_end], free_time)
-                    # If the event overlaps an event that's already there...
-                    if is_during_event[0]:
-                        overlapped_event_end = is_during_event[1]
-                        # Calculate distance between right side and left side
-                        length_of_left_side = length_between_times(event_start, free_end)
-                        length_of_right_side = length_between_times(event_end, overlapped_event_end)
-                        # If distance is shorter on left side...
-                        if time_is_greater(length_of_right_side, length_of_left_side, True):
-                            # Set new start/end
-                            new_end = free_end
-                            new_start = subtract_times(new_end, event_length)
-                            # Update free_time
-                            if event_length == free_length:
-                                free_time.pop(free_start)
-                            else:
-                                free_time[free_start] = new_start
-                            break
-                        # If distance is shorter on right side and the free time frame length on the right side is greater than the event's...
-                        else:
-                            free_after_overlapped_end = free_time[overlapped_event_end]
-                            free_after_length = length_between_times(overlapped_event_end, free_after_overlapped_end)
-                            if time_is_greater(free_after_length, event_length, True):
-                                # Set new start/end
-                                new_start = overlapped_event_end
-                                new_end = add_times(new_start, event_length)
-                                # Update free_time
-                                if event_length != free_length:
-                                    free_time[new_end] = free_time[free_start]
-                                free_time.pop(free_start)
-                                break
+                    # Check if the free time is in the desired meal time frame, if not coninue
+                    if priority == 2 and not overlaps_at_all(free_start, free_end, meal_frame[0], meal_frame[1]):
+                        continue
                     # If the event overlaps to the left of a free time
                     elif overlaps_left(event_start, event_end, free_start, free_end):
                         # The new end of the event is the free time's end
@@ -140,6 +156,7 @@ def optimize_priority_group(priority_group, free_time, priority):
                             free_time.pop(free_start)
                         else:
                             free_time[free_start] = new_start
+                            remove_dup_free_time(free_start, free_time)
                         break
                     # If all else fails...
                     elif overlaps_right(event_start, event_end, free_start, free_end) or priority == 1:
@@ -150,11 +167,13 @@ def optimize_priority_group(priority_group, free_time, priority):
                         # Update free_time
                         if event_length != free_length:
                             free_time[new_end] = free_time[free_start]
+                            remove_dup_free_time(new_end, free_time)
                         free_time.pop(free_start)
                         break
             elif free_time_count == len(free_time):
                 leftovers.append(event)
         # Update database with new values
+        print(free_time)
         if priority != 3:
             exec_commit(f"UPDATE {EVENT_TABLE} SET {START_TIME} = '{new_start}', {END_TIME} = '{new_end}' WHERE {ID} = {event[0]};")
     if priority == 3:
@@ -192,6 +211,17 @@ def during_event(event_frame, free_frame, free_time):
         return [overlaps_middle(event_frame[0], event_frame[1], overlapped_event_start, overlapped_event_end), overlapped_event_end]
     except IndexError:
         return [False]
+
+def remove_dup_free_time(key, free_time):
+    """A heler function that makes sure there are no key:value pairs in free_time that
+    are the exact same.
+
+    Args:
+        key (str): The "starting time" that's being changed
+        free_time (dict): The free time in the day
+    """
+    if free_time[key] == key:
+        free_time.pop(key)
 
 def overlaps_left(this_start, this_end, that_start, that_end):
     """Determines whether or not "this" time frame overlaps "that" time frame on "this'" left side.
@@ -373,9 +403,12 @@ def initialize_days(u_id):
     """
     days = [[], [], [], [], [], [], []]
     for i in range(len(days)):
-        days[i].append(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {i+1} AND {EVENT_PRIORITY} = 3;")),
-        days[i].append(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {i+1} AND {EVENT_PRIORITY} = 2 AND {EVENT_NAME} != 'Sleep';"))
-        days[i].append(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {i+1} AND {EVENT_PRIORITY} = 1;"))
+        day_id = i+2
+        if day_id == len(days):
+            day_id = 1
+        days[i].append(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {day_id} AND {EVENT_PRIORITY} = 3;")),
+        days[i].append(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {day_id} AND {EVENT_PRIORITY} = 2 AND {EVENT_NAME} != 'Sleep';"))
+        days[i].append(exec_get_all(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {day_id} AND {EVENT_PRIORITY} = 1;"))
     return days
 
 def get_meal_frame(meal):
@@ -430,7 +463,8 @@ def default_user_calendar(u_id):
     for i in range(1, 8):
         exec += f"('Breakfast', 'special', 2, '7:15', '7:45', {u_id}, {i}), "
         exec += f"('Lunch', 'special', 2, '12:15', '12:45', {u_id}, {i}), "
-        exec += f"('Dinner', 'special', 2, '17:15', '17:45', {u_id}, {i})"
+        exec += f"('Dinner', 'special', 2, '17:15', '17:45', {u_id}, {i}), "
+        exec += f"('Sleep', 'special', 2, '23:00', '7:00', {u_id}, {i})"
         if i == 7:
             exec += ";"
         else:

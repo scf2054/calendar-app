@@ -117,14 +117,16 @@ class Event(Resource):
             elif start_changed and not end_changed:
                 end_time = add_times(start_time, '00:30')
                 temp.append(END_TIME)
-            elif start_changed and end_changed:
+            elif start_changed and end_changed and event_name != 'Sleep':
                 return f"The start time must come before the end time: {start_time}, {end_time}", 406
-        if overlaps_high_priority(unchanged_event[6], day_id, start_time, end_time, unchanged_event[0]):
+        if time_is_greater(start_time, end_time):
+            if overlaps_high_priority(unchanged_event[6], day_id, start_time, '23:59', unchanged_event[0]) and overlaps_high_priority(unchanged_event[6], day_id, '0:00', end_time, unchanged_event[0]):
+                return f"This new time overlaps a high priority event, failed to update calendar...", 406
+        elif overlaps_high_priority(unchanged_event[6], day_id, start_time, end_time, unchanged_event[0]):
             return f"This new time overlaps a high priority event, failed to update calendar...", 406
-        else:
-            changes += f"{START_TIME} = '{start_time}', {END_TIME} = '{end_time}', {DAY_ID} = {day_id}, "
-            for x in temp:
-                success_str += x + " "
+        changes += f"{START_TIME} = '{start_time}', {END_TIME} = '{end_time}', {DAY_ID} = {day_id}, "
+        for x in temp:
+            success_str += x + " "
         # When changing event location, nothing else changes
         event_location = args[EVENT_LOCATION]
         if event_location:
@@ -146,11 +148,16 @@ class User_Events(Resource):
             event_type = 'custom'
         event_priority = args[EVENT_PRIORITY]
         if not event_priority:
-            event_priority = 1
+            if event_type == 'special':
+                event_priority = 2
+            elif event_type == 'work':
+                event_priority = 3
+            else:
+                event_priority = 1
         start_time = args[START_TIME]
         end_time = args[END_TIME]
         if not end_time:
-            end_time = add_times(start_time, '1:00')
+            end_time = add_times(start_time, '0:30')
         day_id = args[DAY_ID]
         event_location = args[EVENT_LOCATION]
         if not event_location:
@@ -174,7 +181,8 @@ class User_Events(Resource):
                 return f"Event type '{event_type}' does not exist.", 404
         values += f"('{event_name}', '{event_type}', {event_priority}, '{start_time}', '{end_time}', {u_id}, {day_id}, '{event_location}')"
         if overlaps_high_priority(u_id, day_id, start_time, end_time):
-            return f"This new event overlaps a high priority event, failed to add to calendar...", 406
+            day_name = exec_get_one(f"SELECT * FROM {DAY_OF_WEEK} WHERE {ID} = {day_id};")
+            return f"This new event overlaps a high priority event, failed to add to {day_name}...", 406
         exec_commit(f"INSERT INTO {EVENT_TABLE}({EVENT_NAME}, {EVENT_TYPE}, {EVENT_PRIORITY}, {START_TIME}, {END_TIME}, {U_ID}, {DAY_ID}, {EVENT_LOCATION}) VALUES {values};")
         return "Event successfully added to calendar!"
 
@@ -185,3 +193,7 @@ class User_Events(Resource):
             return f"User #{u_id} doesn't have permission to delete course #{id}.", 403
         exec_commit(f"DELETE FROM {EVENT_TABLE} WHERE {ID} = {id};")
         return f"User #{u_id} has deleted course #{id}."
+
+class Sleep(Resource):
+    def get(self, u_id, day_id):
+        return exec_get_one(f"SELECT * FROM {EVENT_TABLE} WHERE {U_ID} = {u_id} AND {DAY_ID} = {day_id} AND {EVENT_NAME} = 'Sleep';")
