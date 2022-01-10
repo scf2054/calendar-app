@@ -24,7 +24,6 @@ class AccountPage extends Component {
         this.props.setUser(this.state.user_entered);
         this.toggleAreYouSure();
         this.props.toggleAccountPage();
-        console.log(this.state.user_entered);
         this.props.renderEvents(this.state.user_entered[0], this.state.user_entered[3], this.state.user_entered[4]);
     }
 
