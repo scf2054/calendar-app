@@ -37,8 +37,10 @@ def optimize_calendar(u_id):
         bedtime = list(sleep_frame.keys())[0]
         # The value at sleep's end should now be the earliest time
         free_time[sleep_frame[bedtime]] = earliest_latest[0]
+        remove_dup_free_time(sleep_frame[bedtime], free_time)
         # The value at the latest that all events go to should now be the bedtime
         free_time[earliest_latest[1]] = bedtime
+        remove_dup_free_time(earliest_latest[1], free_time)
         medium_leftovers = optimize_priority_group(medium_priorities + day_leftovers, free_time, 2)
         day_leftovers = optimize_priority_group(low_priorities + medium_leftovers, free_time, 1)
     return f"The calendar for user #{u_id} has been optimized."
@@ -103,6 +105,7 @@ def optimize_priority_group(priority_group, free_time, priority):
                         free_time.pop(free_start)
                     else:
                         free_time[free_start] = new_start
+                        remove_dup_free_time(free_start, free_time)
                     break
                 # If distance is shorter on right side and the free time frame length on the right side is greater than the event's...
                 else:
@@ -115,6 +118,7 @@ def optimize_priority_group(priority_group, free_time, priority):
                         # Update free_time
                         if event_length != free_length:
                             free_time[new_end] = free_time[free_start]
+                            remove_dup_free_time(new_end, free_time)
                         free_time.pop(free_start)
                         break
             # As long as the length of free time is greater than or equal to the event...
@@ -127,7 +131,9 @@ def optimize_priority_group(priority_group, free_time, priority):
                 if overlaps_middle(event_start, event_end, free_start, free_end):
                     # Change the free time and leave the time frame alone
                     free_time[free_start] = event_start
+                    remove_dup_free_time(free_start, free_time)
                     free_time[event_end] = free_end
+                    remove_dup_free_time(event_end, free_time)
                     # Only when the priority is 3 should you update the earliest and latest times
                     if priority == 3:
                         if time_is_greater(earliest, event_start):
@@ -150,6 +156,7 @@ def optimize_priority_group(priority_group, free_time, priority):
                             free_time.pop(free_start)
                         else:
                             free_time[free_start] = new_start
+                            remove_dup_free_time(free_start, free_time)
                         break
                     # If all else fails...
                     elif overlaps_right(event_start, event_end, free_start, free_end) or priority == 1:
@@ -160,11 +167,13 @@ def optimize_priority_group(priority_group, free_time, priority):
                         # Update free_time
                         if event_length != free_length:
                             free_time[new_end] = free_time[free_start]
+                            remove_dup_free_time(new_end, free_time)
                         free_time.pop(free_start)
                         break
             elif free_time_count == len(free_time):
                 leftovers.append(event)
         # Update database with new values
+        print(free_time)
         if priority != 3:
             exec_commit(f"UPDATE {EVENT_TABLE} SET {START_TIME} = '{new_start}', {END_TIME} = '{new_end}' WHERE {ID} = {event[0]};")
     if priority == 3:
@@ -202,6 +211,17 @@ def during_event(event_frame, free_frame, free_time):
         return [overlaps_middle(event_frame[0], event_frame[1], overlapped_event_start, overlapped_event_end), overlapped_event_end]
     except IndexError:
         return [False]
+
+def remove_dup_free_time(key, free_time):
+    """A heler function that makes sure there are no key:value pairs in free_time that
+    are the exact same.
+
+    Args:
+        key (str): The "starting time" that's being changed
+        free_time (dict): The free time in the day
+    """
+    if free_time[key] == key:
+        free_time.pop(key)
 
 def overlaps_left(this_start, this_end, that_start, that_end):
     """Determines whether or not "this" time frame overlaps "that" time frame on "this'" left side.
